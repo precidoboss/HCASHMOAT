@@ -1764,7 +1764,8 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
             <option value="staked">🔒 Staked</option>
             <option value="locked">⏳ Locked</option>
             <option value="reward">💰 Rewards</option>
-            <option value="unstake">↩ Unstake</option>
+            <option value="unstake">↩ Unstake / Exit</option>
+            <option value="eel">⚡ EEL (Early Exit)</option>
           </select>
           <span class="mono" style="font-size:.80rem;color:var(--mut);align-self:center" id="evCount"></span>
         </div>
@@ -2287,6 +2288,14 @@ const WAVAX_ABI = [
 // ══════════════════════════════════════════════════════
 const fmtP = n => {if(!n||isNaN(n))return'0';if(n>=1e6)return(n/1e6).toFixed(2)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return Math.round(n).toLocaleString()};
 const fmtK = n => {if(!n)return'$0';if(n>=1e9)return'$'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return'$'+(n/1e6).toFixed(2)+'M';if(n>=1e3)return'$'+(n/1e3).toFixed(1)+'K';return'$'+n.toFixed(2)};
+// Human-readable LP token amounts (LP tokens are tiny fractions — show meaningful decimals)
+const fmtLP = n => {
+  if(!n||isNaN(n))return'0';
+  if(n>=1000)return n.toFixed(2);
+  if(n>=1)return n.toFixed(4);
+  if(n>=0.0001)return n.toFixed(6);
+  return n.toExponential(4); // only fallback for extremely tiny amounts
+};
 const fmtPrice = n => {if(!n||n===0)return'0';if(n>=1000)return n.toLocaleString(undefined,{maximumFractionDigits:2});if(n>=1)return n.toFixed(4);if(n>=0.01)return n.toFixed(6);if(n>=0.0001)return n.toFixed(8);return parseFloat(n.toPrecision(6)).toString()};
 const f4 = n => Number(n).toFixed(4);
 const f2 = n => Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
@@ -2704,6 +2713,7 @@ const MOAT_ADDR_LC = HCASH_MOAT_ADDR.toLowerCase();
 const EV_STAKED   = '0x9e71bc8eea02a63969f509818f2dafb9254532904319f9dbda79b67bd34a5f3d'; // Staked(address,uint256)
 const EV_LOCKED   = '0x7ff7bacc6cd661809ed1ddce1c0b4ad1d43db434d2b0f2b2a51b4a31d9da6a38'; // Locked(address,uint256,uint256)
 const EV_UNSTAKED = '0x0f5bb82176feb1b5e747e28471aa92156a04d9f3ab9f45f28e2d704232b93f75'; // Unstaked(address,uint256)
+const EV_EEL      = '0x'; // EarlyExitLock — placeholder, falls through to METHOD_MAP
 const EV_TRANSFER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'; // Transfer
 
 async function loadEvents() {
@@ -2711,137 +2721,88 @@ async function loadEvents() {
   if(feed)feed.innerHTML='<div class="mono" style="font-size:1.35rem;color:var(--mut);text-align:center;padding:1.5rem"><span class="spin"></span>Loading events…</div>';
   try{
     const MOAT_LC=HCASH_MOAT_ADDR.toLowerCase();
-    const LP_LC=HCASH_LP_ADDR.toLowerCase();
     const events=[];
 
-    // ── PRIMARY: Snowtrace API — normal txs to moat contract (gives real timeStamp) ──
+    // Fetch normal txs (gives method sig + timestamp) AND token transfers (gives exact LP amount)
     const [txRes, tokenTxRes] = await Promise.allSettled([
-      // Normal transactions to the moat contract (stake/lock/unstake calls)
-      fetch(`${SNOWTRACE}?module=account&action=txlist&address=${HCASH_MOAT_ADDR}&startblock=0&endblock=99999999&sort=desc&offset=200`)
+      fetch(`${SNOWTRACE}?module=account&action=txlist&address=${HCASH_MOAT_ADDR}&startblock=0&endblock=99999999&sort=desc&offset=300`)
         .then(r=>r.json()),
-      // Token (LP) transfers to/from moat contract
-      fetch(`${SNOWTRACE}?module=account&action=tokentx&contractaddress=${HCASH_LP_ADDR}&address=${HCASH_MOAT_ADDR}&sort=desc&offset=200`)
+      fetch(`${SNOWTRACE}?module=account&action=tokentx&contractaddress=${HCASH_LP_ADDR}&address=${HCASH_MOAT_ADDR}&sort=desc&offset=300`)
         .then(r=>r.json()),
     ]);
 
-    // Parse normal txs — decode method signature to determine event type
+    // ── Step 1: Build a type-map from normal txs keyed by txhash ──
+    // These tell us WHAT action was called (stake/lock/unstake/exit/eel/reward)
     const METHOD_MAP={
-      '0xa694fc3a':'staked',    // stake(uint256)
-      '0xf83d08ba':'staked',    // stake() variants
-      '0x23b872dd':'deposit',   // transferFrom
-      '0xb88d4fde':'deposit',
-      '0x2e1a7d4d':'unstake',   // withdraw(uint256)
-      '0x4e71d92d':'reward',    // claim()
-      '0xe9fad8ee':'unstake',   // exit()
-      '0x84e9c9af':'locked',    // lock(uint256,uint256)
-      '0x1e83409a':'reward',    // claimAllRewards
-      '0xd96a094a':'staked',    // buy/stake
-      '0x2f48ab7d':'locked',    // lockTokens
-      '0x7acb7757':'unstake',   // earlyExitLock
-      '0x3d18b912':'reward',    // getReward
-      '0x39941fa9':'locked',    // lock variants
+      '0xa694fc3a':'staked',
+      '0xf83d08ba':'staked',
+      '0x2e1a7d4d':'unstake',
+      '0x4e71d92d':'reward',
+      '0xe9fad8ee':'exit',
+      '0x84e9c9af':'locked',
+      '0x1e83409a':'reward',
+      '0xd96a094a':'staked',
+      '0x2f48ab7d':'locked',
+      '0x7acb7757':'eel',
+      '0x3d18b912':'reward',
+      '0x39941fa9':'locked',
     };
+    const txTypeMap={};   // txhash → { type, wallet, timestamp, blockNumber }
     const txs=(txRes.status==='fulfilled'&&txRes.value?.status==='1')?(txRes.value.result||[]):[];
     for(const tx of txs){
       if(tx.isError==='1') continue;
       const method=(tx.input||'').slice(0,10).toLowerCase();
       let type=METHOD_MAP[method]||null;
-      // Also classify by function name if available
       if(!type){
         const fn=(tx.functionName||'').toLowerCase();
-        if(fn.includes('stake'))type='staked';
+        if(fn.includes('earlyexit'))type='eel';
+        else if(fn.includes('stake'))type='staked';
         else if(fn.includes('lock'))type='locked';
-        else if(fn.includes('unstake')||fn.includes('withdraw')||fn.includes('exit'))type='unstake';
+        else if(fn==='exit'||fn.includes('exit()'))type='exit';
+        else if(fn.includes('unstake')||fn.includes('withdraw'))type='unstake';
         else if(fn.includes('claim')||fn.includes('reward'))type='reward';
-        else if(fn.includes('burn'))type='burned';
-        else type='activity';
+        else type=null;
       }
-      // Parse amount from input data (first uint256 param = 32 bytes after method sig)
-      let amt=0;
-      try{
-        const data=(tx.input||'').slice(10);
-        if(data.length>=64){
-          amt=Number(BigInt('0x'+data.slice(0,64)))/1e18;
-        }
-      }catch(e){}
-      events.push({
-        eventType:type,
-        wallet:(tx.from||'').toLowerCase(),
-        amount:amt,
-        txHash:tx.hash||'',
-        timestamp:Number(tx.timeStamp||0),
-        blockNumber:tx.blockNumber,
-        _onchain:true,
-      });
+      if(type) txTypeMap[tx.hash]={type,wallet:(tx.from||'').toLowerCase(),timestamp:Number(tx.timeStamp||0),blockNumber:tx.blockNumber};
     }
 
-    // Parse token transfer txs — gives actual LP amounts with timestamps
+    // ── Step 2: Build events from token transfers (have the real LP amounts) ──
+    // Cross-reference txTypeMap to get the correct action label
     const tokenTxs=(tokenTxRes.status==='fulfilled'&&tokenTxRes.value?.status==='1')?(tokenTxRes.value.result||[]):[];
-    const seenHashes=new Set(events.map(e=>e.txHash).filter(Boolean));
+    const seenHashes=new Set();
     for(const tx of tokenTxs){
+      if(seenHashes.has(tx.hash)) continue;
       const toLc=(tx.to||'').toLowerCase();
       const fromLc=(tx.from||'').toLowerCase();
       const amt=Number(tx.value||0)/1e18;
-      let type='activity', wallet='';
-      if(toLc===MOAT_LC){type='deposit';wallet=fromLc;}
-      else if(fromLc===MOAT_LC){type='reward';wallet=toLc;}
-      else continue;
-      // Enrich existing events with amount if same txhash
-      if(seenHashes.has(tx.hash)){
-        const existing=events.find(e=>e.txHash===tx.hash);
-        if(existing&&!existing.amount&&amt>0) existing.amount=amt;
-        continue;
-      }
-      events.push({
-        eventType:type,
-        wallet,
-        amount:amt,
-        txHash:tx.hash||'',
-        timestamp:Number(tx.timeStamp||0),
-        blockNumber:tx.blockNumber,
-        _onchain:true,
-      });
+      const meta=txTypeMap[tx.hash];
+      let type, wallet;
+      if(toLc===MOAT_LC){
+        // LP going INTO moat — stake or lock
+        wallet=fromLc;
+        type=meta?.type==='locked'?'locked':(meta?.type||'staked');
+      } else if(fromLc===MOAT_LC){
+        // LP going OUT of moat — unstake, exit, eel, or reward claim
+        wallet=toLc;
+        // Use the method type from the normal tx; default to 'reward' only if truly no method found
+        type=meta?.type||'reward';
+      } else continue;
+      const ts=meta?.timestamp||Number(tx.timeStamp||0);
+      events.push({eventType:type,wallet,amount:amt,txHash:tx.hash||'',timestamp:ts,blockNumber:tx.blockNumber||meta?.blockNumber,_onchain:true});
       seenHashes.add(tx.hash);
     }
 
-    // ── FALLBACK: eth_getLogs for any events missing from Snowtrace ──
-    try{
-      const RPC=AVAX_RPC;
-      const blkRes=await fetch(RPC,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_blockNumber',params:[]})}).then(r=>r.json());
-      const curBlock=blkRes?.result?parseInt(blkRes.result,16):0;
-      const logsRes=await fetch(RPC,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({jsonrpc:'2.0',id:2,method:'eth_getLogs',params:[{
-          fromBlock:'0x'+Math.max(0,curBlock-50000).toString(16),
-          toBlock:'0x'+curBlock.toString(16),
-          address:HCASH_MOAT_ADDR
-        }]})}).then(r=>r.json());
-      const logs=logsRes?.result||[];
-      for(const log of logs){
-        if(seenHashes.has(log.transactionHash)) continue;
-        const topic0=(log.topics||[])[0]||'';
-        const wallet=log.topics?.[1]?'0x'+log.topics[1].slice(26).toLowerCase():'';
-        let amt=0;
-        try{const hex=(log.data||'0x').replace('0x','').padStart(64,'0').slice(0,64);amt=Number(BigInt('0x'+hex))/1e18;}catch(e){}
-        let type='activity';
-        if(topic0===EV_STAKED)type='staked';
-        else if(topic0===EV_LOCKED)type='locked';
-        else if(topic0===EV_UNSTAKED)type='unstake';
-        else continue;
-        const blkNum=parseInt(log.blockNumber||'0',16);
-        const ts=Math.floor(Date.now()/1000)-(curBlock-blkNum)*2;
-        events.push({eventType:type,wallet,amount:amt,txHash:log.transactionHash||'',timestamp:ts,_onchain:true});
-        seenHashes.add(log.transactionHash);
+    // ── Step 3: Add any normal txs not covered by token transfers (e.g. reward claims with no LP transfer) ──
+    for(const [hash,meta] of Object.entries(txTypeMap)){
+      if(seenHashes.has(hash)) continue;
+      if(meta.type==='reward'||meta.type==='staked'||meta.type==='locked'||meta.type==='unstake'||meta.type==='exit'||meta.type==='eel'){
+        events.push({eventType:meta.type,wallet:meta.wallet,amount:0,txHash:hash,timestamp:meta.timestamp,blockNumber:meta.blockNumber,_onchain:true});
+        seenHashes.add(hash);
       }
-    }catch(re){console.warn('getLogs fallback:',re.message);}
+    }
 
-    // Sort by timestamp desc, filter zero-timestamp to bottom
-    events.sort((a,b)=>{
-      if(!a.timestamp&&!b.timestamp)return 0;
-      if(!a.timestamp)return 1;
-      if(!b.timestamp)return -1;
-      return b.timestamp-a.timestamp;
-    });
+    // Sort newest first
+    events.sort((a,b)=>b.timestamp-a.timestamp);
     allEvData=[...events];
     filteredEvData=[...allEvData];
     renderEvFeed();
@@ -2855,7 +2816,16 @@ async function loadEvents() {
 
 function filterEvs() {
   const t = document.getElementById('evTypeFilter')?.value.toLowerCase()||'';
-  filteredEvData = t ? allEvData.filter(e=>(e.eventType||e.type||'').toLowerCase().includes(t)) : [...allEvData];
+  if(!t){ filteredEvData = [...allEvData]; }
+  else if(t==='unstake'){
+    // "Unstake / Exit" catches unstake + exit (normal exit, not EEL)
+    filteredEvData = allEvData.filter(e=>{
+      const et=(e.eventType||e.type||'').toLowerCase();
+      return et==='unstake'||et==='exit'||et==='withdraw';
+    });
+  } else {
+    filteredEvData = allEvData.filter(e=>(e.eventType||e.type||'').toLowerCase()===t);
+  }
   renderEvFeed();
 }
 function renderEvFeed() {
@@ -2863,8 +2833,8 @@ function renderEvFeed() {
   if(!feed)return;
   setTxt('evCount', filteredEvData.length+' events');
   if(!filteredEvData.length){feed.innerHTML='<div class="mono" style="font-size:1.35rem;color:var(--mut);padding:1.5rem;text-align:center">No events found.</div>';return;}
-  const TYPE_COLOR={staked:'var(--red)',locked:'var(--gold)',burned:'var(--red)',reward:'var(--grn)',claim:'var(--grn)',withdraw:'var(--dim)',unstake:'var(--dim)',deposit:'var(--red)'};
-  const TYPE_ICON={staked:'🔒',locked:'⏳',burned:'🔥',reward:'💰',claim:'💰',unstake:'↩',deposit:'⬇'};
+  const TYPE_COLOR={staked:'var(--red)',locked:'var(--gold)',burned:'var(--red)',reward:'var(--grn)',claim:'var(--grn)',withdraw:'var(--dim)',unstake:'var(--dim)',eel:'var(--pur)',exit:'var(--pur)',deposit:'var(--red)'};
+  const TYPE_ICON={staked:'🔒',locked:'⏳',burned:'🔥',reward:'💰',claim:'💰',unstake:'↩',eel:'⚡',exit:'↩',deposit:'⬇'};
   feed.innerHTML = filteredEvData.slice(0,80).map(e=>{
     const t=(e.eventType||e.type||e.action||'activity').toLowerCase();
     const col=TYPE_COLOR[t]||'var(--mut)';
@@ -2897,16 +2867,18 @@ function renderEvFeed() {
   }).join('');
 }
 function renderActivityStats() {
-  const stakes = allEvData.filter(e=>(e.eventType||'').toLowerCase().includes('stake')||'deposit'==(e.eventType||'').toLowerCase()).length;
-  const locks = allEvData.filter(e=>(e.eventType||'').toLowerCase().includes('lock')).length;
-  const claims = allEvData.filter(e=>(e.eventType||'').toLowerCase().includes('claim')||(e.eventType||'').toLowerCase().includes('reward')).length;
-  const exits = allEvData.filter(e=>(e.eventType||'').toLowerCase().includes('unstake')||(e.eventType||'').toLowerCase().includes('withdraw')).length;
+  const stakes = allEvData.filter(e=>{const t=(e.eventType||'').toLowerCase();return t==='staked'||t==='deposit';}).length;
+  const locks  = allEvData.filter(e=>(e.eventType||'').toLowerCase()==='locked').length;
+  const claims = allEvData.filter(e=>{const t=(e.eventType||'').toLowerCase();return t==='claim'||t==='reward';}).length;
+  const unstakes = allEvData.filter(e=>{const t=(e.eventType||'').toLowerCase();return t==='unstake'||t==='withdraw'||t==='exit';}).length;
+  const eels   = allEvData.filter(e=>(e.eventType||'').toLowerCase()==='eel').length;
   setHtml('activityStats',`
-    <div class="calc-row"><span class="calc-lbl">Total hCASH Events</span><span class="calc-val cw">${allEvData.length}</span></div>
-    <div class="calc-row"><span class="calc-lbl">Stake/Deposit</span><span class="calc-val cr">${stakes}</span></div>
-    <div class="calc-row"><span class="calc-lbl">Lock Events</span><span class="calc-val cg">${locks}</span></div>
-    <div class="calc-row"><span class="calc-lbl">Reward Claims</span><span class="calc-val cgn">${claims}</span></div>
-    <div class="calc-row"><span class="calc-lbl">Unstake/Exit</span><span class="calc-val cd">${exits}</span></div>
+    <div class="calc-row"><span class="calc-lbl">Total Events</span><span class="calc-val cw">${allEvData.length}</span></div>
+    <div class="calc-row"><span class="calc-lbl">🔒 Stake / Deposit</span><span class="calc-val cr">${stakes}</span></div>
+    <div class="calc-row"><span class="calc-lbl">⏳ Lock Events</span><span class="calc-val cg">${locks}</span></div>
+    <div class="calc-row"><span class="calc-lbl">💰 Reward Claims</span><span class="calc-val cgn">${claims}</span></div>
+    <div class="calc-row"><span class="calc-lbl">↩ Unstake / Exit</span><span class="calc-val cd">${unstakes}</span></div>
+    <div class="calc-row"><span class="calc-lbl">⚡ Early Exit (EEL)</span><span class="calc-val" style="color:var(--pur)">${eels}</span></div>
     <div style="margin-top:.9rem">
       <div class="mono" style="font-size:.76rem;color:var(--mut);margin-bottom:5px">Lock vs Stake ratio</div>
       <div class="bw"><div class="bt"><div class="bf" style="width:${locks/(stakes+locks||1)*100}%;background:linear-gradient(90deg,var(--gold),#fbbf24)"></div></div>
@@ -2968,6 +2940,7 @@ function renderLb() {
 // ══════════════════════════════════════════════════════
 async function loadExplorerData() {
   setHtml('explorerStats','<div class="mono" style="font-size:1.35rem;color:var(--mut)"><span class="spin"></span>Loading on-chain data…</div>');
+  let lpSup = poolData?.lpSupply || 0;  // fallback to already-loaded value
   try {
     const prov = walletProvider||new ethers.JsonRpcProvider(AVAX_RPC);
     const lp = new ethers.Contract(HCASH_LP_ADDR,LP_ABI,prov);
@@ -2975,7 +2948,7 @@ async function loadExplorerData() {
     const isWavaxT0 = t0.toLowerCase()===WAVAX_ADDR.toLowerCase();
     const avaxRes = parseFloat(ethers.formatEther(isWavaxT0?res[0]:res[1]));
     const hcashRes = parseFloat(ethers.formatEther(isWavaxT0?res[1]:res[0]));
-    const lpSup = parseFloat(ethers.formatEther(ts));
+    lpSup = parseFloat(ethers.formatEther(ts));
     let avaxUsd = priceData?.avaxPrice||0;
     // Always try to get fresh AVAX price if not available
     if(!avaxUsd) {
@@ -3468,7 +3441,7 @@ async function quoteLPFromAVAX() {
       const lpExpected=parseFloat(ethers.formatEther(q[2]));
       if(hcashInp&&!hcashInp._userEdited)hcashInp.value=hcashNeeded.toFixed(6);
       const ratio=(hcashNeeded/avaxAmt).toFixed(2);
-      if(preview)preview.innerHTML=`<span style="color:var(--grn)">✓</span> ${lpExpected.toExponential(4)} LP · ${hcashNeeded.toFixed(4)} hCASH · 1 AVAX = ${ratio} hCASH`;
+      if(preview)preview.innerHTML=`<span style="color:var(--grn)">✓</span> ${fmtLP(lpExpected)} LP · ${hcashNeeded.toFixed(4)} hCASH · 1 AVAX = ${ratio} hCASH`;
     } catch(e){
       // Fallback reserve math
       try{
@@ -4243,10 +4216,9 @@ function runCalc() {
   // Estimate LP tokens proportional to pool
   const lpFrac=poolData?((halfUsd/(poolData.avaxReserve*(avaxPrice||25)*2))||0):0;
   const lpEst=poolData?(lpFrac*poolData.lpSupply)||0:0;
-  // Correct formula: pts = tokens × ppt × mult, ppt = 1,000,000 / totalSupply
-  const lpTotalSupply = poolData?.lpSupply||1;
-  const ppt = 1000000 / lpTotalSupply;
-  const estPts = lpEst * ppt * mult;
+  // Correct moat points formula (verified against moats.app)
+  const lpTotalSupply = poolData?.lpSupply || LIL_TOTAL_SUPPLY;
+  const estPts = lpEst > 0 ? calcMoatPoints(lpEst, calcLockDays, lpTotalSupply) : 0;
   // Fort score = additive, total pool grows with new deposits
   const fortPct=estPts>0?(estPts/(totalPts+estPts)*100).toFixed(5):'—';
   el.innerHTML=`<div style="background:var(--sur);border:1px solid var(--bor);border-radius:9px;padding:.85rem">
@@ -4254,9 +4226,10 @@ function runCalc() {
     <div class="calc-row"><span class="calc-lbl">Budget Split (50/50)</span><span class="calc-val">${fmtK(halfUsd)} each</span></div>
     <div class="calc-row"><span class="calc-lbl">hCASH to buy</span><span class="calc-val cg">${hcashPrice>0?fmtP(hcashTokens):'—'} hCASH</span></div>
     <div class="calc-row"><span class="calc-lbl">AVAX to pair</span><span class="calc-val cw">${avaxPrice>0?f4(avaxAmt):'—'} AVAX</span></div>
-    <div class="calc-row"><span class="calc-lbl">LP Tokens Est.</span><span class="calc-val cd">${lpEst>0?lpEst.toExponential(4):'—'}</span></div>
+    <div class="calc-row"><span class="calc-lbl">LP Tokens Est.</span><span class="calc-val cd">${lpEst>0?fmtLP(lpEst):'—'}</span></div>
     <div class="calc-row"><span class="calc-lbl">Lock Duration</span><span class="calc-val cg">${calcLockDays}d</span></div>
     <div class="calc-row"><span class="calc-lbl">Points Multiplier</span><span class="calc-val cr">${mult}×</span></div>
+    <div class="calc-row"><span class="calc-lbl">Est. Moat Points</span><span class="calc-val cr">${estPts>0?fmtP(estPts)+' pts':'—'}</span></div>
     <div class="calc-row" style="border-top:1px solid var(--bor);padding-top:.55rem;margin-top:.2rem">
       <span class="calc-lbl" style="color:var(--txt)">Est. Fort Score Share</span>
       <span class="calc-val cgn" style="font-size:1.25rem">${fortPct}%</span>
@@ -5347,19 +5320,21 @@ document.addEventListener('click', function(e) {
   const ctx = canvas.getContext('2d');
   let W, H, animId;
 
+  function rnd(a,b){ return a + Math.random()*(b-a); }
+
+  // Declare arrays before resize() so initOrbs/initEmbers can reference them
+  const ORBS = [];
+  const EMBERS = [];
+
   function resize() {
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
     initOrbs();
-    if (typeof initEmbers === 'function') initEmbers();
+    initEmbers();
   }
   window.addEventListener('resize', resize);
   resize();
 
-  function rnd(a,b){ return a + Math.random()*(b-a); }
-
-  // ── Glowing orbs ──
-  const ORBS = [];
   function initOrbs() {
     ORBS.length = 0;
     const count = Math.min(6, Math.floor(W / 260));
@@ -5377,8 +5352,6 @@ document.addEventListener('click', function(e) {
     }
   }
 
-  // ── Floating ember particles ──
-  const EMBERS = [];
   function initEmbers() {
     EMBERS.length = 0;
     const count = Math.min(40, Math.floor(W / 28));
@@ -5467,9 +5440,7 @@ document.addEventListener('click', function(e) {
     animId = requestAnimationFrame(draw);
   }
 
-  initOrbs();
-  initEmbers();
-  draw();
+  draw(); // resize() already populated ORBS/EMBERS via initOrbs/initEmbers
 
   window._miningAnim = {
     pause()  { cancelAnimationFrame(animId); canvas.classList.add('hidden'); },
@@ -6647,20 +6618,46 @@ function wiOnMinerSelect() {}
 function wiBuildLockGrid() {
   const g = document.getElementById('wi-lockGrid');
   if (!g || g.children.length > 0) return;
-  const durs = [[1,'2.04×'],[30,'2.31×'],[90,'2.73×'],[180,'3.23×'],[365,'4.00×'],[540,'4.57×'],[730,'5.00×']];
+  const durs = [['stake','1×'],['1','2.04×'],['30','2.31×'],['90','2.73×'],['180','3.23×'],['365','4.00×'],['730','5.00×']];
   g.innerHTML = durs.map(([d, m], i) => `
-    <div class="dur-btn${i===3?' active':''}" onclick="wiSelectLock(${d},this)" data-days="${d}" style="text-align:center">
-      <div class="dur-days">${d}d</div>
+    <div class="dur-btn${d==='180'?' active':''}" onclick="wiSelectLock(${d==='stake'?'"stake"':d},this)" data-days="${d}" style="text-align:center">
+      <div class="dur-days">${d==='stake'?'Stake':d+'d'}</div>
       <div class="dur-mult">${m}</div>
     </div>`).join('');
+  // Inject custom days input row below grid
+  const wrap = g.parentElement;
+  if (wrap && !document.getElementById('wi-customLockRow')) {
+    const row = document.createElement('div');
+    row.id = 'wi-customLockRow';
+    row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:6px';
+    row.innerHTML = `
+      <span style="font-family:'DM Mono',monospace;font-size:var(--t-xs);color:var(--mut);white-space:nowrap">Custom days:</span>
+      <input id="wi-customLockDays" type="number" min="1" max="730" placeholder="e.g. 60"
+        class="inp" style="width:90px;padding:3px 7px;font-size:var(--t-xs)"
+        oninput="wiSelectLock(parseInt(this.value)||0,null)">
+      <span style="font-family:'DM Mono',monospace;font-size:var(--t-xs);color:var(--mut)" id="wi-customLockMult"></span>`;
+    wrap.appendChild(row);
+  }
 }
 
 function wiSelectLock(d, el) {
+  // d can be 'stake', a number of days, or 0 (from custom input before typed)
   document.querySelectorAll('#wi-lockGrid .dur-btn').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
-  _wiLockDaysVal = d;
+  // If a preset button was clicked, clear custom input
+  if (el) {
+    const customInp = document.getElementById('wi-customLockDays');
+    if (customInp) customInp.value = '';
+  }
+  _wiLockDaysVal = d === 'stake' ? 'stake' : (parseInt(d) || 0);
   const inp = document.getElementById('wi-lockDays');
-  if (inp) inp.value = d;
+  if (inp) inp.value = _wiLockDaysVal;
+  // Show multiplier next to custom input
+  const multLabel = document.getElementById('wi-customLockMult');
+  if (multLabel) {
+    const m = lockMultiplier(_wiLockDaysVal);
+    multLabel.textContent = m + '×';
+  }
   wiCalc();
 }
 
@@ -6916,7 +6913,7 @@ function wiCalc() {
   document.getElementById('wi-lpTotalUsd').textContent    = fmtU(minerUsd);
   document.getElementById('wi-lpAvaxAmt').textContent     = avaxSide.toFixed(4) + ' AVAX';
   document.getElementById('wi-lpHcashAmt').textContent    = fmtP(hcashSide) + ' hCASH';
-  document.getElementById('wi-lpTokens').textContent      = lpTokenEst > 0 ? lpTokenEst.toExponential(4) + ' LP' : '—';
+  document.getElementById('wi-lpTokens').textContent      = lpTokenEst > 0 ? fmtLP(lpTokenEst) + ' LP' : '—';
   document.getElementById('wi-lpPoolShare').textContent   = lpPoolSharePct > 0 ? lpPoolSharePct.toFixed(4) + '%' : '—';
   document.getElementById('wi-lpMult').textContent        = mult + '×';
   document.getElementById('wi-lpPoints').textContent      = lpPtsTotal > 0 ? fmtP(lpPtsTotal) + ' pts total' : '—';
@@ -6928,7 +6925,9 @@ function wiCalc() {
   document.getElementById('wi-lpPtsDay').textContent      = lpPtsTotal > 0
     ? `${fmtP(lpPtsTotal)} pts (${lpPtsSharePct.toFixed(3)}% of moat)`
     : '—';
-  document.getElementById('wi-lpMultDisplay').textContent = `${mult}× (${_wiLockDaysVal}d lock)`;
+  document.getElementById('wi-lpMultDisplay').textContent = _wiLockDaysVal === 'stake'
+    ? `${mult}× (stake, no lock)`
+    : `${mult}× (${_wiLockDaysVal}d lock)`;
   document.getElementById('wi-lpFee30').textContent       = fmtH(lpFee30) + ' hCASH';
   document.getElementById('wi-lpFeeUsd30').textContent    = fmtU(lpFeeUsd30);
   document.getElementById('wi-lpFee365').textContent      = fmtH(lpFee365) + ' hCASH';
