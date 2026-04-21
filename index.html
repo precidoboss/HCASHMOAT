@@ -118,7 +118,7 @@ html.light {
 
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
 body {
   background: var(--bg);
   color: var(--txt);
@@ -328,6 +328,25 @@ main {
 @media(min-width: 1200px) { main { padding: 1.25rem 1.5rem 3rem; } }
 
 .view { display: none; }
+@media(max-width:480px){
+  #bd-slotGrid > div { min-width: 0 !important; }
+  #bd-slotTableWrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #view-build .card { overflow: hidden; max-width: 100%; box-sizing: border-box; }
+}
+@media(max-width:480px){
+  /* Footer mobile */
+  footer, [data-footer], .site-footer { font-size: 10px !important; }
+  /* Prevent any child from busting out */
+  body > * { max-width: 100vw; overflow-x: hidden; }
+  main { overflow-x: hidden; }
+  /* Footer pill — force wrap on small screens */
+  #app-footer-pill, [data-footer-pill] {
+    border-radius: 12px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    max-width: calc(100vw - 1.7rem) !important;
+  }
+}
 .view.on { display: block; }
 
 /* ── GRIDS ── */
@@ -625,7 +644,29 @@ html.light .liq-token-row { background: rgba(0,0,0,.02); }
 .liq-max-btn:hover { background: rgba(232,53,53,.16); border-color: rgba(232,53,53,.4); }
 
 .liq-plus-divider { text-align: center; color: var(--mut); font-size: 1.3rem; margin: .1rem 0; line-height: 1; }
-.liq-preview { font-family: 'DM Mono', monospace; font-size: var(--t-xs); color: var(--gld); min-height: 1.3em; padding: .25rem 0; }
+.liq-preview {
+  font-family: 'DM Mono', monospace;
+  font-size: var(--t-xs);
+  min-height: 1.3em;
+  margin: .5rem 0 .25rem;
+}
+.liq-preview:not(:empty) {
+  background: rgba(212,168,67,.06);
+  border: 1px solid rgba(212,168,67,.22);
+  border-radius: 8px;
+  padding: .6rem .75rem;
+  color: var(--txt);
+}
+.liq-preview .q-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.liq-preview .q-row:last-child { border-bottom: none; }
+.liq-preview .q-lbl { color: var(--mut); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
+.liq-preview .q-val { color: var(--txt); font-weight: 600; font-size: var(--t-xs); }
+.liq-preview .q-val.green { color: var(--grn); }
+.liq-preview .q-val.gold  { color: var(--gold); }
+.liq-preview .q-val.red   { color: var(--red); }
 .liq-slip-row { display: flex; align-items: center; gap: 4px; margin: .55rem 0; flex-wrap: wrap; }
 .slip-btn {
   padding: 3px 9px; background: transparent; border: 1px solid var(--bor);
@@ -635,7 +676,33 @@ html.light .liq-token-row { background: rgba(0,0,0,.02); }
 .slip-btn:hover { border-color: var(--bor2); color: var(--txt); }
 .slip-btn.active { background: rgba(232,53,53,.1); border-color: rgba(232,53,53,.3); color: var(--acc); }
 .liq-action-btn { width: 100%; padding: .75rem; margin-top: .55rem; font-size: var(--t-base); border-radius: var(--r-md); }
-.liq-status { font-family: 'DM Mono', monospace; font-size: var(--t-xs); color: var(--mut); text-align: center; margin-top: .4rem; min-height: 1.2em; line-height: 1.5; }
+.liq-status {
+  font-family: 'DM Mono', monospace;
+  font-size: var(--t-xs);
+  color: var(--mut);
+  margin-top: .5rem;
+  min-height: 1.2em;
+  line-height: 1.6;
+}
+.liq-status:not(:empty) {
+  background: var(--sur);
+  border: 1px solid var(--bor);
+  border-radius: 8px;
+  padding: .6rem .75rem;
+}
+.tx-step {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.tx-step:last-child { border-bottom: none; }
+.tx-step-icon { font-size: .9rem; flex-shrink: 0; margin-top: 1px; }
+.tx-step-body { flex: 1; }
+.tx-step-title { font-weight: 700; color: var(--txt); font-size: var(--t-xs); font-family: 'Rajdhani',sans-serif; }
+.tx-step-sub { color: var(--mut); font-size: 10px; margin-top: 1px; }
+.tx-step-sub a { color: var(--red); }
+.tx-step.active .tx-step-title { color: var(--gold); }
+.tx-step.done   .tx-step-title { color: var(--grn); }
+.tx-step.error  .tx-step-title { color: var(--red); }
 .liq-note { font-family: 'DM Mono', monospace; font-size: var(--t-xs); color: var(--mut); line-height: 1.6; margin-top: .6rem; padding-top: .55rem; border-top: 1px solid var(--bor); }
 .liq-info-strip { display: flex; gap: .85rem; flex-wrap: wrap; background: var(--sur); border: 1px solid var(--bor); border-radius: 6px; padding: .5rem .8rem; }
 .liq-swap-dir-row { display: flex; gap: 6px; margin-bottom: .55rem; }
@@ -929,6 +996,14 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
 <!-- MINING BACKGROUND CANVAS -->
 <canvas id="miningCanvas"></canvas>
 
+<!-- STARTUP LOADING OVERLAY — hidden once _appReady is set -->
+<div id="appLoadingOverlay" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;transition:opacity .4s">
+  <div style="font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:1.4rem;color:var(--red);letter-spacing:.1em">hCASH MOAT</div>
+  <div style="display:flex;align-items:center;gap:8px;color:var(--mut);font-family:'DM Mono',monospace;font-size:.75rem">
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse 1.2s ease-in-out infinite"></div>
+    Loading live data…
+  </div>
+</div>
 
 <!-- NOTIF -->
 <div id="notif"></div>
@@ -987,6 +1062,7 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
     <div class="tab" data-v="leaderboard" onclick="nav(this)">🏆 Board</div>
     <div class="tab" data-v="activity" onclick="nav(this)">📡 Activity</div>
     <div class="tab" data-v="whatif" onclick="nav(this)" style="color:var(--gold);border-color:rgba(212,168,67,.3);background:rgba(212,168,67,.06)">🔮 What If?</div>
+    <div class="tab" data-v="build" onclick="nav(this)" style="color:var(--red);border-color:rgba(229,62,62,.3);background:rgba(229,62,62,.06)">🔨 Build</div>
   </nav>
   <div class="hdr-r">
     <button id="connectBtn" class="btn btn-sm" onclick="walletConnect()">Connect Wallet</button>
@@ -1044,6 +1120,11 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
     <div class="sc"><div class="sl">Volume 24h</div><div class="sv cg" id="d_vol">—</div><div class="ss">Pharaoh pool</div></div>
     <div class="sc"><div class="sl">Moat Stakers</div><div class="sv cd" id="d_wallets">—</div><div class="ss">unique wallets</div></div>
     <div class="sc"><div class="sl">Total Points</div><div class="sv cr" id="d_points">—</div><div class="ss">across all stakers</div></div>
+    <div class="sc"><div class="sl">Current Block</div><div class="sv cw" id="d_block">—</div><div class="ss" id="d_blockTime">Avalanche C-Chain</div></div>
+    <div class="sc"><div class="sl">Network Hash</div><div class="sv cr" id="d_netHash">—</div><div class="ss">total hashrate</div></div>
+    <div class="sc"><div class="sl">Emission/Block</div><div class="sv cg" id="d_emitBlock">—</div><div class="ss" id="d_emitDay">current reward</div></div>
+    <div class="sc"><div class="sl">Halving In</div><div class="sv" style="color:var(--pur)" id="d_halving">—</div><div class="ss" id="d_halvingBlocks">blocks remaining</div></div>
+    <div class="sc"><div class="sl">Facilities</div><div class="sv cd" id="d_facilities">—</div><div class="ss" id="d_facilities_sub">online</div></div>
   </div>
 
   <div class="g2">
@@ -1152,9 +1233,7 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
     <button class="liq-tab" id="liqTab_remove" onclick="lpTab('remove',this)">
       <span>➖</span> Remove
     </button>
-    <button class="liq-tab" id="liqTab_swap" onclick="lpTab('swap',this)">
-      <span>🔄</span> Swap
-    </button>
+
     <button class="liq-tab liq-tab-gold" id="liqTab_stake" onclick="lpTab('stake',this)">
       <span>🔒</span> Stake
     </button>
@@ -1245,61 +1324,7 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
       </div>
     </div>
 
-    <!-- ── SWAP ── -->
-    <div id="lp_pane_swap" class="liq-pane">
-      <div class="liq-pane-inner">
-        <div class="liq-step-label">Swap between AVAX and hCASH via Pharaoh</div>
-        <!-- Direction toggle -->
-        <div class="liq-swap-dir-row">
-          <button id="swapDirBtn0" class="liq-dir-btn active" onclick="setSwapDir(0)">
-            <img src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/image-removebg-preview%20(8).png" style="width:18px;height:18px;border-radius:50%;object-fit:cover">
-            <span>AVAX</span>
-            <span class="liq-dir-arrow">→</span>
-            <img src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/hashcashclub.png" style="width:18px;height:18px;border-radius:50%;object-fit:cover">
-            <span>hCASH</span>
-          </button>
-          <button id="swapDirBtn1" class="liq-dir-btn" onclick="setSwapDir(1)">
-            <img src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/hashcashclub.png" style="width:18px;height:18px;border-radius:50%;object-fit:cover">
-            <span>hCASH</span>
-            <span class="liq-dir-arrow">→</span>
-            <img src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/image-removebg-preview%20(8).png" style="width:18px;height:18px;border-radius:50%;object-fit:cover">
-            <span>AVAX</span>
-          </button>
-        </div>
-        <!-- From input -->
-        <div class="liq-token-row" style="margin-top:.5rem">
-          <div class="liq-token-icon" id="swapFromIconWrap">
-            <img src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/image-removebg-preview%20(8).png" id="swapFromImg" style="width:32px;height:32px;border-radius:50%;object-fit:cover">
-          </div>
-          <div class="liq-token-info">
-            <div class="liq-token-name" id="swapFromToken">AVAX</div>
-            <div class="liq-token-bal" id="swapFromBal">—</div>
-          </div>
-          <div class="liq-token-input-wrap">
-            <input id="swapFromAmt" type="number" inputmode="decimal" class="liq-input" placeholder="0.0" oninput="quoteSwap()">
-            <button class="liq-max-btn" onclick="fillMaxSwap()">MAX</button>
-          </div>
-        </div>
-        <div id="swapQuoteRow" class="liq-preview"></div>
-        <div class="liq-slip-row">
-          <span class="mono" style="font-size:.76rem;color:var(--mut)">Slip:</span>
-          <button class="slip-btn active" onclick="setSlip(0.5,this)">0.5%</button>
-          <button class="slip-btn" onclick="setSlip(1.0,this)">1%</button>
-          <button class="slip-btn" onclick="setSlip(2.0,this)">2%</button>
-        </div>
-        <button class="btn liq-action-btn" id="swapExecBtn" onclick="execSwap()">🔄 Execute Swap</button>
-        <div id="swapStatus" class="liq-status"></div>
-        <div class="liq-note" style="margin-top:.5rem">
-          Tries <b>Pharaoh → KyberSwap → Odos</b> automatically. If all fail, swap directly on:
-          <a href="https://phar.gg" target="_blank" style="color:var(--gold)">Pharaoh ↗</a> ·
-          <a href="https://kyberswap.com/swap/avalanche" target="_blank" style="color:#1ed760">KyberSwap ↗</a> ·
-          <a href="https://app.odos.xyz/" target="_blank" style="color:var(--pur)">Odos ↗</a> ·
-          <a href="https://lfj.gg/avalanche/trade" target="_blank" style="color:var(--pur)">LFJ ↗</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── STAKE LP ── -->
+        <!-- ── STAKE LP ── -->
     <div id="lp_pane_stake" class="liq-pane">
       <div class="liq-pane-inner">
         <div class="liq-step-label">Stake LP in hCASH Moat for <b style="color:var(--red)">1× points</b> — flexible, unstake anytime</div>
@@ -1697,9 +1722,13 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
 
   <!-- Rigs section (shown when not filtered to rigs specifically) -->
   <div class="sh" id="rigSectionHead" style="margin-top:.5rem"><div class="sh-t">🔧 Rig Assemblers</div></div>
-  <div id="rigGrid" class="g2">
+  <div id="rigGrid" class="miner-grid">
     <div class="mono" style="font-size:1.35rem;color:var(--mut)"><span class="spin"></span>Loading rig data…</div>
   </div>
+
+  <!-- External NFT miners (e.g. Jarmer Jorn) -->
+  <div class="sh" id="extNftSectionHead" style="margin-top:.5rem;display:none"><div class="sh-t">🌐 External NFT Miners</div></div>
+  <div id="extNftGrid" class="miner-grid"></div>
 
   <!-- Other contracts -->
   <div class="sh" style="margin-top:.5rem"><div class="sh-t">📄 Other HashCash Contracts</div></div>
@@ -1879,115 +1908,14 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
       </div>
     </div>
 
-    <!-- ══ MANUAL BUILD — collapsible ══ -->
-    <div class="card" style="margin-bottom:.85rem">
-      <div class="ch" style="cursor:pointer;user-select:none" onclick="wiToggleManual()">
-        <div class="ctitle" style="color:var(--red)">⛏ Manual Build — Custom Miner + Price</div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span class="mono" style="font-size:var(--fs-xs);color:var(--mut)">click to expand</span>
-          <span id="wiManualChevron" style="font-size:.8rem;color:var(--mut);transition:transform .2s">▼</span>
-        </div>
-      </div>
-      <div id="wiManualBody" style="display:none">
-        <div class="cbody" style="display:flex;flex-direction:column;gap:.75rem">
 
-          <!-- Miner selector with search -->
-          <div style="position:relative">
-            <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">Select Miner (from HashCash API)</div>
-            <div style="display:flex;gap:6px;margin-bottom:4px">
-              <div style="position:relative;flex:1">
-                <input id="wi-minerSearch" type="text" class="inp"
-                  placeholder="🔍  Search miners…"
-                  oninput="wiFilterMiners(this.value)"
-                  onfocus="document.getElementById('wi-minerDropdown').style.display='block'"
-                  onkeydown="wiSearchKeydown(event)"
-                  autocomplete="off"
-                  style="width:100%;padding-right:2rem">
-                <button onclick="wiClearSearch()" title="Clear" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--mut);cursor:pointer;font-size:.85rem;padding:0;line-height:1;z-index:1">✕</button>
-              </div>
-              <button class="btn btn-g btn-sm" onclick="wiRefreshMiners()" title="Reload miners from API">↺</button>
-            </div>
-            <div id="wi-minerDropdown" style="display:none;position:absolute;z-index:400;left:0;right:40px;max-height:220px;overflow-y:auto;background:var(--card);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.5);top:100%">
-              <div id="wi-minerDropdownList"></div>
-            </div>
-            <div id="wi-selectedChip" style="display:none;margin-top:4px;background:rgba(229,62,62,.07);border:1px solid rgba(229,62,62,.22);border-radius:6px;padding:5px 10px;align-items:center;gap:8px">
-              <span id="wi-selectedChipName" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--fs-sm);color:var(--red2);flex:1"></span>
-              <button onclick="wiClearMinerSelection()" style="background:none;border:none;color:var(--mut);cursor:pointer;font-size:.75rem" title="Clear">✕</button>
-            </div>
-            <div id="wi-minerImg" style="margin-top:.5rem;display:none">
-              <img id="wi-minerImgEl" src="" alt="" style="width:64px;height:64px;border-radius:8px;object-fit:cover;border:1px solid var(--bor)">
-            </div>
-          </div>
-
-          <!-- Miner stats -->
-          <div id="wi-minerStats" style="display:none;background:var(--sur);border:1px solid var(--bor);border-radius:8px;padding:.65rem">
-            <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Miner Specs</div>
-            <div class="calc-row"><span class="calc-lbl">Hashrate</span><span class="calc-val cr" id="wi-mhsDisplay">—</span></div>
-            <div class="calc-row"><span class="calc-lbl">Power draw</span><span class="calc-val" id="wi-wattsDisplay">—</span></div>
-            <div class="calc-row"><span class="calc-lbl">Efficiency</span><span class="calc-val cg" id="wi-effDisplay">—</span></div>
-          </div>
-
-          <!-- Price input -->
-          <div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">Marketplace Price</div>
-            <div style="display:flex;gap:6px;align-items:center">
-              <input id="wi-price" type="number" class="inp" placeholder="e.g. 2500" style="flex:1" oninput="wiPriceChanged()" min="1">
-              <select id="wi-priceCurrency" class="inp" style="width:100px" onchange="wiCalc()">
-                <option value="hcash">hCASH</option>
-                <option value="avax">AVAX</option>
-              </select>
-            </div>
-            <div id="wi-priceUsdDisplay" style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-top:4px">≈ $— USD</div>
-          </div>
-
-          <!-- Facility level -->
-          <div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">
-              Facility Level
-              <span id="wi-rateSourceBadge" style="margin-left:6px;font-size:var(--fs-xs);color:var(--mut)"></span>
-            </div>
-            <!-- Note: wi-facilityLevel select is rendered in the cart section above; manual uses same element -->
-            <div id="wi-rateNote" style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-top:4px"></div>
-          </div>
-
-          <!-- Add another miner to slot -->
-          <div style="background:rgba(229,62,62,.04);border:1px dashed rgba(229,62,62,.2);border-radius:7px;padding:.6rem">
-            <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px">ADD MINER TO SLOT</div>
-            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-              <div style="position:relative;flex:1;min-width:140px">
-                <input id="wi-slotMinerSearch" type="text" class="inp" placeholder="🔍 Search…"
-                  oninput="wiSlotFilterMiners(this.value)"
-                  onfocus="document.getElementById('wi-slotDropdown').style.display='block'"
-                  autocomplete="off" style="width:100%;font-size:var(--fs-xs)">
-                <div id="wi-slotDropdown" style="display:none;position:absolute;z-index:500;left:0;right:0;max-height:180px;overflow-y:auto;background:var(--card);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.5);top:calc(100% + 2px)">
-                  <div id="wi-slotDropdownList"></div>
-                </div>
-              </div>
-              <select id="wi-slotSource" class="inp" style="width:90px;font-size:var(--fs-xs)">
-                <option value="own">I own it</option>
-                <option value="buy">Will buy</option>
-              </select>
-              <input id="wi-slotMinerPrice" type="number" class="inp" placeholder="Price (hCASH)" style="width:110px;font-size:var(--fs-xs)" oninput="wiCalc()">
-              <button class="btn btn-sm" onclick="wiAddSlotMiner()" style="white-space:nowrap;flex-shrink:0">+ Add</button>
-            </div>
-          </div>
-
-          <!-- Override hashrate -->
-          <div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">Override Hashrate (MH/s) — optional</div>
-            <input id="wi-customMhs" type="number" class="inp" placeholder="Leave blank to use API value" min="0" oninput="wiCalc()">
-          </div>
-
-        </div>
-      </div>
-    </div>
 
     <!-- Right: LP setup (auto-filled) -->
     <div class="card">
       <div class="ch">
         <div class="ctitle" style="color:var(--gold)">💧 Path B — Stake the Same $ into LP</div>
       </div>
-      <div class="cbody" style="display:flex;flex-direction:column;gap:.75rem">
+      <div class="cbody" style="display:flex;flex-direction:column;gap:.75rem;overflow:hidden;max-width:100%">
 
         <div style="background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.18);border-radius:8px;padding:.75rem;font-size:var(--fs-sm);color:var(--dim);line-height:1.65">
           We take the <strong style="color:var(--gold)">same total USD value</strong> you're spending on the miner and split it 50% AVAX + 50% hCASH, 
@@ -2152,19 +2080,290 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
 
 </div><!-- /view-whatif -->
 
+
+<div id="view-build" class="view">
+
+  <!-- Page header -->
+  <div class="sh">
+    <div class="sh-t">🔨 Manual Build — Custom Facility Simulator</div>
+    <span class="live"><span class="ld"></span>Live Prices</span>
+  </div>
+
+  <!-- Explainer banner -->
+  <div class="banner" style="margin-bottom:1rem">
+    <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">
+      <div style="font-size:1.8rem;flex-shrink:0">🔨</div>
+      <div style="flex:1;min-width:220px">
+        <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--fs-lg);margin-bottom:4px">Build Your Own Facility — Manual Entry</div>
+        <div style="font-size:var(--fs-sm);color:var(--dim);line-height:1.65">
+          Add any miner by name and price yourself. Build a full facility load-out, set your facility level, and compare your custom build against LP staking.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 1: Manual miner input ── -->
+  <div style="margin-bottom:1rem">
+
+    <!-- Manual Build card — always open on Build page -->
+    <div class="card" style="margin-bottom:.85rem">
+      <div class="ch">
+        <div class="ctitle" style="color:var(--red)">⛏ Manual Build — Custom Miner + Price</div>
+      </div>
+      <div class="cbody" style="display:flex;flex-direction:column;gap:.75rem">
+
+        <!-- Price input -->
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">Marketplace Price</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <input id="bd-price" type="number" class="inp" placeholder="e.g. 2500" style="flex:1;min-width:120px" oninput="bdPriceChanged()" min="1">
+            <select id="bd-priceCurrency" class="inp" style="width:90px;flex-shrink:0" onchange="bdCalc()">
+              <option value="hcash">hCASH</option>
+              <option value="avax">AVAX</option>
+            </select>
+          </div>
+          <div id="bd-priceUsdDisplay" style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-top:4px">≈ $— USD</div>
+        </div>
+
+        <!-- Facility level -->
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">
+            Facility Level
+            <span id="bd-rateSourceBadge" style="margin-left:6px;font-size:var(--fs-xs);color:var(--mut)"></span>
+          </div>
+          <select id="bd-facilityLevel" class="inp" style="flex:1;min-width:160px;font-size:var(--fs-xs)" onchange="bdOnFacilityChange()">
+            <option value="8.87" data-lv="1">Lv1 (2×2 · 4 slots · 400W) — 8.87 hCASH/kWh</option>
+            <option value="7.09" data-lv="2">Lv2 (2×3 · 6 slots · 1,000W) — 7.09 hCASH/kWh</option>
+            <option value="6.21" data-lv="3" selected>Lv3 (3×3 · 9 slots · 2,000W) — 6.21 hCASH/kWh</option>
+            <option value="7.09" data-lv="4">Lv4 (3×4 · 12 slots · 6,000W) — 7.09 hCASH/kWh</option>
+            <option value="3.55" data-lv="5">Lv5 (4×4 · 16 slots · 15,000W) — 3.55 hCASH/kWh ⚡ best</option>
+          </select>
+          <div id="bd-rateNote" style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-top:4px"></div>
+        </div>
+
+        <!-- Add miner to slot -->
+        <div style="background:rgba(229,62,62,.04);border:1px dashed rgba(229,62,62,.2);border-radius:7px;padding:.6rem">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px">ADD MINER TO SLOT</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;width:100%;box-sizing:border-box">
+            <div style="position:relative;flex:1;min-width:120px;max-width:100%">
+              <input id="bd-slotMinerSearch" type="text" class="inp" placeholder="🔍 Search…"
+                oninput="bdSlotFilterMiners(this.value)"
+                onfocus="document.getElementById('bd-slotDropdown').style.display='block'"
+                autocomplete="off" style="width:100%;font-size:var(--fs-xs)">
+              <div id="bd-slotDropdown" style="display:none;position:absolute;z-index:500;left:0;right:0;max-height:180px;overflow-y:auto;background:var(--card);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.5);top:calc(100% + 2px)">
+                <div id="bd-slotDropdownList"></div>
+              </div>
+            </div>
+            <select id="bd-slotSource" class="inp" style="width:90px;font-size:var(--fs-xs)">
+              <option value="own">I own it</option>
+              <option value="buy">Will buy</option>
+            </select>
+            <input id="bd-slotMinerPrice" type="number" class="inp" placeholder="Price (hCASH)" style="width:110px;font-size:var(--fs-xs)" oninput="bdCalc()">
+            <button class="btn btn-sm" onclick="bdAddSlotMiner()" style="white-space:nowrap;flex-shrink:0">+ Add</button>
+          </div>
+        </div>
+
+        <!-- Override hashrate -->
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">Override Hashrate (MH/s) — optional</div>
+          <input id="bd-customMhs" type="number" class="inp" placeholder="Leave blank to use API value" min="0" oninput="bdCalc()">
+        </div>
+
+        <!-- Slot table -->
+        <div id="bd-slotTableWrap" style="margin-top:.65rem;display:none">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px">
+            <span>FACILITY SLOTS</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span id="bd-slotSummary" style="color:var(--grn)"></span>
+              <button onclick="bdClearAll()" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:2px 7px;background:rgba(229,62,62,.1);border:1px solid rgba(229,62,62,.3);border-radius:4px;color:var(--red);cursor:pointer;white-space:nowrap">✕ Clear All</button>
+            </div>
+          </div>
+          <div style="background:var(--bor);border-radius:4px;height:5px;overflow:hidden;margin-bottom:6px">
+            <div id="bd-slotPowerBar" style="height:100%;background:linear-gradient(90deg,var(--grn),var(--gold));border-radius:4px;width:0%;transition:width .4s"></div>
+          </div>
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%">
+            <div id="bd-slotGrid" style="display:grid;gap:5px;min-width:0"></div>
+          </div>
+        </div>
+
+        <button class="btn btn-sm" style="align-self:flex-start" onclick="bdCalc()">⚡ Run Comparison →</button>
+
+      </div>
+    </div>
+
+    <!-- Path B: LP setup -->
+    <div class="card">
+      <div class="ch">
+        <div class="ctitle" style="color:var(--gold)">💧 Path B — Stake the Same $ into LP</div>
+      </div>
+      <div class="cbody" style="display:flex;flex-direction:column;gap:.75rem">
+        <div style="background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.18);border-radius:8px;padding:.75rem;font-size:var(--fs-sm);color:var(--dim);line-height:1.65">
+          We take the <strong style="color:var(--gold)">same total USD value</strong> you're spending on the miner and split it 50% AVAX + 50% hCASH,
+          add it to the Pharaoh LP pool, then stake those LP tokens in the hCASH Moat.
+        </div>
+        <div id="bd-lpCalcBox" style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;padding:.65rem">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Auto-Calculated Split</div>
+          <div class="calc-row"><span class="calc-lbl">Total budget (USD)</span><span class="calc-val cw" id="bd-lpTotalUsd">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">AVAX side (50%)</span><span class="calc-val" id="bd-lpAvaxAmt">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">hCASH side (50%)</span><span class="calc-val cg" id="bd-lpHcashAmt">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">Est. LP tokens</span><span class="calc-val cd" id="bd-lpTokens">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">Pool share</span><span class="calc-val" id="bd-lpPoolShare">—</span></div>
+        </div>
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Lock Duration (Moat multiplier)</div>
+          <div class="dur-grid" id="bd-lockGrid" style="grid-template-columns:repeat(4,1fr)"></div>
+          <input type="hidden" id="bd-lockDays" value="180">
+        </div>
+        <div id="bd-lpStakeBox" style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;padding:.65rem">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">LP Moat Projections</div>
+          <div class="calc-row"><span class="calc-lbl">Lock multiplier</span><span class="calc-val cg" id="bd-lpMult">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">Moat points (total held)</span><span class="calc-val cr" id="bd-lpPoints">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">Swap fees/day (est.)</span><span class="calc-val cg" id="bd-lpFees">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RESULTS SECTION ── -->
+  <div id="bd-resultsSection" style="display:none">
+
+    <!-- Winner banner -->
+    <div id="bd-winnerBanner" style="margin-bottom:1rem;padding:1rem 1.2rem;border-radius:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div id="bd-winnerIcon" style="font-size:2.5rem;flex-shrink:0"></div>
+      <div style="flex:1;min-width:200px">
+        <div id="bd-winnerTitle" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--fs-xl);margin-bottom:3px"></div>
+        <div id="bd-winnerSub" style="font-size:var(--fs-sm);line-height:1.6"></div>
+      </div>
+      <div id="bd-winnerBadge" style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-sm);padding:.5rem 1rem;border-radius:8px;font-weight:700;flex-shrink:0"></div>
+    </div>
+
+    <!-- Comparison table -->
+    <div class="card wi-compare-grid" style="margin-bottom:1rem;overflow:hidden">
+      <div class="ch" style="background:linear-gradient(90deg,rgba(232,0,14,.04),rgba(240,165,0,.04))">
+        <div style="display:flex;align-items:center;gap:0;flex:1">
+          <div class="ctitle" style="color:var(--red);flex:1">⛏ Path A — Miner</div>
+          <div style="width:1px;height:18px;background:var(--bor);margin:0 12px;flex-shrink:0"></div>
+          <div class="ctitle" style="color:var(--gold);flex:1">💧 Path B — LP Moat</div>
+        </div>
+      </div>
+      <div class="wi-compare-table-wrap">
+        <table class="wi-compare-table">
+          <thead>
+            <tr>
+              <th class="th-label">Metric</th>
+              <th class="th-a">⛏ Miner</th>
+              <th class="th-b">💧 LP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Daily gross (hCASH)</td><td class="td-a cr" id="bd-mGrossDay">—</td><td class="td-b cg" id="bd-lpFeeDay">—</td></tr>
+            <tr><td>Electricity cost/day</td><td class="td-a" style="color:var(--mut)" id="bd-mElecDay">—</td><td class="td-b" style="color:var(--mut)">—</td></tr>
+            <tr><td>Net/day (hCASH)</td><td class="td-a cr" id="bd-mNetDay">—</td><td class="td-b cg">—</td></tr>
+            <tr><td>Net/day (USD)</td><td class="td-a" id="bd-mNetUsdDay">—</td><td class="td-b cg" id="bd-lpValue">—</td></tr>
+            <tr class="sep-row"><td></td><td></td><td></td></tr>
+            <tr><td>30-day net (hCASH)</td><td class="td-a cr" id="bd-mNet30">—</td><td class="td-b cg" id="bd-lpFee30">—</td></tr>
+            <tr><td>30-day net (USD)</td><td class="td-a" id="bd-mNetUsd30">—</td><td class="td-b" id="bd-lpFeeUsd30">—</td></tr>
+            <tr><td>1-year net (hCASH)</td><td class="td-a cr" id="bd-mNet365">—</td><td class="td-b cg" id="bd-lpFee365">—</td></tr>
+            <tr><td>1-year net (USD)</td><td class="td-a" id="bd-mNetUsd365">—</td><td class="td-b" id="bd-lpFeeUsd365">—</td></tr>
+            <tr class="sep-row"><td></td><td></td><td></td></tr>
+            <tr><td>Break-even</td><td class="td-a cg" id="bd-mBreakeven">—</td><td class="td-b" style="color:var(--grn)">Liquid</td></tr>
+            <tr><td>Network share</td><td class="td-a cd" id="bd-mShare">—</td><td class="td-b cd">—</td></tr>
+            <tr><td>Moat points held</td><td class="td-a cd">—</td><td class="td-b cr" id="bd-lpPtsDay">—</td></tr>
+            <tr><td>Lock multiplier</td><td class="td-a cd">—</td><td class="td-b cg" id="bd-lpMultDisplay">—</td></tr>
+            <tr><td>Capital (exit anytime)</td><td class="td-a cd">—</td><td class="td-b cg" id="bd-lpCapital">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--bor)">
+        <div id="bd-mRisk" style="padding:.65rem 1rem;font-size:var(--fs-xs);font-family:'DM Mono',monospace;line-height:1.55;border-right:1px solid var(--bor)"></div>
+        <div id="bd-lpRisk" style="padding:.65rem 1rem;font-size:var(--fs-xs);font-family:'DM Mono',monospace;line-height:1.55"></div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="card" style="margin-bottom:1rem">
+      <div class="ch">
+        <div class="ctitle">📈 Cumulative Earnings — 365 Day Projection</div>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut)">Net USD (after costs)</span>
+      </div>
+      <div class="cbody">
+        <div style="display:flex;gap:16px;margin-bottom:.75rem;flex-wrap:wrap">
+          <span style="display:flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut)">
+            <span style="width:10px;height:3px;background:var(--red);border-radius:2px;display:inline-block"></span>⛏ Miner (net of electricity)
+          </span>
+          <span style="display:flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut)">
+            <span style="width:10px;height:3px;background:var(--gold);border-radius:2px;display:inline-block"></span>💧 LP swap fees
+          </span>
+        </div>
+        <div style="position:relative;width:100%;height:280px">
+          <canvas id="bd-chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assumptions + signals -->
+    <div class="g2" style="margin-bottom:1rem">
+      <div class="card">
+        <div class="ch"><div class="ctitle">📊 Assumptions Used</div></div>
+        <div class="cbody">
+          <div class="calc-row"><span class="calc-lbl">hCASH price</span><span class="calc-val cr" id="bd-assumHcash">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">AVAX price</span><span class="calc-val cw" id="bd-assumAvax">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">Network hashrate</span><span class="calc-val cd" id="bd-assumNetHash">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">Pool liquidity</span><span class="calc-val" id="bd-assumLiq">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">24h pool volume</span><span class="calc-val" id="bd-assumVol">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">LP fee rate</span><span class="calc-val cg">0.3% of volume</span></div>
+          <div class="calc-row"><span class="calc-lbl">Miner electricity rate</span><span class="calc-val" id="bd-assumElec">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">hCASH emission/day</span><span class="calc-val cg" id="bd-assumEmission">—</span></div>
+          <div class="calc-row"><span class="calc-lbl">Next halving in</span><span class="calc-val cr" id="bd-assumHalving">—</span></div>
+          <div style="margin-top:.65rem;padding:.5rem .65rem;background:rgba(229,62,62,.04);border:1px solid rgba(229,62,62,.1);border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);line-height:1.6">
+            ⚠ Projections assume constant price, hashrate, and pool volume. Real returns will vary. This is not financial advice.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ctitle">🔍 Key Signals</div></div>
+        <div class="cbody" id="bd-signals">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut)">Run the comparison to see signals.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verdict -->
+    <div class="card">
+      <div class="ch" style="background:linear-gradient(90deg,rgba(212,168,67,.08),transparent)">
+        <div class="ctitle" style="color:var(--gold)">⚖️ Verdict — What Should You Do?</div>
+      </div>
+      <div class="cbody" id="bd-verdict">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut)">Run the comparison to see the verdict.</div>
+      </div>
+    </div>
+
+  </div><!-- /bd-resultsSection -->
+
+  <!-- Empty state -->
+  <div id="bd-emptyState" style="text-align:center;padding:3rem 1rem;color:var(--mut)">
+    <div style="font-size:3rem;margin-bottom:.75rem">🔨</div>
+    <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--fs-lg);margin-bottom:.4rem">Add miners and run comparison</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs)">Enter a miner, set a price, and click Run Comparison.</div>
+  </div>
+
+</div><!-- /view-build -->
+
 </main>
 
 <!-- FOOTER -->
-<div style="position:relative;z-index:1;text-align:center;padding:2rem .85rem 3rem;margin-top:.5rem;border-top:1px solid var(--bor)">
-  <div style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bor);border-radius:99px;padding:.55rem 1.3rem;box-shadow:0 0 24px rgba(229,62,62,.06)">
-    <img src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/laifumoatsintel.jpg" style="width:24px;height:24px;border-radius:50%;object-fit:cover;border:1px solid rgba(229,62,62,.25)" onerror="this.style.display='none'">
-    <span class="mono" style="font-size:.85rem;color:var(--mut)">Built by</span>
-    <a href="https://x.com/precidobos" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:var(--red);text-decoration:none">@precidobos</a>
-    <span style="width:1px;height:14px;background:var(--bor);display:inline-block"></span>
-    <a href="https://moats.app" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.92rem;color:var(--gold);text-decoration:none">moats.app</a>
-    <span style="font-size:1.25rem">🏆</span>
+<div style="position:relative;z-index:1;text-align:center;padding:1rem .85rem 2rem;margin-top:.5rem;border-top:1px solid var(--bor);width:100%;max-width:100%;box-sizing:border-box;overflow:hidden;font-size:clamp(10px,2.5vw,var(--fs-xs))">
+  <div style="display:inline-flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;background:var(--card);border:1px solid var(--bor);border-radius:16px;padding:.55rem 1rem;box-shadow:0 0 24px rgba(229,62,62,.06);max-width:100%;box-sizing:border-box">
+    <img src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/laifumoatsintel.jpg" style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid rgba(229,62,62,.25);flex-shrink:0" onerror="this.style.display='none'">
+    <span class="mono" style="font-size:clamp(.7rem,.85rem,3vw);color:var(--mut)">Built by</span>
+    <a href="https://x.com/precidobos" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:clamp(.75rem,1rem,3.5vw);color:var(--red);text-decoration:none">@precidobos</a>
+    <span style="width:1px;height:14px;background:var(--bor);display:inline-block;flex-shrink:0"></span>
+    <a href="https://x.com/clubhashcash" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:clamp(.75rem,1rem,3.5vw);color:var(--gold);text-decoration:none">@clubhashcash</a>
+    <span style="width:1px;height:14px;background:var(--bor);display:inline-block;flex-shrink:0"></span>
+    <a href="https://moats.app" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:600;font-size:clamp(.7rem,.92rem,3vw);color:var(--gold);text-decoration:none">moats.app</a>
+    <span style="font-size:clamp(.9rem,1.25rem,4vw);flex-shrink:0">🏆</span>
   </div>
-  <div style="margin-top:.55rem;font-family:'Share Tech Mono',monospace;font-size:.76rem;color:var(--mut)">
+  <div style="margin-top:.55rem;font-family:'Share Tech Mono',monospace;font-size:clamp(.6rem,.76rem,2.8vw);color:var(--mut);padding:0 .5rem;line-height:1.5">
     hCASH MOAT INTEL · Not financial advice · Data from moats.app · HashCash API · Pharaoh Exchange
   </div>
 </div>
@@ -2184,10 +2383,12 @@ const PHARAOH_IMG = 'https://raw.githubusercontent.com/precidoboss/my-game-sprit
 // hCASH Moat
 const HCASH_MOAT_ADDR = ethers.getAddress('0x501f6e7bec3db63d8dacbc9fa0ce42d5d2329d53');
 const HCASH_LP_ADDR   = ethers.getAddress('0x8f961980518bc9ab302948de7948580666dc35d9');
+const HCASH_TOKEN_FALLBACK = '0x297731eb3cab3834525fc9ea061fd71d8f4645c9'; // known hCASH token addr (fallback if LP resolution fails)
 const WAVAX_ADDR      = '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7';
 const USDC_ADDR       = '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e';
 
-const PHARAOH_ROUTER_ADDR  = ethers.getAddress('0x9cee04bdce127da7e448a333f006defb3d5e38cc');
+const PHARAOH_ROUTER_ADDR  = ethers.getAddress('0x9cee04bdce127da7e448a333f006defb3d5e38cc'); // legacy (quotes only)
+const PHARAOH_V2_ROUTER    = '0x5acc354dEe55a5d75EF6430c1c2eBE3d6765b4E6'; // V2 execute router
 const PHARAOH_FACTORY_ADDR = ethers.getAddress('0x85448bf2f589ab1f56225df5167c63f57758f8c1');
 
 let walletProvider = null, walletSigner = null, walletAddress = null;
@@ -2414,8 +2615,10 @@ function notif(msg, type='info', dur=4500) {
 }
 
 // ── NAV ──
+let _appReady = false; // set to true after init() completes
 function nav(el) {
   if(!el||!el.dataset)return;
+  if(!_appReady) { console.warn('nav: app not ready yet'); return; }
   const v = el.dataset.v;
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
@@ -2428,6 +2631,7 @@ function nav(el) {
   if(v==='explorer')loadExplorerData();
   if(v==='calculator'){buildCalcDurGrid();buildLockDurGrid();}
   if(v==='whatif'){initWhatIf();}
+  if(v==='build'){initBuildPage();}
   if(v==='liquidity'){buildLockDurGrid();updateLpBalances();}
   if(v==='stakelock'){buildStakeLockRefs();updatePositionSummary();loadFortScoreOptimizer();}
 }
@@ -2453,7 +2657,6 @@ function setSlip(v, el) {
   document.querySelectorAll('.slip-btn').forEach(b=>b.classList.remove('active'));
   if(el)el.classList.add('active');
   // Re-quote swap if swap pane is active
-  const swapPaneActive = document.getElementById('lp_pane_swap')?.classList.contains('active');
   if(swapPaneActive) quoteSwap();
 }
 
@@ -2504,14 +2707,19 @@ async function updateLpBalances() {
   if(!walletAddress)return;
   const prov = walletProvider||new ethers.JsonRpcProvider(AVAX_RPC);
   try {
-    const hcashAddr = await resolveHcashToken();
-    const [avaxBal, hcashBal, lpBal] = await Promise.allSettled([
+    // Resolve hCASH token address — use known fallback if LP call fails
+    let hcashAddr = HCASH_TOKEN_FALLBACK;
+    try { hcashAddr = await resolveHcashToken(); } catch(e) { console.warn('resolveHcashToken failed, using fallback:', e.message); }
+    const hcashContract = new ethers.Contract(hcashAddr, ERC20_ABI, prov);
+    const [avaxBal, hcashBal, hcashDec, lpBal] = await Promise.allSettled([
       prov.getBalance(walletAddress),
-      new ethers.Contract(hcashAddr,ERC20_ABI,prov).balanceOf(walletAddress),
+      hcashContract.balanceOf(walletAddress),
+      hcashContract.decimals(),
       new ethers.Contract(HCASH_LP_ADDR,ERC20_ABI,prov).balanceOf(walletAddress),
     ]);
+    const dec = hcashDec.status==='fulfilled' ? Number(hcashDec.value) : 18;
     const avax = avaxBal.status==='fulfilled'?parseFloat(ethers.formatEther(avaxBal.value)):0;
-    const hcash = hcashBal.status==='fulfilled'?parseFloat(ethers.formatUnits(hcashBal.value,18)):0;
+    const hcash = hcashBal.status==='fulfilled'?parseFloat(ethers.formatUnits(hcashBal.value,dec)):0;
     const lp = lpBal.status==='fulfilled'?parseFloat(ethers.formatEther(lpBal.value)):0;
     setTxt('lpAvaxBal', f4(avax));
     setTxt('lpHcashBal', fmtP(hcash));
@@ -2628,10 +2836,16 @@ async function loadPoolComposition() {
     const lpSupply = parseFloat(ethers.formatEther(ts));
     const ratio = hcashRes/wavaxRes;
     poolData = {avaxReserve:wavaxRes, hcashReserve:hcashRes, lpSupply, ratio};
-    // AVAX price from dexscreener
-    let avaxUsd = 0;
-    try{const av=await fetch('https://api.dexscreener.com/latest/dex/pairs/avalanche/0xe4cf417081a0ab3f964b44d904bc2b534351a9a7').then(x=>x.json());avaxUsd=Number(av?.pairs?.[0]?.priceUsd||0);}catch(e){}
-    if(priceData)priceData.avaxPrice=avaxUsd;
+    // AVAX price — use multi-source fetcher (same one used by What If page)
+    let avaxUsd = priceData?.avaxPrice || 0;
+    if (!avaxUsd) {
+      try { avaxUsd = await wiFetchAvaxPrice(); } catch(e) {}
+    }
+    if (!avaxUsd) {
+      try{const av=await fetch('https://api.dexscreener.com/latest/dex/pairs/avalanche/0xe4cf417081a0ab3f964b44d904bc2b534351a9a7').then(x=>x.json());avaxUsd=Number(av?.pairs?.[0]?.priceUsd||0);}catch(e){}
+    }
+    if(priceData) priceData.avaxPrice = avaxUsd;
+    else priceData = { price: 0, avaxPrice: avaxUsd, ch24: 0, liq: 0, vol24: 0 };
     const avaxUsdV = wavaxRes*avaxUsd;
     const hcashUsdV = hcashRes*(priceData?.price||0);
     const totalUsd = avaxUsdV+hcashUsdV;
@@ -3141,8 +3355,7 @@ async function loadMiners() {
   const rigGrid=document.getElementById('rigGrid');
   if(grid)grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--mut)"><span class="spin"></span><span class="mono" style="font-size:.92rem;margin-left:5px">Loading from HashCash API…</span></div>';
   try {
-    const resp = await fetch(`${HCASH_API}/contracts`, {headers:{'x-api-key':HCASH_API_KEY}}).then(x=>x.json());
-    const contracts = Array.isArray(resp)?resp:(resp?.contracts||[]);
+    const contracts = await getContracts();
 
     const miners  = contracts.filter(c=>c.category==='miner_nft');
     const rigs    = contracts.filter(c=>c.category==='rig_assembler');
@@ -3191,24 +3404,59 @@ async function loadMiners() {
     // ── RIGS ──
     if(rigGrid){
       const rigHtml = rigs.length ? rigs.map(r=>{
-        const s=r.rigStats||{};
-        const isV2=r.rigVersion==='v2';
-        return `<div class="card">
-          <div class="ch">
-            <div class="ctitle">🔧 ${r.name||r.id}</div>
-            <span class="mono" style="font-size:1rem;color:var(--mut)">${r.rigVersion||'v1'}</span>
-          </div>
-          <div class="cbody">
-            ${s.gpusPerRig?`<div class="calc-row"><span class="calc-lbl">GPUs/Rig</span><span class="calc-val">${s.gpusPerRig}</span></div>`:''}
-            ${isV2&&s.recipeActive!==undefined?`<div class="calc-row"><span class="calc-lbl">Recipe</span><span class="calc-val" style="color:${s.recipeActive?'var(--grn)':'var(--mut)'}">${s.recipeActive?'🟢 Active':'⚫ Inactive'}</span></div>`:''}
-            ${s.assemblyCostRaw?`<div class="calc-row"><span class="calc-lbl">Assembly Cost</span><span class="calc-val cd">${s.assemblyCostRaw}</span></div>`:''}
-            ${isV2&&s.outputNftAddress?`<div class="calc-row"><span class="calc-lbl">Output NFT</span><span class="calc-val" style="font-size:1.05rem">${shortA(s.outputNftAddress)}</span></div>`:''}
-            <div class="calc-row"><span class="calc-lbl">Contract</span><a href="https://snowtrace.io/address/${r.address}" target="_blank" class="mono" style="font-size:.80rem;color:var(--red);text-decoration:none">${shortA(r.address)} ↗</a></div>
-            <a href="https://hashcash.club" target="_blank" class="btn btn-g btn-sm" style="text-decoration:none;margin-top:.5rem">hashcash.club ↗</a>
+        const s=r.rigStats||r.minerStats||{};
+        const img=r.imageUrl||'';
+        const mid=r.id||r.name||'';
+        const mhs=s.hashrateMhps||s.hashrateRaw||0;
+        const pw=s.powerWatts||s.powerRaw||0;
+        const eff=mhs&&pw?`${(mhs/pw*100).toFixed(1)} MH/W`:'';
+        return `<div class="miner-card" onclick="showMinerDetail('${mid}')">
+          ${img?`<img class="miner-img" src="${img}" alt="${r.name}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`:''}
+          <div class="miner-img-fb" style="${img?'display:none':''}">🔧</div>
+          <div class="miner-info">
+            <div class="miner-name">${r.name||r.id}</div>
+            ${mhs?`<div class="miner-stat"><span class="miner-stat-k">Hashrate</span><span class="miner-stat-v" style="color:var(--red)">${mhs>=1000?(mhs/1000).toFixed(1)+'GH/s':mhs+'MH/s'}</span></div>`:''}
+            ${pw?`<div class="miner-stat"><span class="miner-stat-k">Power</span><span class="miner-stat-v" style="color:var(--gold)">${pw}W</span></div>`:''}
+            ${eff?`<div class="miner-stat"><span class="miner-stat-k">Efficiency</span><span class="miner-stat-v" style="color:var(--grn)">${eff}</span></div>`:''}
+            <div class="miner-stat"><span class="miner-stat-k">Version</span><span class="miner-stat-v">${r.rigVersion||'v1'}</span></div>
+            <div class="miner-stat" style="margin-top:.25rem"><span class="mono" style="font-size:.7rem;color:var(--mut)">${shortA(r.address||'')}</span></div>
           </div>
         </div>`;
-      }).join('') : '<div class="mono" style="font-size:1.35rem;color:var(--mut)">No rig assemblers in current release.</div>';
+      }).join('') : '<div class="mono" style="grid-column:1/-1;font-size:1.35rem;color:var(--mut)">No rig assemblers in current release.</div>';
       rigGrid.innerHTML=rigHtml;
+    }
+
+    // ── EXTERNAL NFT MINERS (e.g. Jarmer Jorn) ──
+    const extNftGrid = document.getElementById('extNftGrid');
+    const extNftHead = document.getElementById('extNftSectionHead');
+    // Also include any external_nft contracts with miner-like stats
+    const allExtNft = extNft.length ? extNft : [];
+    if (extNftGrid && allExtNft.length) {
+      if (extNftHead) extNftHead.style.display = '';
+      extNftGrid.innerHTML = allExtNft.map(m => {
+        const s=m.minerStats||{};
+        const img=m.imageUrl||'';
+        const mid=m.id||m.name||'';
+        const mhs=s.hashrateMhps||s.hashrateRaw||0;
+        const pw=s.powerWatts||s.powerRaw||0;
+        const eff=mhs&&pw?`${(mhs/pw*100).toFixed(1)} MH/W`:'';
+        return `<div class="miner-card" onclick="showMinerDetail('${mid}')">
+          ${img?`<img class="miner-img" src="${img}" alt="${m.name||'NFT'}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`:''}
+          <div class="miner-img-fb" style="${img?'display:none':''}">🌐</div>
+          <div class="miner-info">
+            <div class="miner-name">${m.name||m.id||'External NFT'}</div>
+            ${mhs?`<div class="miner-stat"><span class="miner-stat-k">Hashrate</span><span class="miner-stat-v" style="color:var(--red)">${mhs>=1000?(mhs/1000).toFixed(1)+'GH/s':mhs+'MH/s'}</span></div>`:''}
+            ${pw?`<div class="miner-stat"><span class="miner-stat-k">Power</span><span class="miner-stat-v" style="color:var(--gold)">${pw}W</span></div>`:''}
+            ${eff?`<div class="miner-stat"><span class="miner-stat-k">Efficiency</span><span class="miner-stat-v" style="color:var(--grn)">${eff}</span></div>`:''}
+            <div class="miner-stat"><span class="miner-stat-k">Type</span><span class="miner-stat-v" style="color:var(--pur)">External NFT</span></div>
+            <div class="miner-stat" style="margin-top:.25rem"><span class="mono" style="font-size:.7rem;color:var(--mut)">${shortA(m.address||'')}</span></div>
+          </div>
+        </div>`;
+      }).join('');
+    } else if (extNftGrid) {
+      // Try to fetch Jarmer Jorn directly if not in API
+      extNftGrid.innerHTML = '';
+      fetchJarmerJorn();
     }
 
     // ── MARKETPLACE LISTINGS (on-chain) ──
@@ -3245,9 +3493,13 @@ async function loadMarketplaceListings(marketContract, miners) {
   try{
     const prov=walletProvider||new ethers.JsonRpcProvider(AVAX_RPC);
 
-    // Build miner address→name map
+    // Build miner address→name map (include external NFTs like Jarmer Jorn)
     const minerByAddr={};
     miners.forEach(m=>{if(m.address)minerByAddr[m.address.toLowerCase()]=m;});
+    // Also include external_nft contracts stored in _minerData
+    Object.values(_minerData).forEach(m=>{
+      if(m.category==='external_nft'&&m.address)minerByAddr[m.address.toLowerCase()]=m;
+    });
 
     const listings=[];
 
@@ -3285,7 +3537,7 @@ async function loadMarketplaceListings(marketContract, miners) {
 
       if(total > 0){
         // Fetch ALL listings in batches of 200 to avoid RPC limits
-        const BATCH = 200;
+        const BATCH = 500;
         const now = Math.floor(Date.now()/1000);
         for (let start = 0; start < total; start += BATCH) {
           const end = Math.min(start + BATCH - 1, total - 1);
@@ -3371,6 +3623,18 @@ async function loadMarketplaceListings(marketContract, miners) {
       return;
     }
 
+    // Patch Jarmer Jorn listings that didn't resolve name/image
+    const jarmerEntry = _minerData['jarmer_jorn'] || _minerData[JARMER_JORN_ADDR.toLowerCase()];
+    if (jarmerEntry) {
+      const addrLc = JARMER_JORN_ADDR.toLowerCase();
+      listings.forEach(l => {
+        if ((l.nftContract||'') === addrLc) {
+          if (!l.minerName) l.minerName = jarmerEntry.name;
+          if (!l.minerImg)  l.minerImg  = jarmerEntry.imageUrl;
+        }
+      });
+    }
+
     mktDiv.innerHTML=listings.map(l=>{
       const prof=getKnownProfile(l.seller);
       const sellerHtml=prof
@@ -3386,10 +3650,11 @@ async function loadMarketplaceListings(marketContract, miners) {
             ? `<span style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.55rem;color:var(--cyn)">${f4(l.priceAvax)} AVAX</span>`
             : '';
       return `<div style="display:flex;gap:10px;align-items:flex-start;padding:.6rem;background:var(--sur);border:1px solid var(--bor);border-radius:9px;margin-bottom:.4rem">
-        ${l.minerImg?`<img src="${l.minerImg}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--bor)" onerror="this.style.display='none'">`:
-          '<div style="width:42px;height:42px;border-radius:8px;background:var(--card);border:1px solid var(--bor);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.4rem">⛏</div>'}
+        ${(l.minerImg || _minerData[l.nftContract]?.imageUrl || _minerData[l.nftContract?.toLowerCase()]?.imageUrl)
+          ? `<img src="${l.minerImg || _minerData[l.nftContract]?.imageUrl || _minerData[l.nftContract?.toLowerCase()]?.imageUrl}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--bor)" onerror="this.style.display='none'">`
+          : '<div style="width:42px;height:42px;border-radius:8px;background:var(--card);border:1px solid var(--bor);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.4rem">⛏</div>'}
         <div style="flex:1;min-width:0">
-          <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.55rem">${l.minerName||'Miner NFT'} <span class="mono" style="font-size:var(--t-xs);color:var(--mut)">#${l.tokenId}</span></div>
+          <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.55rem">${l.minerName || (_minerData[l.nftContract]?.name) || (_minerData[l.nftContract?.toLowerCase()]?.name) || (l.nftContract ? shortA(l.nftContract) : 'Unknown NFT')} <span class="mono" style="font-size:var(--t-xs);color:var(--mut)">#${l.tokenId}</span></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin:.2rem 0">
             ${s.hashrateFormatted?`<span class="mono" style="font-size:1.25rem;color:var(--red)">${s.hashrateFormatted}</span>`:''}
             ${s.powerFormatted?`<span class="mono" style="font-size:1.25rem;color:var(--gold)">${s.powerFormatted}</span>`:''}
@@ -3414,7 +3679,35 @@ async function loadMarketplaceListings(marketContract, miners) {
 }
 
 const _minerData = {};
+// Shared contracts cache — one API call, reused by loadMiners, wiLoadMiners, loadMarketplaceListings
+let _contractsCache = null;
+let _contractsCacheTs = 0;
+async function getContracts() {
+  const AGE = 60000; // 60s cache
+  if (_contractsCache && Date.now() - _contractsCacheTs < AGE) return _contractsCache;
+  const resp = await fetch(`${HCASH_API}/contracts`, { headers: { 'x-api-key': HCASH_API_KEY }, signal: AbortSignal.timeout(8000) }).then(r => r.json());
+  _contractsCache = Array.isArray(resp) ? resp : (resp?.contracts || []);
+  _contractsCacheTs = Date.now();
+  return _contractsCache;
+}
 // _minerData populated by loadMiners(), consumed by showMinerDetail()
+
+// ── Pre-register Jarmer Jorn external NFT so marketplace can resolve it immediately ──
+const JARMER_JORN_ADDR = '0x71666cBe9FA350792d6C906e2Fc26f3F7aB46107';
+(function() {
+  const jarmerEntry = {
+    id: 'jarmer_jorn',
+    name: 'Jarmer Jorn',
+    address: JARMER_JORN_ADDR,
+    category: 'external_nft',
+    // Fallback image — fetchJarmerJornImage() will try to get the real on-chain image
+    imageUrl: 'https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/Jarmer%20Jorn.png',
+    minerStats: {},
+  };
+  _minerData['jarmer_jorn'] = jarmerEntry;
+  _minerData[JARMER_JORN_ADDR.toLowerCase()] = jarmerEntry;
+  _minerData[JARMER_JORN_ADDR] = jarmerEntry;
+})();
 
 // ══════════════════════════════════════════════════════
 //  LP QUOTE FUNCTIONS
@@ -3441,7 +3734,11 @@ async function quoteLPFromAVAX() {
       const lpExpected=parseFloat(ethers.formatEther(q[2]));
       if(hcashInp&&!hcashInp._userEdited)hcashInp.value=hcashNeeded.toFixed(6);
       const ratio=(hcashNeeded/avaxAmt).toFixed(2);
-      if(preview)preview.innerHTML=`<span style="color:var(--grn)">✓</span> ${fmtLP(lpExpected)} LP · ${hcashNeeded.toFixed(4)} hCASH · 1 AVAX = ${ratio} hCASH`;
+      if(preview)preview.innerHTML=`
+        <div class="q-row"><span class="q-lbl">You deposit</span><span class="q-val">${avaxAmt} AVAX + ${hcashNeeded.toFixed(4)} hCASH</span></div>
+        <div class="q-row"><span class="q-lbl">LP tokens you receive</span><span class="q-val green">${fmtLP(lpExpected)} LP</span></div>
+        <div class="q-row"><span class="q-lbl">Pool rate</span><span class="q-val gold">1 AVAX = ${ratio} hCASH</span></div>
+        <div class="q-row"><span class="q-lbl">Status</span><span class="q-val green">✓ Live quote</span></div>`;
     } catch(e){
       // Fallback reserve math
       try{
@@ -3454,7 +3751,10 @@ async function quoteLPFromAVAX() {
         const hNeeded=parseFloat(ethers.formatEther(hWei));
         const lps=Number(avWei)*Number(ts)/Number(wRes)/1e18;
         if(hcashInp)hcashInp.value=hNeeded.toFixed(6);
-        if(preview)preview.innerHTML=`<span style="color:var(--gold)">~</span> ${lps.toFixed(8)} LP · ${hNeeded.toFixed(4)} hCASH (reserve estimate)`;
+        if(preview)preview.innerHTML=`
+          <div class="q-row"><span class="q-lbl">You deposit</span><span class="q-val">${avaxAmt} AVAX + ${hNeeded.toFixed(4)} hCASH</span></div>
+          <div class="q-row"><span class="q-lbl">LP tokens (est.)</span><span class="q-val gold">~${lps.toFixed(8)} LP</span></div>
+          <div class="q-row"><span class="q-lbl">Status</span><span class="q-val gold">~ Reserve estimate (router unavailable)</span></div>`;
       }catch(e2){if(preview)preview.innerHTML=`<span style="color:var(--red)">⚠ Quote failed</span>`;}
     }
   },350);
@@ -3485,7 +3785,11 @@ async function quoteLPFromToken() {
       const lpExp=lpShare*Number(ts)/1e18;
       if(avaxInp&&!avaxInp._userEdited)avaxInp.value=avaxNeeded.toFixed(6);
       const ratio=(hcashAmt/avaxNeeded).toFixed(2);
-      if(preview)preview.innerHTML=`<span style="color:var(--grn)">✓</span> ~${lpExp.toFixed(8)} LP · needs ${avaxNeeded.toFixed(4)} AVAX · 1 AVAX = ${ratio} hCASH`;
+      if(preview)preview.innerHTML=`
+        <div class="q-row"><span class="q-lbl">You deposit</span><span class="q-val">${avaxNeeded.toFixed(4)} AVAX + ${hcashAmt} hCASH</span></div>
+        <div class="q-row"><span class="q-lbl">LP tokens (est.)</span><span class="q-val green">~${lpExp.toFixed(8)} LP</span></div>
+        <div class="q-row"><span class="q-lbl">Pool rate</span><span class="q-val gold">1 AVAX = ${ratio} hCASH</span></div>
+        <div class="q-row"><span class="q-lbl">Status</span><span class="q-val green">✓ Reserve estimate</span></div>`;
     }catch(e){if(preview)preview.innerHTML=`<span style="color:var(--red)">⚠ ${e.message?.slice(0,50)||'RPC error'}</span>`;}
   },400);
 }
@@ -3501,13 +3805,36 @@ async function quoteRemoveLP() {
     const q=await router.quoteRemoveLiquidity(WAVAX_ADDR,hcashAddr,false,lpWei);
     const avax=parseFloat(ethers.formatEther(q[0]));
     const hcash=parseFloat(ethers.formatEther(q[1]));
-    if(preview)preview.innerHTML=`<span style="color:var(--grn)">✓</span> You'll receive ~${avax.toFixed(4)} AVAX + ${fmtP(hcash)} hCASH`;
+    if(preview)preview.innerHTML=`
+      <div class="q-row"><span class="q-lbl">You burn</span><span class="q-val red">${lpAmt} LP tokens</span></div>
+      <div class="q-row"><span class="q-lbl">You receive</span><span class="q-val green">~${avax.toFixed(4)} AVAX</span></div>
+      <div class="q-row"><span class="q-lbl">You receive</span><span class="q-val green">~${fmtP(hcash)} hCASH</span></div>
+      <div class="q-row"><span class="q-lbl">Status</span><span class="q-val green">✓ Live quote</span></div>`;
   }catch(e){if(preview)preview.innerHTML=`<span style="color:var(--red)">⚠ Could not quote</span>`;}
 }
 
 // ══════════════════════════════════════════════════════
 //  ADD LIQUIDITY
 // ══════════════════════════════════════════════════════
+// ── Rich transaction step renderer ──
+function txSteps(statusEl, steps, activeIdx, opts={}) {
+  if (!statusEl) return;
+  const icons = { pending:'⏳', active:'<span class="spin" style="display:inline-block;width:14px;height:14px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle"></span>', done:'✅', error:'❌', skip:'⬜' };
+  statusEl.innerHTML = steps.map((s, i) => {
+    const state = i < activeIdx ? 'done' : i === activeIdx ? 'active' : 'pending';
+    const errored = opts.errorIdx === i;
+    const finalState = errored ? 'error' : state;
+    const icon = errored ? icons.error : (state === 'done' ? icons.done : state === 'active' ? icons.active : icons.pending);
+    return `<div class="tx-step ${finalState}">
+      <div class="tx-step-icon">${icon}</div>
+      <div class="tx-step-body">
+        <div class="tx-step-title">${s.title}</div>
+        ${s.sub ? `<div class="tx-step-sub">${s.sub}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
 async function hcashAddLiquidity() {
   if(!walletSigner){notif('Connect wallet first','warn');return;}
   const amtRaw=parseFloat(document.getElementById('hcashAvaxAmt')?.value)||0;
@@ -3526,8 +3853,14 @@ async function hcashAddLiquidity() {
     const hcash=new ethers.Contract(hcashAddr,ERC20_ABI,walletSigner);
     const wavax=new ethers.Contract(WAVAX,WAVAX_ABI,walletSigner);
 
+    const ADD_STEPS = [
+      { title: 'Detect Pharaoh pool' },
+      { title: 'Get pool ratio + calculate amounts' },
+      { title: 'Approve tokens (WAVAX + hCASH)' },
+      { title: 'Add liquidity — confirm in wallet' },
+    ];
+    txSteps(statusEl, ADD_STEPS, 0);
     // 1. Detect stable flag
-    upd('<span class="spin"></span>1/4 — Detecting Pharaoh pool…');
     const [pairFalse,pairTrue]=await Promise.all([
       factory.getPair(WAVAX,hcashAddr,false),factory.getPair(WAVAX,hcashAddr,true)
     ]);
@@ -3540,7 +3873,7 @@ async function hcashAddLiquidity() {
     const avaxWei=ethers.parseEther(safeNum(amtRaw));
     const hcashDec=Number(await hcash.decimals().catch(()=>18));
     let hcashWei;
-    upd('<span class="spin"></span>2/4 — Getting pool ratio…');
+    txSteps(statusEl, ADD_STEPS, 1);
     try{
       const big=ethers.parseUnits('999999999',hcashDec);
       const q=await router.quoteAddLiquidity(WAVAX,hcashAddr,stable,avaxWei,big);
@@ -3555,8 +3888,9 @@ async function hcashAddLiquidity() {
     // 3. Balance check
     const hcashBal=await hcash.balanceOf(walletAddress);
     if(hcashBal<hcashWei){
-      notif(`Need ${parseFloat(ethers.formatUnits(hcashWei,hcashDec)).toFixed(4)} hCASH — swap first`,'warn');
-      upd(`<span style="color:var(--gold)">⚠ Need ${parseFloat(ethers.formatUnits(hcashWei,hcashDec)).toFixed(4)} hCASH. Use the Swap tab first.</span>`);
+      const needAmt = parseFloat(ethers.formatUnits(hcashWei,hcashDec)).toFixed(4);
+      notif(`Need ${needAmt} hCASH — get some first`,'warn');
+      txSteps(statusEl, [{title:'Insufficient hCASH balance', sub:`You need ${needAmt} hCASH. Buy on <a href="https://phar.gg" target="_blank">Pharaoh ↗</a>`}], 0, {errorIdx:0});
       return;
     }
 
@@ -3564,40 +3898,40 @@ async function hcashAddLiquidity() {
     const wavaxBal=await wavax.balanceOf(walletAddress);
     if(wavaxBal<avaxWei){
       const needed=avaxWei-wavaxBal;
-      upd('<span class="spin"></span>2/4 — Wrapping AVAX → WAVAX… confirm');
+      txSteps(statusEl, [{title:'Wrap AVAX → WAVAX', sub:'Confirm in wallet — one-time step'},...ADD_STEPS.slice(2)], 0);
       await(await wavax.deposit({value:needed,gasLimit:60000n})).wait();
     }
 
     // 5. Approve WAVAX
     const wavaxAllow=await wavax.allowance(walletAddress,ROUTER);
     if(wavaxAllow<avaxWei){
-      upd('<span class="spin"></span>3/4 — Approving WAVAX… confirm');
+      txSteps(statusEl, ADD_STEPS, 2, {});
       await(await wavax.approve(ROUTER,ethers.MaxUint256)).wait();
     }
 
     // 6. Approve hCASH
     const hcashAllow=await hcash.allowance(walletAddress,ROUTER);
     if(hcashAllow<hcashWei){
-      upd('<span class="spin"></span>3/4 — Approving hCASH… confirm');
+      txSteps(statusEl, ADD_STEPS, 2, {});
       await(await hcash.approve(ROUTER,ethers.MaxUint256)).wait();
     }
 
     // 7. addLiquidity
-    upd('<span class="spin"></span>4/4 — Adding WAVAX+hCASH liquidity… confirm in wallet');
+    txSteps(statusEl, ADD_STEPS, 3);
     const minW=avaxWei*99n/100n;
     const minH=hcashWei*99n/100n;
     const tx=await router.addLiquidity(WAVAX,hcashAddr,stable,avaxWei,hcashWei,minW,minH,walletAddress,Math.floor(Date.now()/1000)+1800);
-    upd(`<span class="spin"></span>Confirming… <a href="https://snowtrace.io/tx/${tx.hash}" target="_blank" style="color:var(--red)">${tx.hash.slice(0,10)}… ↗</a>`);
+    txSteps(statusEl, [...ADD_STEPS.slice(0,3), {title:'Adding liquidity — confirming…', sub:`<a href="https://snowtrace.io/tx/${tx.hash}" target="_blank">View tx ↗</a>`}], 3);
     await tx.wait();
-    upd(`<span style="color:var(--grn)">✅ Liquidity added! LP tokens in wallet. <a href="https://snowtrace.io/tx/${tx.hash}" target="_blank" style="color:var(--red)">↗</a></span>`);
+    statusEl.innerHTML = `<div class="tx-step done"><div class="tx-step-icon">✅</div><div class="tx-step-body"><div class="tx-step-title" style="color:var(--grn)">Liquidity added! LP tokens in wallet.</div><div class="tx-step-sub"><a href="https://snowtrace.io/tx/${tx.hash}" target="_blank">View on Snowtrace ↗</a></div></div></div>`;
     notif('💧 Liquidity added! Stake LP to earn Moat Points.','success',6000);
     document.getElementById('hcashAvaxAmt').value='';
     document.getElementById('hcashTokenAmt').value='';
     updateLpBalances();
   }catch(e){
     const isReject=e.message?.includes('user rejected')||e.code===4001;
-    const msg=isReject?'Rejected in wallet':(e.reason||e.shortMessage||e.message?.slice(0,150));
-    upd(`<span style="color:${isReject?'var(--gold)':'var(--red)'}">✗ ${msg}</span>`);
+    const msg=isReject?'Rejected in wallet':(e.reason||e.shortMessage||e.message?.slice(0,150)||'Unknown error');
+    statusEl.innerHTML=`<div class="tx-step error"><div class="tx-step-icon">❌</div><div class="tx-step-body"><div class="tx-step-title">${msg}</div></div></div>`;
     if(!isReject) notif(String(msg),'error');
   }
 }
@@ -3623,7 +3957,13 @@ async function hcashRemoveLiquidity() {
     const lpWei=ethers.parseUnits(amt.toFixed(8),18);
 
     // Detect stable flag — check both, prefer whichever pair address matches our LP
-    upd('<span class="spin"></span>1/3 — Detecting pool type…');
+    const RM_STEPS = [
+      { title: 'Detect pool type' },
+      { title: 'Approve LP tokens — confirm in wallet' },
+      { title: 'Remove liquidity — confirm in wallet' },
+      { title: 'Unwrap WAVAX → AVAX' },
+    ];
+    txSteps(statusEl, RM_STEPS, 0);
     const [pairFalse,pairTrue]=await Promise.all([
       factory.getPair(WAVAX,hcashTokAddr,false).catch(()=>ethers.ZeroAddress),
       factory.getPair(WAVAX,hcashTokAddr,true).catch(()=>ethers.ZeroAddress),
@@ -3637,12 +3977,12 @@ async function hcashRemoveLiquidity() {
     // Approve LP
     const allowed=await lpC.allowance(walletAddress,ROUTER);
     if(allowed<lpWei){
-      upd('<span class="spin"></span>2/3 — Approving LP tokens… confirm in wallet');
+      txSteps(statusEl, RM_STEPS, 1);
       await(await lpC.approve(ROUTER,ethers.MaxUint256)).wait();
     }
 
     const deadline=BigInt(Math.floor(Date.now()/1000)+1800);
-    upd('<span class="spin"></span>3/3 — Removing liquidity… confirm in wallet');
+    txSteps(statusEl, RM_STEPS, 2);
 
     // Use removeLiquidity(WAVAX, hCASH) — returns WAVAX + hCASH to wallet
     // Then unwrap WAVAX → native AVAX
@@ -3653,17 +3993,17 @@ async function hcashRemoveLiquidity() {
       console.warn('[removeLiq stable='+stable+' failed, flipping]',e1.message?.slice(0,80));
       tx=await router.removeLiquidity(WAVAX,hcashTokAddr,!stable,lpWei,0n,0n,walletAddress,deadline,{gasLimit:600000n});
     }
-    upd(`<span class="spin"></span>Confirming… <a href="https://snowtrace.io/tx/${tx.hash}" target="_blank" style="color:var(--red)">${tx.hash.slice(0,10)}… ↗</a>`);
+    txSteps(statusEl, [...RM_STEPS.slice(0,2), {title:'Removing liquidity — confirming…', sub:`<a href="https://snowtrace.io/tx/${tx.hash}" target="_blank">View tx ↗</a>`}, RM_STEPS[3]], 2);
     await tx.wait();
     // Unwrap WAVAX → native AVAX
     try{
       const wBal=await wavaxC.balanceOf(walletAddress);
       if(wBal>0n){
-        upd('<span class="spin"></span>Unwrapping WAVAX → AVAX… confirm');
+        txSteps(statusEl, RM_STEPS, 3);
         await(await wavaxC.withdraw(wBal,{gasLimit:60000n})).wait();
       }
     }catch(ue){console.warn('unwrap after remove:',ue.message);}
-    upd(`<span style="color:var(--grn)">✅ Liquidity removed! AVAX + hCASH in wallet. <a href="https://snowtrace.io/tx/${tx.hash}" target="_blank" style="color:var(--red)">↗</a></span>`);
+    statusEl.innerHTML=`<div class="tx-step done"><div class="tx-step-icon">✅</div><div class="tx-step-body"><div class="tx-step-title" style="color:var(--grn)">Liquidity removed! AVAX + hCASH in wallet.</div><div class="tx-step-sub"><a href="https://snowtrace.io/tx/${tx.hash}" target="_blank">View on Snowtrace ↗</a></div></div></div>`;
     notif('↩ Liquidity removed! AVAX and hCASH in your wallet.','success');
     document.getElementById('hcashRemoveAmt').value='';
     updateLpBalances();
@@ -3691,20 +4031,24 @@ async function hcashStakeLp() {
     const lpC=new ethers.Contract(LP,ERC20_ABI,walletSigner);
     const moatC=new ethers.Contract(MOAT,MOAT_ABI,walletSigner);
     const amtWei=ethers.parseUnits(amt.toFixed(6),18);
-    upd('<span class="spin"></span>1/2 — Approving LP for Moat…');
+    const STAKE_STEPS = [
+      { title: 'Approve LP tokens for Moat' },
+      { title: 'Stake LP in hCASH Moat — confirm in wallet', sub: 'Earn 1× Moat Points. Unstake anytime (0.5% fee).' },
+    ];
+    txSteps(statusEl, STAKE_STEPS, 0);
     const allow=await lpC.allowance(walletAddress,MOAT);
     if(allow<amtWei){ await(await lpC.approve(MOAT,ethers.MaxUint256)).wait(); }
-    upd('<span class="spin"></span>2/2 — Staking in hCASH Moat… confirm in wallet');
+    txSteps(statusEl, STAKE_STEPS, 1);
     const tx=await moatC.stake(amtWei);
-    upd(`<span class="spin"></span>Waiting… <a href="https://snowtrace.io/tx/${tx.hash}" target="_blank" style="color:var(--red)">View ↗</a>`);
+    txSteps(statusEl, [{title:'Stake LP', sub:`<a href="https://snowtrace.io/tx/${tx.hash}" target="_blank">View tx ↗</a> — confirming…`}, STAKE_STEPS[1]], 0);
     await tx.wait();
     notif('🔒 LP staked in hCASH Moat! You\'re earning Moat Points.','success',6000);
-    upd(`<span style="color:var(--grn)">✓ Staked! Points accumulating.</span>`);
+    statusEl.innerHTML=`<div class="tx-step done"><div class="tx-step-icon">✅</div><div class="tx-step-body"><div class="tx-step-title" style="color:var(--grn)">LP staked! Moat Points accumulating.</div><div class="tx-step-sub"><a href="https://snowtrace.io/tx/${tx.hash}" target="_blank">View on Snowtrace ↗</a></div></div></div>`;
     document.getElementById('hcashStakeAmt').value='';
     updateLpBalances();updatePositionSummary();
   }catch(e){
     let msg=e.reason||e.shortMessage||(e.message?.includes('user rejected')||e.code===4001?'Rejected in wallet':e.message?.slice(0,120));
-    upd(`<span style="color:var(--red)">✗ ${msg}</span>`);
+    statusEl.innerHTML=`<div class="tx-step error"><div class="tx-step-icon">❌</div><div class="tx-step-body"><div class="tx-step-title">${msg}</div></div></div>`;
     notif(String(msg),'error');
   }
 }
@@ -3725,21 +4069,25 @@ async function hcashDoLock() {
     const moatC=new ethers.Contract(MOAT,MOAT_ABI,walletSigner);
     const amtWei=ethers.parseUnits(amt.toFixed(6),18);
     const durationSec=BigInt(days*86400);
-    upd('<span class="spin"></span>1/2 — Approving LP for Moat…');
+    const mult=lockMultiplier(days);
+    const LOCK_STEPS = [
+      { title: 'Approve LP tokens for Moat' },
+      { title: `Lock ${amt} LP for ${days} days at ${mult}× points — confirm in wallet`, sub: `${mult}× Moat Points multiplier active for ${days} days` },
+    ];
+    txSteps(statusEl, LOCK_STEPS, 0);
     const allow=await lpC.allowance(walletAddress,MOAT);
     if(allow<amtWei){ await(await lpC.approve(MOAT,ethers.MaxUint256)).wait(); }
-    const mult=lockMultiplier(days);
-    upd(`<span class="spin"></span>2/2 — Locking ${amt} LP for ${days}d (${mult}×)… confirm in wallet`);
+    txSteps(statusEl, LOCK_STEPS, 1);
     const tx=await moatC.lock(amtWei,durationSec);
-    upd(`<span class="spin"></span>Waiting… <a href="https://snowtrace.io/tx/${tx.hash}" target="_blank" style="color:var(--red)">View ↗</a>`);
+    txSteps(statusEl, [{...LOCK_STEPS[0]}, {title:`Locking — confirming…`, sub:`<a href="https://snowtrace.io/tx/${tx.hash}" target="_blank">View tx ↗</a>`}], 1);
     await tx.wait();
     notif(`⏳ ${amt} LP locked for ${days} days at ${mult}× points!`,'success',7000);
-    upd(`<span style="color:var(--gold)">✓ Locked! ${mult}× points active.</span>`);
+    statusEl.innerHTML=`<div class="tx-step done"><div class="tx-step-icon">✅</div><div class="tx-step-body"><div class="tx-step-title" style="color:var(--gold)">Locked! ${mult}× Moat Points active for ${days} days.</div><div class="tx-step-sub"><a href="https://snowtrace.io/tx/${tx.hash}" target="_blank">View on Snowtrace ↗</a></div></div></div>`;
     document.getElementById('hcashLockAmt').value='';
     updateLpBalances();renderActiveLocks();updatePositionSummary();
   }catch(e){
     let msg=e.reason||e.shortMessage||(e.message?.includes('user rejected')||e.code===4001?'Rejected in wallet':e.message?.slice(0,120));
-    upd(`<span style="color:var(--red)">✗ ${msg}</span>`);
+    statusEl.innerHTML=`<div class="tx-step error"><div class="tx-step-icon">❌</div><div class="tx-step-body"><div class="tx-step-title">${msg}</div></div></div>`;
     notif(String(msg),'error');
   }
 }
@@ -3849,12 +4197,16 @@ async function hcashDoUnstake() {
       amtWei=ethers.parseUnits(inputAmt.toFixed(6),18);
     } else {
       // Read staked amount from contract
-      upd('<span class="spin"></span>Reading staked balance…');
+      const UNSTAKE_STEPS = [
+      { title: 'Reading staked balance' },
+      { title: 'Unstake from hCASH Moat — confirm in wallet', sub: '0.5% unstake fee applies' },
+    ];
+    txSteps(statusEl, UNSTAKE_STEPS, 0);
       const ui=await moatC.userInfo(walletAddress);
       amtWei=ui[0]; // stakedAmount
       if(amtWei===0n){notif('No staked LP to unstake','warn');upd('');return;}
     }
-    upd('<span class="spin"></span>Unstaking from hCASH Moat… confirm in wallet');
+    txSteps(statusEl, UNSTAKE_STEPS, 1);
     const tx=await moatC.unstake(amtWei);
     upd(`<span class="spin"></span>Waiting… <a href="https://snowtrace.io/tx/${tx.hash}" target="_blank" style="color:var(--red)">View ↗</a>`);
     await tx.wait();
@@ -3863,7 +4215,7 @@ async function hcashDoUnstake() {
     updateLpBalances();updatePositionSummary();
   }catch(e){
     let msg=e.reason||e.shortMessage||(e.message?.includes('user rejected')||e.code===4001?'Rejected in wallet':e.message?.slice(0,120));
-    upd(`<span style="color:var(--red)">✗ ${msg}</span>`);
+    statusEl.innerHTML=`<div class="tx-step error"><div class="tx-step-icon">❌</div><div class="tx-step-body"><div class="tx-step-title">${msg}</div></div></div>`;
     notif(String(msg),'error');
   }
 }
@@ -4189,10 +4541,10 @@ function selectLockDur(d, el) {
 function buildCalcDurGrid() {
   const g=document.getElementById('calcDurGrid');
   if(!g||g.children.length>0)return;
-  const durs=[[1,'2.04×'],[90,'2.73×'],[180,'3.23×'],[365,'4.00×'],[730,'5.00×']];
+  const durs=[['stake','1×'],[1,'2.04×'],[90,'2.73×'],[180,'3.23×'],[365,'4.00×'],[730,'5.00×']];
   g.innerHTML=durs.map(([d,m],i)=>`
-    <div class="dur-btn${i===2?' active':''}" onclick="selectCalcDur(${d},this)" data-days="${d}">
-      <div class="dur-days">${d}d</div>
+    <div class="dur-btn${i===3?' active':''}" onclick="selectCalcDur(${d==='stake'?"'stake'":d},this)" data-days="${d}">
+      <div class="dur-days">${d==='stake'?'Stake':d+'d'}</div>
       <div class="dur-mult">${m}</div>
     </div>`).join('');
 }
@@ -4208,37 +4560,83 @@ function runCalc() {
   if(!el||!usdc)return;
   const hcashPrice=priceData?.price||0;
   const avaxPrice=priceData?.avaxPrice||0;
+  // If AVAX price not loaded yet, trigger a fetch and show loading state
+  if(!avaxPrice && !priceData?.avaxPrice) {
+    wiFetchAvaxPrice().then(()=>runCalc());
+    el.innerHTML=`<div style="background:var(--sur);border:1px solid var(--bor);border-radius:9px;padding:.85rem;text-align:center">
+      <span class="spin"></span><span class="mono" style="font-size:.9rem;color:var(--mut);margin-left:6px">Fetching live prices…</span>
+    </div>`;
+    return;
+  }
   const halfUsd=usdc/2;
   const hcashTokens=hcashPrice>0?halfUsd/hcashPrice:0;
   const avaxAmt=avaxPrice>0?halfUsd/avaxPrice:0;
   const mult=lockMultiplier(calcLockDays);
   const totalPts=moatPoints.reduce((s,p)=>s+Number(p.points||0),0);
-  // Estimate LP tokens proportional to pool
-  const lpFrac=poolData?((halfUsd/(poolData.avaxReserve*(avaxPrice||25)*2))||0):0;
-  const lpEst=poolData?(lpFrac*poolData.lpSupply)||0:0;
-  // Correct moat points formula (verified against moats.app)
   const lpTotalSupply = poolData?.lpSupply || LIL_TOTAL_SUPPLY;
-  const estPts = lpEst > 0 ? calcMoatPoints(lpEst, calcLockDays, lpTotalSupply) : 0;
-  // Fort score = additive, total pool grows with new deposits
-  const fortPct=estPts>0?(estPts/(totalPts+estPts)*100).toFixed(5):'—';
+
+  // Show loading state while we fetch LP quote from Pharaoh
   el.innerHTML=`<div style="background:var(--sur);border:1px solid var(--bor);border-radius:9px;padding:.85rem">
     <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.55rem;color:var(--red);margin-bottom:.6rem">📊 Projection for $${usdc} USDC</div>
     <div class="calc-row"><span class="calc-lbl">Budget Split (50/50)</span><span class="calc-val">${fmtK(halfUsd)} each</span></div>
     <div class="calc-row"><span class="calc-lbl">hCASH to buy</span><span class="calc-val cg">${hcashPrice>0?fmtP(hcashTokens):'—'} hCASH</span></div>
     <div class="calc-row"><span class="calc-lbl">AVAX to pair</span><span class="calc-val cw">${avaxPrice>0?f4(avaxAmt):'—'} AVAX</span></div>
-    <div class="calc-row"><span class="calc-lbl">LP Tokens Est.</span><span class="calc-val cd">${lpEst>0?fmtLP(lpEst):'—'}</span></div>
-    <div class="calc-row"><span class="calc-lbl">Lock Duration</span><span class="calc-val cg">${calcLockDays}d</span></div>
+    <div class="calc-row"><span class="calc-lbl">LP Tokens Est.</span><span class="calc-val cd"><span class="spin"></span> quoting…</span></div>
+    <div class="calc-row"><span class="calc-lbl">Lock Duration</span><span class="calc-val cg">${calcLockDays==='stake'?'Stake (flexible)':calcLockDays+'d lock'}</span></div>
     <div class="calc-row"><span class="calc-lbl">Points Multiplier</span><span class="calc-val cr">${mult}×</span></div>
-    <div class="calc-row"><span class="calc-lbl">Est. Moat Points</span><span class="calc-val cr">${estPts>0?fmtP(estPts)+' pts':'—'}</span></div>
-    <div class="calc-row" style="border-top:1px solid var(--bor);padding-top:.55rem;margin-top:.2rem">
-      <span class="calc-lbl" style="color:var(--txt)">Est. Fort Score Share</span>
-      <span class="calc-val cgn" style="font-size:1.25rem">${fortPct}%</span>
-    </div>
-    <div class="mono" style="font-size:1.25rem;color:var(--mut);margin-top:.55rem">
-      ⚠ LP token estimate is approximate and depends on pool ratio at time of deposit.<br>
-      Points estimate is rough. Actual points depend on LP contract implementation.
-    </div>
+    <div class="calc-row"><span class="calc-lbl">Est. Moat Points</span><span class="calc-val cr">…</span></div>
   </div>`;
+
+  // Fetch LP from Pharaoh quoteAddLiquidity — matches working quoteLPFromAVAX exactly
+  (async () => {
+    let lpEst = 0;
+    try {
+      const prov = walletProvider || new ethers.JsonRpcProvider(AVAX_RPC);
+      const hcashAddr = await resolveHcashToken();
+      const hcashDec = Number(await new ethers.Contract(hcashAddr, ERC20_ABI, prov).decimals().catch(()=>18));
+      // avaxAmt is the AVAX side (halfUsd / avaxPrice)
+      const avaxWei = ethers.parseEther(safeNum(avaxAmt));
+      // Use WAVAX_ADDR directly (not checksummed), stable=false — same as working quoteLPFromAVAX
+      const router = new ethers.Contract(PHARAOH_ROUTER_ADDR, PHARAOH_ROUTER_ABI, prov);
+      const big = ethers.parseUnits('9999999999', hcashDec);
+      const q = await router.quoteAddLiquidity(WAVAX_ADDR, hcashAddr, false, avaxWei, big);
+      // q[2] = liquidity (LP tokens) as bigint in 18 decimals
+      lpEst = parseFloat(ethers.formatEther(q[2]));
+    } catch(e) {
+      // Fallback to reserve math (same as quoteLPFromAVAX fallback)
+      try {
+        const prov = walletProvider || new ethers.JsonRpcProvider(AVAX_RPC);
+        const lp = new ethers.Contract(HCASH_LP_ADDR, ['function getReserves() view returns (uint256,uint256,uint256)','function token0() view returns (address)','function totalSupply() view returns (uint256)'], prov);
+        const [res, t0, ts] = await Promise.all([lp.getReserves(), lp.token0(), lp.totalSupply()]);
+        const isW0 = t0.toLowerCase() === WAVAX_ADDR.toLowerCase();
+        const wRes = isW0 ? res[0] : res[1];
+        const avWei = ethers.parseEther(safeNum(avaxAmt));
+        lpEst = Number(avWei) * Number(ts) / Number(wRes) / 1e18;
+      } catch(e2) {}
+      console.warn('runCalc LP quote fallback:', e.message?.slice(0,60));
+    }
+
+    const estPts = lpEst > 0 ? calcMoatPoints(lpEst, calcLockDays, lpTotalSupply) : 0;
+    const fortPct = estPts > 0 ? (estPts / (totalPts + estPts) * 100).toFixed(5) : '—';
+
+    el.innerHTML=`<div style="background:var(--sur);border:1px solid var(--bor);border-radius:9px;padding:.85rem">
+      <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.55rem;color:var(--red);margin-bottom:.6rem">📊 Projection for $${usdc} USDC</div>
+      <div class="calc-row"><span class="calc-lbl">Budget Split (50/50)</span><span class="calc-val">${fmtK(halfUsd)} each</span></div>
+      <div class="calc-row"><span class="calc-lbl">hCASH to buy</span><span class="calc-val cg">${hcashPrice>0?fmtP(hcashTokens):'—'} hCASH</span></div>
+      <div class="calc-row"><span class="calc-lbl">AVAX to pair</span><span class="calc-val cw">${avaxPrice>0?f4(avaxAmt)+' AVAX':'—'}</span></div>
+      <div class="calc-row"><span class="calc-lbl">LP Tokens Est.</span><span class="calc-val cd">${lpEst>0?fmtLP(lpEst):'—'}</span></div>
+      <div class="calc-row"><span class="calc-lbl">Lock Duration</span><span class="calc-val cg">${calcLockDays==='stake'?'Stake (flexible)':calcLockDays+'d lock'}</span></div>
+      <div class="calc-row"><span class="calc-lbl">Points Multiplier</span><span class="calc-val cr">${mult}×</span></div>
+      <div class="calc-row"><span class="calc-lbl">Est. Moat Points</span><span class="calc-val cr">${estPts>0?fmtP(estPts)+' pts':'—'}</span></div>
+      <div class="calc-row" style="border-top:1px solid var(--bor);padding-top:.55rem;margin-top:.2rem">
+        <span class="calc-lbl" style="color:var(--txt)">Est. Fort Score Share</span>
+        <span class="calc-val cgn" style="font-size:1.25rem">${fortPct}%</span>
+      </div>
+      <div class="mono" style="font-size:1.25rem;color:var(--mut);margin-top:.55rem">
+        ⚠ LP token estimate is sourced from Pharaoh's quoteAddLiquidity. Actual LP depends on pool ratio at deposit time.
+      </div>
+    </div>`;
+  })();
 }
 // EEL Calculator
 function runEel() {
@@ -4653,7 +5051,184 @@ async function loadFortScoreOptimizer() {
 //  BOOT
 // ══════════════════════════════════════════════════════
 async function loadAll() {
-  await Promise.allSettled([loadPriceData(),loadMoatPoints()]);
+  // Warm the contracts cache in parallel with price/moat data
+  // so miners tab and marketplace are instant when clicked
+  await Promise.allSettled([loadPriceData(), loadMoatPoints(), loadChainStats(), getContracts()]);
+}
+
+async function loadChainStats() {
+  try {
+    const MAIN_CONTRACT = '0x105fecae0c48d683dA63620De1f2d1582De9e98a';
+    const MAIN_ABI = [
+      'function totalHashrate() view returns (uint256)',
+      'function getBigcoinPerBlock() view returns (uint256)',
+      'function blocksUntilNextHalving() view returns (uint256)',
+      'function HALVING_INTERVAL() view returns (uint256)',
+      'function playerCount() view returns (uint256)',
+      'function totalFacilities() view returns (uint256)',
+      'function getActiveFacilityCount() view returns (uint256)',
+    ];
+    const prov = new ethers.JsonRpcProvider(AVAX_RPC);
+    const game = new ethers.Contract(MAIN_CONTRACT, MAIN_ABI, prov);
+
+    // Fetch block number and chain stats in parallel
+    const [blockHex, hashRaw, bpbRaw, halvRaw, halvIntRaw] = await Promise.all([
+      prov.send('eth_blockNumber', []),
+      game.totalHashrate().catch(() => 0n),
+      game.getBigcoinPerBlock().catch(() => 0n),
+      game.blocksUntilNextHalving().catch(() => 0n),
+      game.HALVING_INTERVAL().catch(() => 0n),
+    ]);
+
+    // Current block
+    const curBlock = parseInt(blockHex, 16);
+    if (curBlock > 0) {
+      setTxt('d_block', curBlock.toLocaleString());
+      setTxt('d_blockTime', '~1s avg · live');
+    }
+
+    // Network hashrate (in MH/s)
+    const hashMhs = Number(hashRaw);
+    if (hashMhs > 0) {
+      const hashGhs = hashMhs / 1000;
+      setTxt('d_netHash', hashGhs.toFixed(3) + ' GH/s');
+    }
+
+    // Emission per block + per day
+    const bpb = parseFloat(ethers.formatEther(bpbRaw || 0n));
+    if (bpb > 0) {
+      const blocksPerDay = 83802; // live average from chain data
+      const emitDay = bpb * blocksPerDay;
+      setTxt('d_emitBlock', bpb.toFixed(4) + ' hCASH');
+      setTxt('d_emitDay', fmtP(emitDay) + ' hCASH/day');
+      // Update wiCalc emission too
+      _wiDailyEmission = emitDay;
+      if (!_wiNetHashMhs && hashMhs > 0) _wiNetHashMhs = hashMhs;
+    }
+
+    // Halving countdown
+    const halvBlocks = Number(halvRaw);
+    if (halvBlocks > 0) {
+      const secsLeft = halvBlocks * 1; // ~1s/block on Avalanche
+      const daysLeft = secsLeft / 86400;
+      const hrsLeft  = (secsLeft % 86400) / 3600;
+      const minsLeft = (secsLeft % 3600)  / 60;
+      setTxt('d_halving', `${Math.floor(daysLeft)}d ${Math.floor(hrsLeft)}h ${Math.floor(minsLeft)}m`);
+      setTxt('d_halvingBlocks', halvBlocks.toLocaleString() + ' blocks');
+      window._wiBlocksToHalving = halvBlocks;
+    }
+
+    // ── Active facilities: try API networkStats first, then Snowtrace event count ──
+    loadActiveFacilityCount(MAIN_CONTRACT);
+
+  } catch(e) { console.warn('loadChainStats:', e.message); }
+}
+
+// Count active player-owned facilities from the chain
+// Logic: FacilityBought(address indexed player, uint256 indexed facilityIndex, uint256 cost)
+// For each unique player, track their LATEST facilityIndex → count unique players per level → sum = total
+// This matches the accurate dashboard: 92+123+65+20+8 = 308
+async function loadActiveFacilityCount(MAIN_CONTRACT) {
+  // Topic hashes computed from ABI signatures
+  const TOPIC_INITIAL = ethers.id('InitialFacilityPurchased(address)');
+  const TOPIC_BOUGHT  = ethers.id('FacilityBought(address,uint256,uint256)');
+
+  try {
+    // Use Snowtrace getLogs API — handles full range without block limit issues
+    const [initialRes, boughtRes] = await Promise.allSettled([
+      fetch(`${SNOWTRACE}?module=logs&action=getLogs&address=${MAIN_CONTRACT}&topic0=${TOPIC_INITIAL}&fromBlock=0&toBlock=99999999&offset=5000`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()),
+      fetch(`${SNOWTRACE}?module=logs&action=getLogs&address=${MAIN_CONTRACT}&topic0=${TOPIC_BOUGHT}&fromBlock=0&toBlock=99999999&offset=5000`,  { signal: AbortSignal.timeout(10000) }).then(r => r.json()),
+    ]);
+
+    // Players who purchased a paid facility (Lv1-Lv5) via FacilityBought
+    // Track latest facilityIndex per player (they can only go up)
+    const playerLevel = new Map(); // player address → latest facilityIndex
+    if (boughtRes.status === 'fulfilled' && boughtRes.value?.status === '1') {
+      for (const log of (boughtRes.value.result || [])) {
+        const player  = log.topics?.[1] ? '0x' + log.topics[1].slice(26).toLowerCase() : null;
+        const lvRaw   = log.topics?.[2] ? Number(BigInt(log.topics[2])) : 0;
+        if (!player || lvRaw < 1 || lvRaw > 5) continue;
+        // Keep the highest level seen per player
+        if (!playerLevel.has(player) || lvRaw > playerLevel.get(player)) {
+          playerLevel.set(player, lvRaw);
+        }
+      }
+    }
+
+    // Per-level breakdown (unique players at that level)
+    const perLevel = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    for (const lv of playerLevel.values()) {
+      if (lv >= 1 && lv <= 5) perLevel[lv]++;
+    }
+    const totalPaidFacilities = playerLevel.size; // unique players with Lv1+ facility
+
+    // Also count players with only the starter facility (InitialFacilityPurchased but no FacilityBought)
+    let starterOnly = 0;
+    if (initialRes.status === 'fulfilled' && initialRes.value?.status === '1') {
+      for (const log of (initialRes.value.result || [])) {
+        const player = log.topics?.[1] ? '0x' + log.topics[1].slice(26).toLowerCase() : null;
+        if (player && !playerLevel.has(player)) starterOnly++;
+      }
+    }
+
+    const total = totalPaidFacilities + starterOnly;
+    console.log('[Facilities] Lv1-5 players:', perLevel, '| Starter-only:', starterOnly, '| Total:', total);
+
+    if (total > 0) {
+      setTxt('d_facilities', total.toLocaleString());
+      // Build compact breakdown subtitle: Lv1:92 Lv2:123 Lv3:65 Lv4:20 Lv5:8
+      const breakdown = [1,2,3,4,5]
+        .filter(lv => perLevel[lv] > 0)
+        .map(lv => `Lv${lv}:${perLevel[lv]}`)
+        .join(' · ');
+      const subEl = document.getElementById('d_facilities_sub');
+      if (subEl) subEl.textContent = breakdown || 'online';
+      return;
+    }
+    // Fallback if Snowtrace returned nothing — try ethers getLogs in chunks
+    throw new Error('Snowtrace returned 0 results');
+  } catch(e) {
+    console.warn('[Facilities] Snowtrace failed, trying ethers RPC in chunks:', e.message);
+  }
+
+  // Fallback: ethers getLogs in block chunks (Avalanche limits range to ~2048 blocks per call)
+  try {
+    const prov = new ethers.JsonRpcProvider(AVAX_RPC);
+    const latestBlock = Number(await prov.getBlockNumber());
+    const CHUNK = 100000; // large chunks, RPC may return partial
+    const playerLevel = new Map();
+    let starterPlayers = new Set();
+
+    for (let from = 0; from <= latestBlock; from += CHUNK) {
+      const to = Math.min(from + CHUNK - 1, latestBlock);
+      const [bl, il] = await Promise.allSettled([
+        prov.getLogs({ address: MAIN_CONTRACT, topics: [TOPIC_BOUGHT],  fromBlock: from, toBlock: to }),
+        prov.getLogs({ address: MAIN_CONTRACT, topics: [TOPIC_INITIAL], fromBlock: from, toBlock: to }),
+      ]);
+      if (bl.status === 'fulfilled') {
+        bl.value.forEach(log => {
+          const player = log.topics?.[1] ? '0x' + log.topics[1].slice(26).toLowerCase() : null;
+          const lv = log.topics?.[2] ? Number(BigInt(log.topics[2])) : 0;
+          if (player && lv >= 1 && lv <= 5) {
+            if (!playerLevel.has(player) || lv > playerLevel.get(player)) playerLevel.set(player, lv);
+          }
+        });
+      }
+      if (il.status === 'fulfilled') {
+        il.value.forEach(log => {
+          const player = log.topics?.[1] ? '0x' + log.topics[1].slice(26).toLowerCase() : null;
+          if (player) starterPlayers.add(player);
+        });
+      }
+    }
+
+    let starterOnly = 0;
+    for (const p of starterPlayers) { if (!playerLevel.has(p)) starterOnly++; }
+    const total = playerLevel.size + starterOnly;
+    if (total > 0) { setTxt('d_facilities', total.toLocaleString()); return; }
+  } catch(e2) {
+    console.warn('[Facilities] ethers getLogs fallback failed:', e2.message);
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -4711,11 +5286,26 @@ function setSwapDir(dir) {
     const img=document.getElementById('swapFromImg');
     if(img)img.src='https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/hashcashclub.png';
   }
-  // Update balance display
+  // Update balance display — trigger a refresh if balances haven't loaded yet
   const balEl = document.getElementById('swapFromBal');
-  if(balEl) {
-    if(dir===0) balEl.textContent = (document.getElementById('lpAvaxBal')?.textContent||'—')+' AVAX available';
-    else balEl.textContent = (document.getElementById('lpHcashBal')?.textContent||'—')+' hCASH available';
+  if(walletAddress) {
+    const avaxTxt  = document.getElementById('lpAvaxBal')?.textContent  || '—';
+    const hcashTxt = document.getElementById('lpHcashBal')?.textContent || '—';
+    // If balances are still placeholder, fetch them now
+    if(avaxTxt === '—' || hcashTxt === '—') {
+      updateLpBalances().then(() => {
+        if(balEl) {
+          if(dir===0) balEl.textContent = (document.getElementById('lpAvaxBal')?.textContent||'—')+' AVAX available';
+          else balEl.textContent = (document.getElementById('lpHcashBal')?.textContent||'—')+' hCASH available';
+        }
+      });
+    }
+    if(balEl) {
+      if(dir===0) balEl.textContent = avaxTxt === '—' ? 'Loading…' : avaxTxt+' AVAX available';
+      else balEl.textContent = hcashTxt === '—' ? 'Loading…' : hcashTxt+' hCASH available';
+    }
+  } else {
+    if(balEl) balEl.textContent = 'Connect wallet to see balance';
   }
   document.getElementById('swapFromAmt').value = '';
   setTxt('swapQuoteRow','');
@@ -4811,15 +5401,32 @@ async function quoteSwap() {
   },400);
 }
 
-// ── Aggregator swap: tries Pharaoh router, then KyberSwap, then Odos ──
+// ── Swap: redirects to phar.gg (Pharaoh V2 uses execute() ABI) ──
 async function execSwap() {
-  if(!walletSigner){notif('Connect wallet first','warn');return;}
   const amt=parseFloat(document.getElementById('swapFromAmt')?.value)||0;
-  if(!amt||amt<=0){notif('Enter amount first','warn');return;}
   const statusEl=document.getElementById('swapStatus');
   const upd=s=>{if(statusEl)statusEl.innerHTML=s;};
 
-  const hcashAddr=ethers.getAddress(await resolveHcashToken());
+  let hcashAddr='';
+  try{ hcashAddr=ethers.getAddress(await resolveHcashToken()); }catch(e){}
+
+  const AVAX_NATIVE='0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+  const fromToken = swapDir===0 ? AVAX_NATIVE : (hcashAddr||'');
+  const toToken   = swapDir===0 ? (hcashAddr||'') : AVAX_NATIVE;
+
+  const pharUrl = `https://phar.gg/swap?inputCurrency=${swapDir===0?'AVAX':fromToken}&outputCurrency=${swapDir===0?toToken:'AVAX'}${amt?'&exactAmount='+amt:''}`;
+
+  upd(`<div style="background:rgba(212,168,67,.07);border:1px solid rgba(212,168,67,.25);border-radius:8px;padding:.75rem;margin-top:.3rem">
+    <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;color:var(--gold);margin-bottom:.4rem">⚡ Pharaoh V2 Router</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--dim);margin-bottom:.55rem">The hCASH/WAVAX pool uses Pharaoh's V2 <code>execute()</code> router. Opening Pharaoh with your tokens pre-filled — confirm the swap there.</div>
+    <a href="${pharUrl}" target="_blank"
+      style="display:inline-flex;align-items:center;gap:6px;padding:.5rem 1rem;background:rgba(212,168,67,.15);border:1px solid rgba(212,168,67,.35);border-radius:8px;color:var(--gold);text-decoration:none;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--fs-sm)">
+      <img src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/pharoah%20image.jpg" style="width:16px;height:16px;border-radius:3px;object-fit:cover"> Open Pharaoh Swap ↗
+    </a>
+  </div>`);
+  window.open(pharUrl,'_blank');
+  return;
+  // ── legacy paths kept below (unreachable) ──
   const WAVAX=ethers.getAddress(WAVAX_ADDR);
   const ROUTER=ethers.getAddress(PHARAOH_ROUTER_ADDR);
   const prov=walletProvider||new ethers.JsonRpcProvider(AVAX_RPC);
@@ -4828,11 +5435,9 @@ async function execSwap() {
   const slip=_slippage/100;
   const deadline=BigInt(Math.floor(Date.now()/1000)+1200);
   const CHAIN_ID=43114;
-
-  // Token addresses for aggregator APIs
-  const AVAX_NATIVE='0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'; // native AVAX for aggregators
-  const fromToken = swapDir===0 ? AVAX_NATIVE : hcashAddr;
-  const toToken   = swapDir===0 ? hcashAddr   : AVAX_NATIVE;
+  const AVAX_NATIVE2='0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+  const fromToken2 = swapDir===0 ? AVAX_NATIVE2 : hcashAddr;
+  const toToken2   = swapDir===0 ? hcashAddr   : AVAX_NATIVE2;
   const amtInWei  = swapDir===0 ? ethers.parseEther(safeNum(amt)) : ethers.parseUnits(safeNum(amt,dec),dec);
   const amtInStr  = amtInWei.toString();
 
@@ -5206,9 +5811,81 @@ async function showMinerDetail(id) {
   buildLockDurGrid();
   buildCalcDurGrid();
   buildStakeLockRefs();
+  // Fetch Jarmer Jorn image from NFT contract immediately so marketplace shows it
+  fetchJarmerJornImage();
   await loadAll();
+  _appReady = true; // unlock nav() — app is fully initialized
+  // If wallet already connected (session restore), refresh balances immediately
+  if (walletAddress) { updateLpBalances().catch(()=>{}); }
+  // Hide loading overlay
+  const overlay = document.getElementById('appLoadingOverlay');
+  if (overlay) {
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
+    setTimeout(() => overlay.remove(), 450);
+  }
   setInterval(loadAll, 45000);
 })();
+
+// Fetch Jarmer Jorn image from on-chain tokenURI and update _minerData + patch any cached listings
+async function fetchJarmerJornImage() {
+  try {
+    const prov = new ethers.JsonRpcProvider(AVAX_RPC);
+    const nft = new ethers.Contract(JARMER_JORN_ADDR, [
+      'function tokenURI(uint256 tokenId) view returns (string)',
+      'function name() view returns (string)',
+    ], prov);
+    let uri = '', contractName = '';
+    try {
+      [uri, contractName] = await Promise.all([
+        nft.tokenURI(1).catch(() => nft.tokenURI(0).catch(() => '')),
+        nft.name().catch(() => '')
+      ]);
+    } catch(e) {}
+
+    // Resolve metadata to image URL
+    let imageUrl = _minerData['jarmer_jorn']?.imageUrl || ''; // keep fallback
+    if (uri) {
+      if (uri.startsWith('data:application/json')) {
+        try { const j = JSON.parse(atob(uri.split(',')[1])); imageUrl = j.image || j.image_url || imageUrl; } catch(e) {}
+      } else {
+        const fetchUri = uri.startsWith('ipfs://') ? uri.replace('ipfs://', 'https://ipfs.io/ipfs/') : uri;
+        try {
+          const meta = await fetch(fetchUri, { signal: AbortSignal.timeout(6000) }).then(r => r.json());
+          imageUrl = meta.image || meta.image_url || meta.imageUrl || imageUrl;
+        } catch(e) {}
+      }
+      if (imageUrl.startsWith('ipfs://')) imageUrl = imageUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
+    }
+
+    // Update _minerData
+    const entry = _minerData['jarmer_jorn'] || {};
+    entry.name    = contractName || entry.name || 'Jarmer Jorn';
+    entry.imageUrl = imageUrl || entry.imageUrl;
+    entry.address  = JARMER_JORN_ADDR;
+    entry.category = 'external_nft';
+    _minerData['jarmer_jorn'] = entry;
+    _minerData[JARMER_JORN_ADDR.toLowerCase()] = entry;
+    _minerData[JARMER_JORN_ADDR] = entry;
+
+    // Patch any already-loaded marketplace listings that couldn't resolve the name
+    const addrLc = JARMER_JORN_ADDR.toLowerCase();
+    let patched = 0;
+    for (const arr of [_wiMarketListings]) {
+      for (const l of arr) {
+        if ((l.nftContract||'').toLowerCase() === addrLc) {
+          if (!l.minerName || l.minerName === shortA(addrLc)) { l.minerName = entry.name; patched++; }
+          if (!l.minerImg) { l.minerImg = entry.imageUrl; patched++; }
+        }
+      }
+    }
+    if (patched > 0) renderWiMarket(); // re-render with correct name/image
+
+    console.log('[JarmerJorn] name:', entry.name, '| image:', imageUrl ? '✓' : 'fallback', '| patched:', patched, 'listings');
+  } catch(e) {
+    console.warn('[JarmerJorn] image fetch failed:', e.message);
+  }
+}
 </script>
 
 <script>
@@ -5559,6 +6236,8 @@ async function loadMarketplaceListingsForWi(marketContract, miners) {
   const minerByAddr = {};
   miners.forEach(m => { if(m.address) minerByAddr[m.address.toLowerCase()] = m; });
   _wiMiners.forEach(m => { if(m.address) minerByAddr[m.address.toLowerCase()] = m; });
+  // Include all pre-registered external NFTs from _minerData (e.g. Jarmer Jorn)
+  Object.values(_minerData).forEach(m => { if(m.address) minerByAddr[m.address.toLowerCase()] = m; });
 
   function parseCurrencyPriceWi(rawWei, currencyAddr) {
     const ca = (currencyAddr||'').toLowerCase();
@@ -5586,7 +6265,7 @@ async function loadMarketplaceListingsForWi(marketContract, miners) {
       let total = 0;
       try { total = Number(await mktC.totalListings()); } catch(e) {}
       if (total > 0) {
-        const BATCH = 200;
+        const BATCH = 500;
         const now = Math.floor(Date.now()/1000);
         for (let start = 0; start < total; start += BATCH) {
           const end = Math.min(start + BATCH - 1, total - 1);
@@ -5663,6 +6342,20 @@ async function loadMarketplaceListingsForWi(marketContract, miners) {
   } catch(e) { console.warn('loadMarketplaceListingsForWi:', e.message); }
 
   _wiMarketListings = listings;
+
+  // Patch any Jarmer Jorn listings that didn't resolve (async image fetch may not be done yet)
+  const jarmer = _minerData['jarmer_jorn'] || _minerData[JARMER_JORN_ADDR.toLowerCase()];
+  if (jarmer) {
+    const addrLc = JARMER_JORN_ADDR.toLowerCase();
+    for (const l of _wiMarketListings) {
+      if ((l.nftContract||'') === addrLc) {
+        if (!l.minerName) l.minerName = jarmer.name;
+        if (!l.minerImg)  l.minerImg  = jarmer.imageUrl;
+        if (!l._miner)    l._miner    = jarmer;
+      }
+    }
+  }
+
   renderWiMarket();
 
   const hdr = document.getElementById('marketplaceHeader');
@@ -5719,11 +6412,15 @@ function renderWiMarket() {
   for (const l of listings) {
     const key = l.nftContract || (l.minerName||'unknown').toLowerCase().replace(/\s+/g,'_');
     if (!minerGroups.has(key)) {
+      // Try resolving unknown contracts against _minerData (catches Jarmer Jorn + any others pre-registered)
+      const knownEntry = l.nftContract ? (_minerData[l.nftContract] || _minerData[l.nftContract.toLowerCase()]) : null;
+      const resolvedName = l.minerName || knownEntry?.name || (l.nftContract ? shortA(l.nftContract) : 'Unknown NFT');
+      const resolvedImg  = l.minerImg  || knownEntry?.imageUrl || '';
       minerGroups.set(key, {
         key,
-        minerName: l.minerName || 'Miner NFT',
-        minerImg:  l.minerImg  || '',
-        minerStats: l.minerStats || null,
+        minerName: resolvedName,
+        minerImg:  resolvedImg,
+        minerStats: l.minerStats || knownEntry?.minerStats || null,
         listings: [],
       });
     }
@@ -5774,7 +6471,7 @@ function renderWiMarket() {
         <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--t-md);color:var(--gold)">${group.minerName} — ${group.listings.length} active deal${group.listings.length!==1?'s':''}</div>
         <button onclick="wiToggleMinerGroup(null)" style="background:none;border:none;color:var(--mut);cursor:pointer;font-size:.9rem;padding:0;line-height:1" title="Close">✕</button>
       </div>
-      <div style="padding:.5rem .65rem;display:flex;flex-direction:column;gap:.35rem">
+      <div style="padding:.5rem .65rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.4rem">
         ${group.listings.map(l => {
           const s = l.minerStats || {};
           const mhs = s.hashrateMhps || s.hashrateRaw || 0;
@@ -5829,11 +6526,23 @@ function wiToggleCartListing(listing) {
   if (idx >= 0) {
     _wiCart.splice(idx, 1);
   } else {
-    // Check facility capacity
+    // Check slot capacity
     const fac = wiGetFacility();
     const totalSlots = fac.slots || 9;
+    const maxWatts   = fac.watts || 2000;
     if (_wiCart.length >= totalSlots) {
       notif(`Facility only has ${totalSlots} slots — remove one first`, 'warn'); return;
+    }
+    // Check power capacity
+    const s = listing.minerStats || listing._miner?.minerStats || {};
+    const minerWatts = s.powerWatts || s.powerRaw || 0;
+    const usedWatts = _wiSlots.reduce((acc, sl) => acc + (sl.watts || 0), 0);
+    const freeWatts = maxWatts - usedWatts;
+    if (minerWatts > 0 && usedWatts >= maxWatts) {
+      notif(`⚡ No power left in this facility (${maxWatts}W max)`, 'warn'); return;
+    }
+    if (minerWatts > 0 && usedWatts + minerWatts > maxWatts) {
+      notif(`⚡ Power overload: miner needs ${minerWatts}W, only ${freeWatts}W free`, 'warn'); return;
     }
     _wiCart.push(listing);
   }
@@ -5879,12 +6588,19 @@ function renderWiCart() {
     }).join('');
   }
 
-  // Sync _wiSlots from cart
+  // Sync _wiSlots from cart — store priceUsd directly to avoid currency confusion
   _wiSlots = _wiCart.map(l => {
     const s = l.minerStats || l._miner?.minerStats || {};
     const watts = s.powerWatts || s.powerRaw || 0;
     const miner = l._miner || { name: l.minerName||'Miner', minerStats: s, imageUrl: l.minerImg||'' };
-    return { miner, source: 'buy', price: l.priceHcash || l.priceAvax || 0, watts };
+    // Compute USD value of this listing at current prices
+    const avaxP  = priceData?.avaxPrice  || 0;
+    const hcashP = priceData?.price      || 0;
+    const priceUsd = l.priceHcash > 0 ? l.priceHcash * hcashP
+                   : l.priceUsdc  > 0 ? l.priceUsdc
+                   : l.priceAvax  > 0 ? l.priceAvax * avaxP
+                   : 0;
+    return { miner, source: 'buy', price: l.priceHcash || l.priceAvax || 0, priceUsd, currencyLabel: l.currencyLabel || 'hCASH', priceHcash: l.priceHcash, priceAvax: l.priceAvax, priceUsdc: l.priceUsdc, watts };
   });
   wiRenderSlotTable();
 
@@ -6059,7 +6775,7 @@ async function wiFetchFacilityRatesOnChain() {
         game.getBigcoinPerBlock().catch(() => 0n),
         game.blocksUntilNextHalving().catch(() => 0n),
         game.HALVING_INTERVAL().catch(() => 0n),
-        game.facilityCount().catch(() => 6n),
+        game.facilityCount().catch(() => 0n),
       ]);
 
     // totalHashrate: raw value is in MH/s (verified: 200148 MH/s = 200.148 GH/s)
@@ -6084,8 +6800,8 @@ async function wiFetchFacilityRatesOnChain() {
       console.log('[Chain] blocksUntilNextHalving:', halvBlocks.toLocaleString(), '(~' + (halvBlocks/85460).toFixed(1) + 'd) ✓');
     }
 
-    // ── 2. Facility slots: index 0 = starter (skip), index 1-5 = Lv1-Lv5 ──
-    const facCount = Math.min(Number(facilityCountRaw) || 6, 8);
+    // ── 2. Facility slots: index 0 = starter (skip), index 1-N = Lv1-LvN ──
+    const facCount = Number(facilityCountRaw) || 6;
     const facCalls = [];
     for (let i = 0; i < facCount; i++) facCalls.push(game.facilities(i).catch(() => null));
     const facResults = await Promise.all(facCalls);
@@ -6183,16 +6899,22 @@ function wiFacilityRatesUpdateUI() {
   wiCalc();
 }
 
-// Called when facility level changes — reset slots and re-render
+// Called when facility level changes — fully reset everything
 function wiOnFacilityChange() {
+  // Clear ALL slots and selected miner — user must re-add for the new facility
   _wiSlots = [];
-  // If primary miner already selected, put it in slot 1
-  if (_wiSelectedMiner) {
-    const s = _wiSelectedMiner.minerStats || {};
-    const watts = s.powerWatts || s.powerRaw || 0;
-    const price = parseFloat(document.getElementById('wi-price')?.value) || 0;
-    _wiSlots.push({ miner: _wiSelectedMiner, source: 'buy', price, watts });
-  }
+  _wiCart = [];
+  _wiSlotSelectedMiner = null;
+  // Clear the slot search input
+  const slotSearch = document.getElementById('wi-slotMinerSearch');
+  if (slotSearch) slotSearch.value = '';
+  const slotPrice = document.getElementById('wi-slotMinerPrice');
+  if (slotPrice) slotPrice.value = '';
+  const slotDrop = document.getElementById('wi-slotDropdown');
+  if (slotDrop) slotDrop.style.display = 'none';
+  // Re-render market and cart
+  renderWiMarket();
+  renderWiCart();
   wiRenderSlotTable();
   wiCalc();
 }
@@ -6214,29 +6936,40 @@ function wiRenderSlotTable() {
   const powerBar = document.getElementById('wi-slotPowerBar');
   if (!grid) return;
 
-  // Ensure _wiSlots doesn't exceed slot count
+  // Clamp slots to capacity
   while (_wiSlots.length > totalSlots) _wiSlots.pop();
 
-  // Compute used power
   const usedWatts = _wiSlots.reduce((s, sl) => s + (sl.watts || 0), 0);
   const powerPct  = maxWatts > 0 ? Math.min(100, (usedWatts / maxWatts) * 100) : 0;
+  const powerFull = usedWatts >= maxWatts;
+
   if (powerBar) {
     powerBar.style.width = powerPct + '%';
-    powerBar.style.background = powerPct > 90
+    powerBar.style.background = powerPct >= 100
       ? 'linear-gradient(90deg,var(--red),var(--red2))'
-      : powerPct > 70
+      : powerPct > 75
         ? 'linear-gradient(90deg,var(--gold),#fbbf24)'
         : 'linear-gradient(90deg,var(--grn),#4ade80)';
   }
 
   if (summary) {
-    summary.textContent = `${_wiSlots.length}/${totalSlots} slots · ${usedWatts}W / ${maxWatts}W`;
-    summary.style.color = powerPct > 90 ? 'var(--red)' : powerPct > 70 ? 'var(--gold)' : 'var(--grn)';
+    const freeW = Math.max(0, maxWatts - usedWatts);
+    const freeSlots = totalSlots - _wiSlots.length;
+    summary.innerHTML = `
+      <span style="color:${powerPct>=100?'var(--red)':powerPct>75?'var(--gold)':'var(--grn)'}">${_wiSlots.length}/${totalSlots} slots</span>
+      <span style="color:var(--mut)">·</span>
+      <span style="color:${powerPct>=100?'var(--red)':powerPct>75?'var(--gold)':'var(--txt)'}">${usedWatts}W / ${maxWatts}W</span>
+      ${powerFull ? '<span style="background:rgba(232,53,53,.15);color:var(--red);border:1px solid rgba(232,53,53,.3);border-radius:4px;padding:1px 6px;font-size:9px;margin-left:4px">⚡ POWER FULL</span>' : `<span style="color:var(--mut);font-size:9px">${freeW}W free · ${freeSlots} slot${freeSlots!==1?'s':''} open</span>`}
+    `;
   }
 
-  // Build slot cells
-  const cols = fac.dims?.split('×')[1] || Math.ceil(Math.sqrt(totalSlots));
-  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  // Determine grid columns from facility dimensions
+  const dimY = fac.dims ? parseInt(fac.dims.split('×')[1]) : Math.ceil(Math.sqrt(totalSlots));
+  // On mobile, cap at 3 columns to prevent overflow
+  const isMobile = window.innerWidth < 500;
+  const cols = isMobile ? Math.min(dimY, 3) : dimY;
+  grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0,1fr))`;
+  grid.style.gap = '5px';
 
   let html = '';
   for (let i = 0; i < totalSlots; i++) {
@@ -6245,26 +6978,72 @@ function wiRenderSlotTable() {
       const m = sl.miner;
       const s = m.minerStats || {};
       const mhs = s.hashrateMhps || s.hashrateRaw || 0;
+      const mhsStr = mhs >= 1000 ? (mhs/1000).toFixed(1)+'GH/s' : mhs ? mhs+'MH/s' : '?';
       const imgUrl = m.imageUrl || '';
-      const imgTag = imgUrl ? `<img src="${imgUrl}" style="width:22px;height:22px;object-fit:cover;border-radius:3px;flex-shrink:0" onerror="this.style.display='none'" alt="">` : '<span style="font-size:.9rem;flex-shrink:0">⛏</span>';
-      const srcBadge = sl.source === 'own'
-        ? `<span style="font-size:8px;background:rgba(74,222,128,.12);color:var(--grn);border:1px solid rgba(74,222,128,.3);border-radius:3px;padding:1px 4px">OWNED</span>`
-        : `<span style="font-size:8px;background:rgba(229,62,62,.12);color:var(--red2);border:1px solid rgba(229,62,62,.3);border-radius:3px;padding:1px 4px">${sl.price ? sl.price.toLocaleString()+' hC' : 'BUY'}</span>`;
-      html += `<div style="background:rgba(229,62,62,.06);border:1px solid rgba(229,62,62,.2);border-radius:7px;padding:5px 7px;font-size:10px;position:relative;min-height:52px">
-        <button onclick="wiRemoveSlot(${i})" style="position:absolute;top:3px;right:4px;background:none;border:none;color:var(--mut);cursor:pointer;font-size:9px;padding:0;line-height:1">✕</button>
-        <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">${imgTag}<span style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--fs-xs);color:var(--txt);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.name}</span></div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--grn)">${mhs >= 1000 ? (mhs/1000).toFixed(1)+'GH/s' : mhs+'MH/s'} · ${sl.watts||0}W</div>
-        ${srcBadge}
-      </div>`;
+      const imgTag = imgUrl
+        ? `<img src="${imgUrl}" style="width:28px;height:28px;object-fit:cover;border-radius:4px;flex-shrink:0;border:1px solid rgba(229,62,62,.2)" onerror="this.style.display='none'" alt="">`
+        : `<div style="width:28px;height:28px;border-radius:4px;background:rgba(229,62,62,.1);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">⛏</div>`;
+      const isOwned = sl.source === 'own';
+      const priceLbl = isOwned ? 'OWNED'
+        : sl.priceHcash > 0 ? sl.priceHcash.toLocaleString(undefined,{maximumFractionDigits:0})+' hC'
+        : sl.priceAvax  > 0 ? f4(sl.priceAvax)+' AVAX'
+        : sl.price > 0 ? sl.price.toLocaleString()+' hC' : 'BUY';
+      const badgeStyle = isOwned
+        ? 'background:rgba(74,222,128,.12);color:var(--grn);border:1px solid rgba(74,222,128,.3)'
+        : 'background:rgba(229,62,62,.1);color:var(--red2);border:1px solid rgba(229,62,62,.25)';
+      html += `
+        <div style="background:var(--card);border:1px solid rgba(229,62,62,.25);border-radius:8px;padding:6px 7px;position:relative;transition:border-color .15s"
+          onmouseover="this.style.borderColor='rgba(229,62,62,.5)'" onmouseout="this.style.borderColor='rgba(229,62,62,.25)'">
+          <button onclick="wiRemoveSlot(${i})" title="Remove"
+            style="position:absolute;top:4px;right:5px;background:rgba(229,62,62,.1);border:1px solid rgba(229,62,62,.25);border-radius:4px;color:var(--red);cursor:pointer;font-size:9px;padding:1px 5px;line-height:1.4;transition:background .1s"
+            onmouseover="this.style.background='rgba(229,62,62,.25)'" onmouseout="this.style.background='rgba(229,62,62,.1)'">✕</button>
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;padding-right:18px">
+            ${imgTag}
+            <span style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--fs-xs);color:var(--txt);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1" title="${m.name}">${m.name}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:4px">
+            <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--grn)">${mhsStr}</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:${sl.watts>0?'var(--gold)':'var(--mut)'}">${sl.watts||0}W</div>
+          </div>
+          <div style="margin-top:4px">
+            <span style="font-size:8px;border-radius:3px;padding:1px 5px;${badgeStyle}">${priceLbl}</span>
+          </div>
+        </div>`;
     } else {
-      html += `<div style="background:var(--sur);border:1px dashed var(--bor);border-radius:7px;padding:5px 7px;min-height:52px;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:10px;font-family:'Share Tech Mono',monospace">EMPTY</div>`;
+      const slotNum = i + 1;
+      html += `
+        <div style="background:var(--sur);border:1px dashed var(--bor);border-radius:8px;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:default;opacity:${powerFull?'.4':'1'}">
+          <div style="font-size:1.1rem;opacity:.3">⛏</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--mut)">SLOT ${slotNum}</div>
+          ${powerFull ? '<div style="font-size:8px;color:var(--red)">no power</div>' : ''}
+        </div>`;
     }
   }
   grid.innerHTML = html;
 }
 
 function wiRemoveSlot(idx) {
+  const removed = _wiSlots[idx];
   _wiSlots.splice(idx, 1);
+  // If the removed miner was the selected slot miner, clear that too
+  if (removed && _wiSlotSelectedMiner && removed.miner === _wiSlotSelectedMiner) {
+    _wiSlotSelectedMiner = null;
+    const inp = document.getElementById('wi-slotMinerSearch');
+    if (inp) inp.value = '';
+    const dd = document.getElementById('wi-slotDropdown');
+    if (dd) dd.style.display = 'none';
+  }
+  // Also sync cart: if this slot came from cart, remove from cart too
+  if (removed && _wiCart.length > 0) {
+    const cartIdx = _wiCart.findIndex(c =>
+      c.nftContract === (removed.miner?.address||'').toLowerCase() ||
+      c.minerName === removed.miner?.name
+    );
+    if (cartIdx >= 0) {
+      _wiCart.splice(cartIdx, 1);
+      renderWiMarket(); // refresh checkmarks
+    }
+  }
   wiRenderSlotTable();
   wiCalc();
 }
@@ -6276,14 +7055,18 @@ function wiAddSlotMiner() {
   const totalSlots = fac.slots || 9;
 
   if (!_wiSlotSelectedMiner) { notif('Select a miner first', 'warn'); return; }
-  if (_wiSlots.length >= totalSlots) { notif('All slots filled for this facility', 'warn'); return; }
+  if (_wiSlots.length >= totalSlots) { notif(`All ${totalSlots} slots filled for this facility`, 'warn'); return; }
 
   const s = _wiSlotSelectedMiner.minerStats || {};
   const watts = s.powerWatts || s.powerRaw || 0;
   const usedWatts = _wiSlots.reduce((acc, sl) => acc + (sl.watts || 0), 0);
+  const freeWatts = maxWatts - usedWatts;
+
+  if (watts > 0 && usedWatts >= maxWatts) {
+    notif(`⚡ No power left in this facility (${maxWatts}W max, all used)`, 'warn'); return;
+  }
   if (watts > 0 && usedWatts + watts > maxWatts) {
-    notif(`Not enough power: ${watts}W needed, ${maxWatts - usedWatts}W free`, 'warn');
-    return;
+    notif(`⚡ Power overload: miner needs ${watts}W but only ${freeWatts}W free in this facility`, 'warn'); return;
   }
 
   const source = document.getElementById('wi-slotSource')?.value || 'buy';
@@ -6587,10 +7370,7 @@ async function wiLoadMiners() {
   if (list) list.innerHTML = `<div style="padding:10px 12px;font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut)">Loading…</div>`;
 
   try {
-    const r = await fetch(`${HCASH_API}/contracts`, { headers: { 'x-api-key': HCASH_API_KEY } });
-    if (!r.ok) throw new Error('API error ' + r.status);
-    const data = await r.json();
-    const contracts = Array.isArray(data) ? data : (data.contracts || []);
+    const contracts = await getContracts();
     _wiMiners = contracts.filter(c =>
       (c.category === 'miner_nft' || c.category === 'rig_assembler') && c.name && c.address
     );
@@ -6620,7 +7400,7 @@ function wiBuildLockGrid() {
   if (!g || g.children.length > 0) return;
   const durs = [['stake','1×'],['1','2.04×'],['30','2.31×'],['90','2.73×'],['180','3.23×'],['365','4.00×'],['730','5.00×']];
   g.innerHTML = durs.map(([d, m], i) => `
-    <div class="dur-btn${d==='180'?' active':''}" onclick="wiSelectLock(${d==='stake'?'"stake"':d},this)" data-days="${d}" style="text-align:center">
+    <div class="dur-btn${d==='180'?' active':''}" onclick="wiSelectLock(${d==='stake'?"'stake'":d},this)" data-days="${d}" style="text-align:center">
       <div class="dur-days">${d==='stake'?'Stake':d+'d'}</div>
       <div class="dur-mult">${m}</div>
     </div>`).join('');
@@ -6733,6 +7513,70 @@ async function wiEnsureLiveData() {
   wiCalc();
 }
 
+// ── Async LP quote from Pharaoh — matches quoteLPFromAVAX exactly ──
+let _wiLpQuoteTimer = null;
+async function wiQuoteLpFromPharaoh(avaxSide, hcashSide, lpTotalSupply, lockDaysVal, poolLiq, vol24h, hcashUsd) {
+  clearTimeout(_wiLpQuoteTimer);
+  _wiLpQuoteTimer = setTimeout(async () => {
+    try {
+      const prov = walletProvider || new ethers.JsonRpcProvider(AVAX_RPC);
+      const hcashAddr = await resolveHcashToken();
+      const hcashDec = Number(await new ethers.Contract(hcashAddr, ERC20_ABI, prov).decimals().catch(() => 18));
+      const avaxWei = ethers.parseEther(safeNum(avaxSide));
+      // Use WAVAX_ADDR directly (not checksummed), stable=false — same as working quoteLPFromAVAX
+      const router = new ethers.Contract(PHARAOH_ROUTER_ADDR, PHARAOH_ROUTER_ABI, prov);
+      const big = ethers.parseUnits('9999999999', hcashDec);
+      const q = await router.quoteAddLiquidity(WAVAX_ADDR, hcashAddr, false, avaxWei, big);
+      const lpTokenEst = parseFloat(ethers.formatEther(q[2]));
+      if (lpTokenEst <= 0) return;
+
+      const lpPoolSharePct = lpTotalSupply > 0 ? (lpTokenEst / lpTotalSupply) * 100 : 0;
+      const myFeeUsdDay = vol24h > 0 && lpPoolSharePct > 0 ? vol24h * 0.003 * (lpPoolSharePct / 100) : 0;
+      const mult = lockMultiplier(lockDaysVal);
+      const totalMoatPts = moatPoints.reduce((s, p) => s + Number(p.points || 0), 0);
+      const lpPtsTotal = calcMoatPoints(lpTokenEst, lockDaysVal, lpTotalSupply);
+      const lpPtsSharePct = totalMoatPts > 0 && lpPtsTotal > 0
+        ? (lpPtsTotal / (totalMoatPts + lpPtsTotal)) * 100 : 0;
+
+      const fmtH = n => n.toFixed(2);
+      const fmtU = n => '$' + n.toFixed(2);
+      const fmtP2 = n => {
+        if (n >= 1e6) return (n/1e6).toFixed(2)+'M';
+        if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
+        return Math.round(n).toLocaleString();
+      };
+
+      // Update LP-related fields with accurate Pharaoh quote
+      const lpTokensEl = document.getElementById('wi-lpTokens');
+      if (lpTokensEl) lpTokensEl.textContent = fmtLP(lpTokenEst) + ' LP ✓';
+      const lpShareEl = document.getElementById('wi-lpPoolShare');
+      if (lpShareEl) lpShareEl.textContent = lpPoolSharePct > 0 ? lpPoolSharePct.toFixed(4) + '%' : '—';
+      const lpPtsEl = document.getElementById('wi-lpPoints');
+      if (lpPtsEl) lpPtsEl.textContent = lpPtsTotal > 0 ? fmtP2(lpPtsTotal) + ' pts total' : '—';
+      const lpFeesEl = document.getElementById('wi-lpFees');
+      if (lpFeesEl) lpFeesEl.textContent = myFeeUsdDay > 0 ? fmtU(myFeeUsdDay) + '/day' : '—';
+
+      // Path B results
+      const myFeeHcashDay = hcashUsd > 0 ? myFeeUsdDay / hcashUsd : 0;
+      const lpFee30 = myFeeHcashDay * 30;
+      const lpFeeUsd30 = myFeeUsdDay * 30;
+      const lpFee365 = myFeeHcashDay * 365;
+      const lpFeeUsd365 = myFeeUsdDay * 365;
+      const el_fd = document.getElementById('wi-lpFeeDay'); if (el_fd) el_fd.textContent = fmtH(myFeeHcashDay) + ' hCASH';
+      const el_f30 = document.getElementById('wi-lpFee30'); if (el_f30) el_f30.textContent = fmtH(lpFee30) + ' hCASH';
+      const el_fu30 = document.getElementById('wi-lpFeeUsd30'); if (el_fu30) el_fu30.textContent = fmtU(lpFeeUsd30);
+      const el_f365 = document.getElementById('wi-lpFee365'); if (el_f365) el_f365.textContent = fmtH(lpFee365) + ' hCASH';
+      const el_fu365 = document.getElementById('wi-lpFeeUsd365'); if (el_fu365) el_fu365.textContent = fmtU(lpFeeUsd365);
+      const el_pts = document.getElementById('wi-lpPtsDay');
+      if (el_pts) el_pts.textContent = lpPtsTotal > 0
+        ? `${fmtP2(lpPtsTotal)} pts (${lpPtsSharePct.toFixed(3)}% of moat)` : '—';
+    } catch(e) {
+      console.warn('[wiQuoteLpFromPharaoh] fallback to proportional:', e.message?.slice(0, 80));
+      // Silently keep the proportional estimate already displayed
+    }
+  }, 400);
+}
+
 // Core calculation
 function wiCalc() {
   const priceRaw  = parseFloat(document.getElementById('wi-price')?.value) || 0;
@@ -6748,27 +7592,47 @@ function wiCalc() {
   const elecRate = selEl ? parseFloat(selEl.options[selEl.selectedIndex]?.value) || 5.77 : 5.77;
 
   // Convert miner price to USD
-  // Total budget = primary miner price (from input) + ALL "buy" slot miner prices combined
-  let primaryUsd = 0;
-  if (priceRaw > 0) {
-    primaryUsd = currency === 'hcash' ? priceRaw * hcashUsd : priceRaw * avaxUsd;
+  // When miners come from the cart (_wiCart), ALL prices are already in _wiSlots — use those directly.
+  // Only fall back to the manual wi-price input when there's no cart (manual search mode).
+  let minerUsd = 0;
+  if (_wiSlots.length > 0 && _wiCart.length > 0) {
+    // Cart mode: sum each slot's pre-computed USD value (handles AVAX, hCASH, USDC correctly)
+    minerUsd = _wiSlots.reduce((s, sl) => {
+      if (sl.priceUsd > 0) return s + sl.priceUsd;
+      // Fallback if priceUsd wasn't set: compute from raw prices
+      const p = sl.priceHcash > 0 ? sl.priceHcash * (hcashUsd || 0)
+              : sl.priceUsdc  > 0 ? sl.priceUsdc
+              : sl.priceAvax  > 0 ? sl.priceAvax  * (avaxUsd  || 0)
+              : (sl.price || 0) * (hcashUsd || 0);
+      return s + p;
+    }, 0);
+  } else {
+    // Manual search mode: use the price input for the single selected miner
+    let primaryUsd = 0;
+    if (priceRaw > 0) {
+      primaryUsd = currency === 'hcash' ? priceRaw * hcashUsd : priceRaw * avaxUsd;
+    }
+    const extraSlotBuyTotal = _wiSlots.slice(_wiSelectedMiner ? 1 : 0)
+      .filter(sl => sl.source === 'buy')
+      .reduce((s, sl) => s + (sl.price || 0), 0);
+    const extraSlotUsd = extraSlotBuyTotal * (hcashUsd || 0);
+    minerUsd = primaryUsd + extraSlotUsd;
   }
-  // Extra slot miners (index 1+ if primary selected, or all if no primary)
-  const extraSlotBuyTotal = _wiSlots.slice(_wiSelectedMiner ? 1 : 0)
-    .filter(sl => sl.source === 'buy')
-    .reduce((s, sl) => s + (sl.price || 0), 0);
-  const extraSlotUsd = extraSlotBuyTotal * (hcashUsd || 0);
-  let minerUsd = primaryUsd + extraSlotUsd;
-  // Fallback: if no primary price typed yet but slot miners have prices
+  // Fallback: if still zero but slots have prices, compute from slots using all currencies
   if (minerUsd === 0 && _wiSlots.length > 0) {
-    const allBuyTotal = _wiSlots.filter(sl => sl.source === 'buy').reduce((s, sl) => s + (sl.price || 0), 0);
-    minerUsd = allBuyTotal * (hcashUsd || 0);
+    minerUsd = _wiSlots.filter(sl => sl.source === 'buy').reduce((s, sl) => {
+      if (sl.priceUsd > 0) return s + sl.priceUsd;
+      const p = sl.priceHcash > 0 ? sl.priceHcash * (hcashUsd || 0)
+              : sl.priceUsdc  > 0 ? sl.priceUsdc
+              : sl.priceAvax  > 0 ? sl.priceAvax  * (avaxUsd  || 0)
+              : (sl.price || 0) * (hcashUsd || 0);
+      return s + p;
+    }, 0);
   }
 
   // Update USD display
   const priceUsdEl = document.getElementById('wi-priceUsdDisplay');
-  const extraLabel = extraSlotUsd > 0 ? ` + $${extraSlotUsd.toFixed(2)} extra slots` : '';
-  if (priceUsdEl) priceUsdEl.textContent = minerUsd > 0 ? `≈ $${minerUsd.toFixed(2)} USD total${extraLabel}` : '≈ $— USD';
+  if (priceUsdEl) priceUsdEl.textContent = minerUsd > 0 ? `≈ $${minerUsd.toFixed(2)} USD total (${_wiSlots.length} miner${_wiSlots.length!==1?'s':''})` : '≈ $— USD';
 
   // Get miner stats
   const s = _wiSelectedMiner?.minerStats || {};
@@ -6823,12 +7687,9 @@ function wiCalc() {
   const totalMhs   = slotTotalMhs   > 0 ? slotTotalMhs   : mhs;
   const totalWatts = slotTotalWatts > 0 ? slotTotalWatts : watts;
   // totalCostHcash = primary miner price in hCASH + all extra "buy" slot prices
-  const primaryCostHcash = priceRaw > 0
-    ? (currency === 'hcash' ? priceRaw : (priceRaw * avaxUsd / Math.max(hcashUsd, 0.000001)))
-    : 0;
-  const extraSlotsCostHcash = _wiSlots.slice(_wiSelectedMiner ? 1 : 0)
-    .filter(sl => sl.source === 'buy').reduce((s, sl) => s + (sl.price || 0), 0);
-  const totalCostHcash = primaryCostHcash + extraSlotsCostHcash || slotTotalBuyCost || priceRaw;
+  // Total cost in hCASH for break-even calculation — sum ALL slot prices directly
+  const totalCostHcash = _wiSlots.filter(sl => sl.source === 'buy').reduce((s, sl) => s + (sl.price || 0), 0)
+    || (currency === 'hcash' ? priceRaw : (priceRaw * avaxUsd / Math.max(hcashUsd, 0.000001)));
 
   // ── PATH A: MINER ──
   const minerShare     = totalMhs / liveNetHash;
@@ -6855,8 +7716,10 @@ function wiCalc() {
     : (priceData.liq || 0);
   const poolLiq     = poolTvlUsd;
 
-  // LP tokens proportional to share of pool TVL contributed
-  // lpTokenEst = (myUsd / poolTvl) × totalLpSupply
+  // LP swap fees: 24h pool volume (declare here so it's available everywhere below)
+  const vol24h        = priceData.vol24 || 0;
+
+  // LP tokens — show proportional estimate immediately, then update with Pharaoh quote async
   const lpTokenEst = poolData?.lpSupply > 0 && poolLiq > 0
     ? (minerUsd / poolLiq) * poolData.lpSupply
     : 0;
@@ -6864,8 +7727,10 @@ function wiCalc() {
     ? (lpTokenEst / poolData.lpSupply) * 100
     : 0;
 
-  // LP swap fees: 24h pool volume × 0.3% fee × my share of pool
-  const vol24h        = priceData.vol24 || 0;
+  // Kick off an async Pharaoh quoteAddLiquidity to get accurate LP amount
+  if (avaxSide > 0) {
+    wiQuoteLpFromPharaoh(avaxSide, hcashSide, poolData?.lpSupply || LIL_TOTAL_SUPPLY, _wiLockDaysVal, poolLiq, vol24h, hcashUsd);
+  }
   const myFeeUsdDay   = vol24h * 0.003 * (lpPoolSharePct / 100);
   const myFeeHcashDay = hcashUsd > 0 ? myFeeUsdDay / hcashUsd : 0;
 
@@ -7246,6 +8111,72 @@ async function wiSyncLiveData() {
 }
 
 // Initialize What If page when navigated to
+// ── Fetch Jarmer Jorn external NFT miner ──
+async function fetchJarmerJorn() {
+  const JARMER_ADDR = '0x71666cBe9FA350792d6C906e2Fc26f3F7aB46107';
+  const extNftGrid = document.getElementById('extNftGrid');
+  const extNftHead = document.getElementById('extNftSectionHead');
+  if (!extNftGrid) return;
+
+  try {
+    // Try HashCash API first
+    const resp = await fetch(`${HCASH_API}/contracts`, { headers: { 'x-api-key': HCASH_API_KEY } }).then(r => r.json());
+    const contracts = Array.isArray(resp) ? resp : (resp?.contracts || []);
+    const found = contracts.filter(c =>
+      (c.address||'').toLowerCase() === JARMER_ADDR.toLowerCase() ||
+      (c.name||'').toLowerCase().includes('jarmer') ||
+      c.category === 'external_nft'
+    );
+
+    if (found.length) {
+      if (extNftHead) extNftHead.style.display = '';
+      extNftGrid.innerHTML = found.map(m => {
+        const s = m.minerStats || {};
+        const img = m.imageUrl || '';
+        const mid = m.id || m.name || '';
+        const mhs = s.hashrateMhps || s.hashrateRaw || 0;
+        const pw  = s.powerWatts  || s.powerRaw    || 0;
+        const eff = mhs && pw ? `${(mhs/pw*100).toFixed(1)} MH/W` : '';
+        return `<div class="miner-card" onclick="showMinerDetail('${mid}')">
+          ${img ? `<img class="miner-img" src="${img}" alt="${m.name||'NFT'}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">` : ''}
+          <div class="miner-img-fb" style="${img?'display:none':''}">🌐</div>
+          <div class="miner-info">
+            <div class="miner-name">${m.name || 'Jarmer Jorn'}</div>
+            ${mhs ? `<div class="miner-stat"><span class="miner-stat-k">Hashrate</span><span class="miner-stat-v" style="color:var(--red)">${mhs >= 1000 ? (mhs/1000).toFixed(1)+'GH/s' : mhs+'MH/s'}</span></div>` : ''}
+            ${pw  ? `<div class="miner-stat"><span class="miner-stat-k">Power</span><span class="miner-stat-v" style="color:var(--gold)">${pw}W</span></div>` : ''}
+            ${eff ? `<div class="miner-stat"><span class="miner-stat-k">Efficiency</span><span class="miner-stat-v" style="color:var(--grn)">${eff}</span></div>` : ''}
+            <div class="miner-stat"><span class="miner-stat-k">Type</span><span class="miner-stat-v" style="color:var(--pur)">External NFT</span></div>
+            <div class="miner-stat" style="margin-top:.25rem"><span class="mono" style="font-size:.7rem;color:var(--mut)">${shortA(m.address||JARMER_ADDR)}</span></div>
+          </div>
+        </div>`;
+      }).join('');
+      // Update _minerData with fresh API data (including imageUrl if available)
+      found.forEach(m => {
+        const key1 = m.id || m.name || 'jarmer_jorn';
+        const key2 = (m.address || JARMER_ADDR).toLowerCase();
+        _minerData[key1] = m;
+        _minerData[key2] = m;
+        // Also update the jarmer_jorn key explicitly
+        _minerData['jarmer_jorn'] = m;
+      });
+      return;
+    }
+  } catch(e) { console.warn('fetchJarmerJorn API:', e.message); }
+
+  // Fallback: show placeholder card — name is already in _minerData from pre-registration
+  if (extNftHead) extNftHead.style.display = '';
+  extNftGrid.innerHTML = `<div class="miner-card" onclick="showMinerDetail('jarmer_jorn')">
+    <div class="miner-img-fb">🌐</div>
+    <div class="miner-info">
+      <div class="miner-name">Jarmer Jorn</div>
+      <div class="miner-stat"><span class="miner-stat-k">Type</span><span class="miner-stat-v" style="color:var(--pur)">External NFT</span></div>
+      <div class="miner-stat" style="margin-top:.25rem">
+        <a href="https://snowtrace.io/address/${JARMER_ADDR}" target="_blank" class="mono" style="font-size:.7rem;color:var(--red);text-decoration:none">${shortA(JARMER_ADDR)} ↗</a>
+      </div>
+    </div>
+  </div>`;
+}
+
 function initWhatIf() {
   wiBuildLockGrid();
   wiRenderSlotTable();    // show empty slot grid immediately
@@ -7266,6 +8197,569 @@ function initWhatIf() {
     wiFetchAvaxPrice().then(() => wiCalc());
   }, 90 * 1000);
 }
+
+// ══════════════════════════════════════════════════════
+//  BUILD PAGE — bd* functions (separate state from wi*)
+// ══════════════════════════════════════════════════════
+
+// Build page state — completely independent from What If
+let _bdSlots = [];
+let _bdSelectedMiner = null;
+let _bdSlotSelectedMiner = null;
+let _bdLockDaysVal = 180;
+let _bdSearchQuery = '';
+let _bdSearchIdx = -1;
+let _bdChart = null;
+
+function bdGetFacility() {
+  const sel = document.getElementById('bd-facilityLevel');
+  const lv = parseInt(sel?.options[sel.selectedIndex]?.dataset.lv) || 3;
+  return { lv, ..._wiFacilityData[lv] };
+}
+
+function bdOnFacilityChange() {
+  bdRenderSlotTable();
+  bdCalc();
+}
+
+// Lock grid
+function bdBuildLockGrid() {
+  const g = document.getElementById('bd-lockGrid');
+  if (!g || g.children.length > 0) return;
+  const durs = [['stake','1×'],['1','2.04×'],['30','2.31×'],['90','2.73×'],['180','3.23×'],['365','4.00×'],['730','5.00×']];
+  g.innerHTML = durs.map(([d, m]) =>
+    `<div class="dur-btn${d==='180'?' active':''}" onclick="bdSelectLock(${d==='stake'?"'stake'":d},this)" data-days="${d}" style="text-align:center">
+      <div class="dur-days">${d==='stake'?'Stake':d+'d'}</div>
+      <div class="dur-mult">${m}</div>
+    </div>`
+  ).join('');
+}
+
+function bdSelectLock(d, el) {
+  _bdLockDaysVal = d;
+  document.querySelectorAll('#bd-lockGrid .dur-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const hidden = document.getElementById('bd-lockDays');
+  if (hidden) hidden.value = d;
+  bdCalc();
+}
+
+// Miner search / dropdown
+function bdFilterMiners(query) {
+  _bdSearchQuery = query.trim().toLowerCase();
+  _bdSearchIdx = -1;
+  bdRenderDropdown();
+  const dd = document.getElementById('bd-minerDropdown');
+  if (dd) dd.style.display = 'block';
+}
+
+function bdRenderDropdown() {
+  const list = document.getElementById('bd-minerDropdownList');
+  if (!list) return;
+  const q = _bdSearchQuery;
+  const filtered = q
+    ? _wiMiners.filter(m => m.name?.toLowerCase().includes(q))
+    : _wiMiners;
+  if (!_wiMiners.length) {
+    list.innerHTML = `<div style="padding:10px 12px;font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut)">Loading miners…</div>`;
+    return;
+  }
+  if (!filtered.length) {
+    list.innerHTML = `<div style="padding:10px 12px;font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut)">No miners match "${q}"</div>`;
+    return;
+  }
+  list.innerHTML = filtered.map((m, i) => {
+    const s = m.minerStats || {};
+    const mhs = s.hashrateMhps || s.hashrateRaw || 0;
+    const watts = s.powerWatts || s.powerRaw || 0;
+    const mhsStr = mhs >= 1000 ? (mhs/1000).toFixed(2)+' GH/s' : mhs ? mhs+' MH/s' : '';
+    const idx = _wiMiners.indexOf(m);
+    const imgHtml = m.imageUrl ? `<img src="${m.imageUrl}" style="width:28px;height:28px;border-radius:4px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'" alt="">` : `<span style="font-size:1.1rem;flex-shrink:0">⛏</span>`;
+    return `<div class="bd-dd-item" data-idx="${idx}" onclick="bdSelectMinerByIdx(${idx})"
+      style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--bor);transition:background .1s"
+      onmouseover="this.style.background='rgba(229,62,62,.08)'" onmouseout="this.style.background=''">
+      ${imgHtml}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:var(--fs-sm);font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.name}</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut)">${mhsStr}${mhsStr && watts ? ' · ' : ''}${watts?watts+'W':'0W (free)'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function bdSearchKeydown(e) {
+  const dd = document.getElementById('bd-minerDropdown');
+  const items = document.querySelectorAll('.bd-dd-item');
+  if (!dd || dd.style.display === 'none') return;
+  if (e.key === 'ArrowDown') { e.preventDefault(); _bdSearchIdx = Math.min(_bdSearchIdx+1, items.length-1); bdHighlightItem(items); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); _bdSearchIdx = Math.max(_bdSearchIdx-1, 0); bdHighlightItem(items); }
+  else if (e.key === 'Enter') { e.preventDefault(); if (_bdSearchIdx >= 0 && items[_bdSearchIdx]) items[_bdSearchIdx].click(); }
+  else if (e.key === 'Escape') { dd.style.display = 'none'; }
+}
+
+function bdHighlightItem(items) {
+  items.forEach((el, i) => { el.style.background = i === _bdSearchIdx ? 'rgba(229,62,62,.12)' : ''; });
+  if (items[_bdSearchIdx]) items[_bdSearchIdx].scrollIntoView({ block: 'nearest' });
+}
+
+function bdSelectMinerByIdx(idx) {
+  if (!_wiMiners[idx]) return;
+  _bdSelectedMiner = _wiMiners[idx];
+  const searchEl = document.getElementById('bd-minerSearch');
+  if (searchEl) searchEl.value = _bdSelectedMiner.name;
+  const dd = document.getElementById('bd-minerDropdown');
+  if (dd) dd.style.display = 'none';
+  const chip = document.getElementById('bd-selectedChip');
+  const chipName = document.getElementById('bd-selectedChipName');
+  if (chip && chipName) { chipName.textContent = _bdSelectedMiner.name; chip.style.display = 'flex'; }
+  const s = _bdSelectedMiner.minerStats || {};
+  const mhs = s.hashrateMhps || s.hashrateRaw || 0;
+  const watts = s.powerWatts || s.powerRaw || 0;
+  const eff = (mhs > 0 && watts > 0) ? (mhs / watts * 1000).toFixed(2) + ' KH/W' : 'Free power';
+  const statsEl = document.getElementById('bd-minerStats');
+  if (statsEl) {
+    document.getElementById('bd-mhsDisplay').textContent = s.hashrateFormatted || (mhs + ' MH/s') || '—';
+    document.getElementById('bd-wattsDisplay').textContent = watts ? (s.powerFormatted || watts + 'W') : '0W (free)';
+    document.getElementById('bd-effDisplay').textContent = eff;
+    statsEl.style.display = 'block';
+  }
+  if (_bdSelectedMiner.imageUrl) {
+    document.getElementById('bd-minerImgEl').src = _bdSelectedMiner.imageUrl;
+    document.getElementById('bd-minerImg').style.display = 'block';
+  } else {
+    document.getElementById('bd-minerImg').style.display = 'none';
+  }
+  const sForSlot = _bdSelectedMiner.minerStats || {};
+  const wattsForSlot = sForSlot.powerWatts || sForSlot.powerRaw || 0;
+  const priceForSlot = parseFloat(document.getElementById('bd-price')?.value) || 0;
+  if (!_bdSlots.length || (_bdSlots[0] && _bdSlots[0].source === 'buy')) {
+    _bdSlots[0] = { miner: _bdSelectedMiner, source: 'buy', price: priceForSlot, watts: wattsForSlot };
+  }
+  bdRenderSlotTable();
+  bdCalc();
+}
+
+function bdClearSearch() {
+  const el = document.getElementById('bd-minerSearch');
+  if (el) { el.value = ''; el.focus(); }
+  _bdSearchQuery = '';
+  bdRenderDropdown();
+  document.getElementById('bd-minerDropdown').style.display = 'block';
+}
+
+function bdClearMinerSelection() {
+  _bdSelectedMiner = null;
+  if (_bdSlots.length > 0 && _bdSlots[0]?.source === 'buy') _bdSlots.shift();
+  const chip = document.getElementById('bd-selectedChip');
+  const searchEl = document.getElementById('bd-minerSearch');
+  if (chip) chip.style.display = 'none';
+  if (searchEl) { searchEl.value = ''; searchEl.focus(); }
+  document.getElementById('bd-minerStats').style.display = 'none';
+  document.getElementById('bd-minerImg').style.display = 'none';
+  document.getElementById('bd-minerDropdown').style.display = 'block';
+  _bdSearchQuery = '';
+  bdRenderDropdown();
+  bdRenderSlotTable();
+  bdCalc();
+}
+
+function bdPriceChanged() {
+  const price = parseFloat(document.getElementById('bd-price')?.value) || 0;
+  if (_bdSlots.length > 0 && _bdSlots[0]?.source === 'buy') {
+    _bdSlots[0].price = price;
+    bdRenderSlotTable();
+  }
+  bdCalc();
+}
+
+function bdRefreshMiners() {
+  wiLoadMiners(); // reuse shared miner load
+  bdRenderDropdown();
+}
+
+// Slot add/remove
+function bdAddSlotMiner() {
+  const fac = bdGetFacility();
+  const maxWatts = fac.watts || 2000;
+  const totalSlots = fac.slots || 9;
+  if (!_bdSlotSelectedMiner) { notif('Select a miner first', 'warn'); return; }
+  if (_bdSlots.length >= totalSlots) { notif(`All ${totalSlots} slots filled`, 'warn'); return; }
+  const s = _bdSlotSelectedMiner.minerStats || {};
+  const watts = s.powerWatts || s.powerRaw || 0;
+  const usedWatts = _bdSlots.reduce((acc, sl) => acc + (sl.watts || 0), 0);
+  if (watts > 0 && usedWatts + watts > maxWatts) {
+    notif(`⚡ Power overload: only ${maxWatts - usedWatts}W free`, 'warn'); return;
+  }
+  const source = document.getElementById('bd-slotSource')?.value || 'buy';
+  const price = parseFloat(document.getElementById('bd-slotMinerPrice')?.value) || 0;
+  _bdSlots.push({ miner: _bdSlotSelectedMiner, source, price, watts });
+  const inp = document.getElementById('bd-slotMinerSearch');
+  if (inp) inp.value = '';
+  document.getElementById('bd-slotDropdown').style.display = 'none';
+  _bdSlotSelectedMiner = null;
+  document.getElementById('bd-slotMinerPrice').value = '';
+  bdRenderSlotTable();
+  bdCalc();
+}
+
+function bdSlotFilterMiners(q) {
+  const list = document.getElementById('bd-slotDropdownList');
+  if (!list) return;
+  const filtered = q ? _wiMiners.filter(m => m.name?.toLowerCase().includes(q.toLowerCase())) : _wiMiners.slice(0, 20);
+  list.innerHTML = filtered.map(m => {
+    const s = m.minerStats || {};
+    const mhs = s.hashrateMhps || s.hashrateRaw || 0;
+    const watts = s.powerWatts || s.powerRaw || 0;
+    const imgTag = m.imageUrl ? `<img src="${m.imageUrl}" style="width:22px;height:22px;object-fit:cover;border-radius:3px" onerror="this.style.display='none'" alt="">` : '<span>⛏</span>';
+    return `<div onclick="bdSlotSelectMiner(${_wiMiners.indexOf(m)})"
+      style="display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;border-bottom:1px solid var(--bor);font-size:var(--fs-xs)"
+      onmouseover="this.style.background='rgba(229,62,62,.08)'" onmouseout="this.style.background=''">
+      ${imgTag}
+      <div>
+        <div style="font-weight:600;color:var(--txt)">${m.name}</div>
+        <div style="font-family:'Share Tech Mono',monospace;color:var(--mut);font-size:9px">${mhs}MH/s · ${watts||0}W</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('bd-slotDropdown').style.display = 'block';
+}
+
+function bdSlotSelectMiner(idx) {
+  _bdSlotSelectedMiner = _wiMiners[idx];
+  const inp = document.getElementById('bd-slotMinerSearch');
+  if (inp) inp.value = _bdSlotSelectedMiner.name;
+  document.getElementById('bd-slotDropdown').style.display = 'none';
+  const s = _bdSlotSelectedMiner.minerStats || {};
+  const price = s.priceHcash || s.price || '';
+  const priceEl = document.getElementById('bd-slotMinerPrice');
+  if (priceEl && price) priceEl.value = price;
+}
+
+function bdRemoveSlot(idx) {
+  _bdSlots.splice(idx, 1);
+  bdRenderSlotTable();
+  bdCalc();
+}
+
+function bdRenderSlotTable() {
+  const fac = bdGetFacility();
+  const totalSlots = fac.slots || 9;
+  const maxWatts = fac.watts || 2000;
+  const grid = document.getElementById('bd-slotGrid');
+  const summary = document.getElementById('bd-slotSummary');
+  const powerBar = document.getElementById('bd-slotPowerBar');
+  const wrap = document.getElementById('bd-slotTableWrap');
+  if (!grid) return;
+  while (_bdSlots.length > totalSlots) _bdSlots.pop();
+  const usedWatts = _bdSlots.reduce((s, sl) => s + (sl.watts || 0), 0);
+  const powerPct = maxWatts > 0 ? Math.min(100, (usedWatts / maxWatts) * 100) : 0;
+  const powerFull = usedWatts >= maxWatts;
+  if (wrap) wrap.style.display = _bdSlots.length > 0 ? '' : 'none';
+  if (powerBar) {
+    powerBar.style.width = powerPct + '%';
+    powerBar.style.background = powerPct >= 100 ? 'linear-gradient(90deg,var(--red),var(--red2))' : powerPct > 75 ? 'linear-gradient(90deg,var(--gold),#fbbf24)' : 'linear-gradient(90deg,var(--grn),#4ade80)';
+  }
+  if (summary) {
+    const freeSlots = totalSlots - _bdSlots.length;
+    summary.innerHTML = `<span style="color:${powerPct>=100?'var(--red)':powerPct>75?'var(--gold)':'var(--grn)'}"> ${_bdSlots.length}/${totalSlots} slots</span> <span style="color:var(--mut)">·</span> <span>${usedWatts}W / ${maxWatts}W</span>`;
+  }
+  const dimY = fac.dims ? parseInt(fac.dims.split('×')[1]) : Math.ceil(Math.sqrt(totalSlots));
+  grid.style.gridTemplateColumns = `repeat(${dimY}, 1fr)`;
+  grid.style.gap = '6px';
+  let html = '';
+  for (let i = 0; i < totalSlots; i++) {
+    const sl = _bdSlots[i];
+    if (sl) {
+      const m = sl.miner;
+      const s = m.minerStats || {};
+      const mhs = s.hashrateMhps || s.hashrateRaw || 0;
+      const mhsStr = mhs >= 1000 ? (mhs/1000).toFixed(1)+'GH/s' : mhs ? mhs+'MH/s' : '?';
+      const imgTag = m.imageUrl ? `<img src="${m.imageUrl}" style="width:28px;height:28px;object-fit:cover;border-radius:4px;flex-shrink:0" onerror="this.style.display='none'" alt="">` : `<div style="width:28px;height:28px;border-radius:4px;background:rgba(229,62,62,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">⛏</div>`;
+      const isOwned = sl.source === 'own';
+      const priceLbl = isOwned ? 'OWNED' : sl.price > 0 ? sl.price.toLocaleString()+' hC' : 'BUY';
+      const badgeStyle = isOwned ? 'background:rgba(74,222,128,.12);color:var(--grn);border:1px solid rgba(74,222,128,.3)' : 'background:rgba(229,62,62,.1);color:var(--red2);border:1px solid rgba(229,62,62,.25)';
+      html += `<div style="background:var(--card);border:1px solid rgba(229,62,62,.25);border-radius:8px;padding:6px 7px;position:relative">
+        <button onclick="bdRemoveSlot(${i})" style="position:absolute;top:4px;right:5px;background:rgba(229,62,62,.1);border:1px solid rgba(229,62,62,.25);border-radius:4px;color:var(--red);cursor:pointer;font-size:9px;padding:1px 5px">✕</button>
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;padding-right:18px">${imgTag}<span style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:9px;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0">${m.name}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--grn)">${mhsStr}</span><span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gold)">${sl.watts||0}W</span></div>
+        <div style="margin-top:4px"><span style="font-size:8px;border-radius:3px;padding:1px 5px;${badgeStyle}">${priceLbl}</span></div>
+      </div>`;
+    } else {
+      html += `<div style="background:var(--sur);border:1px dashed var(--bor);border-radius:8px;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;opacity:${powerFull?'.4':'1'}">
+        <div style="font-size:1.1rem;opacity:.3">⛏</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--mut)">SLOT ${i+1}</div>
+      </div>`;
+    }
+  }
+  grid.innerHTML = html;
+}
+
+// ── Main calculation for Build page ──
+function bdCalc() {
+  const priceRaw  = parseFloat(document.getElementById('bd-price')?.value) || 0;
+  const currency  = document.getElementById('bd-priceCurrency')?.value || 'hcash';
+  const customMhs = parseFloat(document.getElementById('bd-customMhs')?.value) || 0;
+  const hcashUsd  = priceData?.price || 0;
+  const avaxUsd   = priceData?.avaxPrice || 0;
+
+  const selEl    = document.getElementById('bd-facilityLevel');
+  const elecRate = selEl ? parseFloat(selEl.options[selEl.selectedIndex]?.value) || 5.77 : 5.77;
+
+  let minerUsd = 0;
+  if (_bdSlots.length > 0) {
+    minerUsd = _bdSlots.filter(sl => sl.source === 'buy').reduce((s, sl) => {
+      return s + (sl.price || 0) * (hcashUsd || 0);
+    }, 0);
+  }
+  if (minerUsd === 0 && priceRaw > 0) {
+    minerUsd = currency === 'hcash' ? priceRaw * hcashUsd : priceRaw * avaxUsd;
+  }
+
+  const priceUsdEl = document.getElementById('bd-priceUsdDisplay');
+  if (priceUsdEl) priceUsdEl.textContent = minerUsd > 0 ? `≈ $${minerUsd.toFixed(2)} USD total (${_bdSlots.length} miner${_bdSlots.length!==1?'s':''})` : '≈ $— USD';
+
+  const s = _bdSelectedMiner?.minerStats || {};
+  const mhs   = customMhs > 0 ? customMhs : (s.hashrateMhps || s.hashrateRaw || 0);
+  const watts = s.powerWatts || s.powerRaw || 0;
+
+  const slotTotalMhs   = _bdSlots.reduce((sum, sl) => { const sm = sl.miner?.minerStats || {}; return sum + (sm.hashrateMhps || sm.hashrateRaw || 0); }, 0);
+  const slotTotalWatts = _bdSlots.reduce((sum, sl) => sum + (sl.watts || 0), 0);
+
+  const totalMhs   = slotTotalMhs   > 0 ? slotTotalMhs   : mhs;
+  const totalWatts = slotTotalWatts > 0 ? slotTotalWatts : watts;
+  const totalCostHcash = _bdSlots.filter(sl => sl.source === 'buy').reduce((s, sl) => s + (sl.price || 0), 0)
+    || (currency === 'hcash' ? priceRaw : (priceRaw * avaxUsd / Math.max(hcashUsd, 0.000001)));
+
+  const hasSlotMiners = _bdSlots.length > 0 && _bdSlots.some(sl => (sl.miner?.minerStats?.hashrateMhps || sl.miner?.minerStats?.hashrateRaw || 0) > 0);
+  const hasInputs = (priceRaw > 0 && _bdSelectedMiner && mhs > 0) || hasSlotMiners;
+  document.getElementById('bd-resultsSection').style.display = hasInputs ? '' : 'none';
+  document.getElementById('bd-emptyState').style.display = hasInputs ? 'none' : '';
+  if (!hasInputs) {
+    // Reset all budget display fields to placeholder
+    const dash = '—';
+    ['bd-lpTotalUsd','bd-lpAvaxAmt','bd-lpHcashAmt','bd-lpTokens','bd-lpPoolShare',
+     'bd-lpMult','bd-lpPoints','bd-lpFees','bd-lpValue','bd-priceUsdDisplay'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.textContent = dash;
+    });
+    return;
+  }
+
+  if (!priceData?.price || !priceData?.avaxPrice) { wiEnsureLiveData(); return; }
+
+  const liveNetHash   = _wiNetHashMhs    || 199143;
+  const dailyEmission = _wiDailyEmission || 106825;
+
+  // PATH A: Miner
+  const minerShare    = totalMhs / liveNetHash;
+  const grossHcashDay = minerShare * dailyEmission;
+  const elecHcashDay  = totalWatts > 0 ? (totalWatts / 1000) * 24 * elecRate : 0;
+  const netHcashDay   = grossHcashDay - elecHcashDay;
+  const netUsdDay     = netHcashDay * hcashUsd;
+  const net30         = netHcashDay * 30;
+  const net365        = netHcashDay * 365;
+  const breakevenDays = netHcashDay > 0 ? Math.ceil(totalCostHcash / netHcashDay) : null;
+  const minerUsd30    = net30  * hcashUsd;
+  const minerUsd365   = net365 * hcashUsd;
+
+  // PATH B: LP
+  const halfUsd   = minerUsd / 2;
+  const avaxSide  = avaxUsd  > 0 ? halfUsd / avaxUsd  : 0;
+  const hcashSide = hcashUsd > 0 ? halfUsd / hcashUsd : 0;
+  const poolTvlUsd = poolData?.avaxReserve ? poolData.avaxReserve * (priceData.avaxPrice||0) * 2 : (priceData.liq || 0);
+  const vol24h     = priceData.vol24 || 0;
+  const lpTokenEst = poolData?.lpSupply > 0 && poolTvlUsd > 0 ? (minerUsd / poolTvlUsd) * poolData.lpSupply : 0;
+  const lpPoolSharePct = poolData?.lpSupply > 0 && lpTokenEst > 0 ? (lpTokenEst / poolData.lpSupply) * 100 : 0;
+  const myFeeUsdDay   = vol24h * 0.003 * (lpPoolSharePct / 100);
+  const myFeeHcashDay = hcashUsd > 0 ? myFeeUsdDay / hcashUsd : 0;
+  const mult = lockMultiplier(_bdLockDaysVal);
+  const lpPtsTotal = lpTokenEst > 0 ? calcMoatPoints(lpTokenEst, _bdLockDaysVal, poolData?.lpSupply || LIL_TOTAL_SUPPLY) : 0;
+  const totalMoatPts = moatPoints.reduce((s, p) => s + Number(p.points || 0), 0);
+  const lpPtsSharePct = totalMoatPts > 0 && lpPtsTotal > 0 ? (lpPtsTotal / (totalMoatPts + lpPtsTotal)) * 100 : 0;
+  const lpFee30 = myFeeHcashDay * 30; const lpFeeUsd30 = myFeeUsdDay * 30;
+  const lpFee365 = myFeeHcashDay * 365; const lpFeeUsd365 = myFeeUsdDay * 365;
+
+  // UPDATE UI
+  const fmtH = n => n.toFixed(2);
+  const fmtU = n => '$' + n.toFixed(2);
+  const fmtPbd = n => { if(n>=1e6)return(n/1e6).toFixed(2)+'M'; if(n>=1e3)return(n/1e3).toFixed(1)+'K'; return Math.round(n).toLocaleString(); };
+  const $ = id => document.getElementById(id);
+
+  $('bd-mGrossDay').textContent     = fmtH(grossHcashDay)+' hCASH';
+  $('bd-mElecDay').textContent      = totalWatts > 0 ? '-'+fmtH(elecHcashDay)+' hCASH' : '0 (free power)';
+  $('bd-mNetDay').textContent       = fmtH(netHcashDay)+' hCASH';
+  $('bd-mNetUsdDay').textContent    = fmtU(netUsdDay);
+  $('bd-mNet30').textContent        = fmtH(net30)+' hCASH';
+  $('bd-mNetUsd30').textContent     = fmtU(minerUsd30);
+  $('bd-mNet365').textContent       = fmtH(net365)+' hCASH';
+  $('bd-mNetUsd365').textContent    = fmtU(minerUsd365);
+  $('bd-mBreakeven').textContent    = breakevenDays ? `~${breakevenDays} days` : 'Never';
+  $('bd-mShare').textContent        = (minerShare * 100).toFixed(4)+'%';
+  $('bd-lpTotalUsd').textContent    = fmtU(minerUsd);
+  $('bd-lpAvaxAmt').textContent     = avaxSide.toFixed(4)+' AVAX';
+  $('bd-lpHcashAmt').textContent    = fmtPbd(hcashSide)+' hCASH';
+  $('bd-lpTokens').textContent      = lpTokenEst > 0 ? lpTokenEst.toFixed(8)+' LP' : '—';
+  $('bd-lpPoolShare').textContent   = lpPoolSharePct > 0 ? lpPoolSharePct.toFixed(4)+'%' : '—';
+  $('bd-lpMult').textContent        = mult+'×';
+  $('bd-lpPoints').textContent      = lpPtsTotal > 0 ? fmtPbd(lpPtsTotal)+' pts total' : '—';
+  $('bd-lpFees').textContent        = myFeeUsdDay > 0 ? fmtU(myFeeUsdDay)+'/day' : '—';
+  $('bd-lpFeeDay').textContent      = fmtH(myFeeHcashDay)+' hCASH';
+  $('bd-lpValue').textContent       = fmtU(minerUsd)+' (initial)';
+  $('bd-lpPtsDay').textContent      = lpPtsTotal > 0 ? `${fmtPbd(lpPtsTotal)} pts (${lpPtsSharePct.toFixed(3)}% of moat)` : '—';
+  $('bd-lpMultDisplay').textContent = _bdLockDaysVal==='stake' ? `${mult}× (stake, no lock)` : `${mult}× (${_bdLockDaysVal}d lock)`;
+  $('bd-lpFee30').textContent       = fmtH(lpFee30)+' hCASH';
+  $('bd-lpFeeUsd30').textContent    = fmtU(lpFeeUsd30);
+  $('bd-lpFee365').textContent      = fmtH(lpFee365)+' hCASH';
+  $('bd-lpFeeUsd365').textContent   = fmtU(lpFeeUsd365);
+  $('bd-lpCapital').textContent     = fmtU(minerUsd)+' (LP redeemable)';
+  $('bd-assumHcash').textContent    = hcashUsd > 0 ? '$'+hcashUsd.toFixed(6) : 'fetching…';
+  $('bd-assumAvax').textContent     = avaxUsd  > 0 ? '$'+avaxUsd.toFixed(2)  : 'fetching…';
+  $('bd-assumNetHash').textContent  = (liveNetHash/1000).toFixed(2)+' GH/s';
+  $('bd-assumLiq').textContent      = poolTvlUsd > 0 ? '$'+(poolTvlUsd/1000).toFixed(1)+'K' : '—';
+  $('bd-assumVol').textContent      = vol24h > 0 ? '$'+(vol24h/1000).toFixed(1)+'K' : '—';
+  $('bd-assumElec').textContent     = elecRate+' hCASH/kWh';
+  $('bd-assumEmission').textContent = fmtPbd(dailyEmission)+' hCASH';
+  const halvEl = $('bd-assumHalving');
+  if (halvEl) { const blk = window._wiBlocksToHalving; halvEl.textContent = blk > 0 ? blk.toLocaleString()+' blocks (~'+(blk/85460).toFixed(1)+'d)' : '—'; }
+
+  // Risk tags
+  const mRiskEl = $('bd-mRisk'); const lpRiskEl = $('bd-lpRisk');
+  const risks = [];
+  if (netHcashDay <= 0) risks.push('⛔ Miner is net-negative at this electricity rate');
+  if (breakevenDays && breakevenDays > 730) risks.push('⚠️ Long break-even (>2 years)');
+  if (watts > 1000) risks.push('⚡ High power draw — consider Lv5 facility');
+  mRiskEl.innerHTML = risks.length ? `<span style="color:var(--red)">${risks.join('<br>')}</span>` : `<span style="color:var(--grn)">✅ Miner looks positive at current rates</span>`;
+  mRiskEl.style.background = risks.length ? 'rgba(229,62,62,.05)' : 'rgba(74,222,128,.05)';
+  mRiskEl.style.border = risks.length ? '1px solid rgba(229,62,62,.15)' : '1px solid rgba(74,222,128,.15)';
+  const lpRisks = [];
+  if (vol24h < 5000) lpRisks.push('⚠️ Low pool volume — fee income will be minimal');
+  lpRiskEl.innerHTML = lpRisks.length ? `<span style="color:var(--gold)">${lpRisks.join('<br>')}</span>` : `<span style="color:var(--grn)">✅ LP position looks healthy</span>`;
+  lpRiskEl.style.background = lpRisks.length ? 'rgba(212,168,67,.05)' : 'rgba(74,222,128,.05)';
+  lpRiskEl.style.border = lpRisks.length ? '1px solid rgba(212,168,67,.15)' : '1px solid rgba(74,222,128,.15)';
+
+  // Winner banner
+  const banner = $('bd-winnerBanner'); const icon=$('bd-winnerIcon'); const title=$('bd-winnerTitle'); const sub=$('bd-winnerSub'); const badge=$('bd-winnerBadge');
+  const minerAnnualUsd = minerUsd365; const lpAnnualUsd = lpFeeUsd365;
+  if (netHcashDay <= 0) {
+    banner.style.cssText='margin-bottom:1rem;padding:1rem 1.2rem;border-radius:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(229,62,62,.07);border:1px solid rgba(229,62,62,.3)';
+    icon.textContent='⛔'; title.textContent='Miner unprofitable at this electricity rate'; title.style.color='var(--red)';
+    sub.textContent='Electricity cost exceeds earnings. LP is the better path.'; sub.style.color='var(--dim)';
+    badge.textContent='💧 LP WINS'; badge.style.cssText="font-family:'Share Tech Mono',monospace;font-size:var(--fs-sm);padding:.5rem 1rem;border-radius:8px;font-weight:700;flex-shrink:0;background:rgba(212,168,67,.12);color:var(--gold);border:1px solid var(--gold)";
+  } else if (minerAnnualUsd > lpAnnualUsd * 1.2) {
+    banner.style.cssText='margin-bottom:1rem;padding:1rem 1.2rem;border-radius:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(229,62,62,.07);border:1px solid rgba(229,62,62,.3)';
+    icon.textContent='⛏'; title.textContent='Miner earns more (pure hCASH income)'; title.style.color='var(--red)';
+    sub.innerHTML=`Miner nets <strong style="color:var(--red)">${fmtU(minerAnnualUsd)}/yr</strong> vs LP fees of <strong style="color:var(--gold)">${fmtU(lpAnnualUsd)}/yr</strong>. LP preserves capital.`; sub.style.color='var(--dim)';
+    badge.textContent='⛏ MINER EARNS MORE'; badge.style.cssText="font-family:'Share Tech Mono',monospace;font-size:var(--fs-sm);padding:.5rem 1rem;border-radius:8px;font-weight:700;flex-shrink:0;background:rgba(229,62,62,.12);color:var(--red);border:1px solid var(--red)";
+  } else if (lpAnnualUsd > minerAnnualUsd * 1.2) {
+    banner.style.cssText='margin-bottom:1rem;padding:1rem 1.2rem;border-radius:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(212,168,67,.07);border:1px solid rgba(212,168,67,.3)';
+    icon.textContent='💧'; title.textContent='LP Moat generates more + capital stays liquid'; title.style.color='var(--gold)';
+    sub.innerHTML=`LP yields <strong style="color:var(--gold)">${fmtU(lpAnnualUsd)}/yr</strong> AND ${fmtU(minerUsd)} capital stays redeemable.`; sub.style.color='var(--dim)';
+    badge.textContent='💧 LP WINS'; badge.style.cssText="font-family:'Share Tech Mono',monospace;font-size:var(--fs-sm);padding:.5rem 1rem;border-radius:8px;font-weight:700;flex-shrink:0;background:rgba(212,168,67,.12);color:var(--gold);border:1px solid var(--gold)";
+  } else {
+    banner.style.cssText='margin-bottom:1rem;padding:1rem 1.2rem;border-radius:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(129,140,248,.07);border:1px solid rgba(129,140,248,.3)';
+    icon.textContent='⚖️'; title.textContent='Too close to call — depends on your goals'; title.style.color='var(--pur)';
+    sub.innerHTML=`Miner: <strong style="color:var(--red)">${fmtU(minerAnnualUsd)}/yr</strong> · LP: <strong style="color:var(--gold)">${fmtU(lpAnnualUsd)}/yr</strong> + capital preserved.`; sub.style.color='var(--dim)';
+    badge.textContent='⚖️ IT DEPENDS'; badge.style.cssText="font-family:'Share Tech Mono',monospace;font-size:var(--fs-sm);padding:.5rem 1rem;border-radius:8px;font-weight:700;flex-shrink:0;background:rgba(129,140,248,.12);color:var(--pur);border:1px solid var(--pur)";
+  }
+
+  // Signals
+  const sigEl = $('bd-signals'); const sigs = [];
+  if (breakevenDays && breakevenDays < 90) sigs.push({icon:'🚀',col:'var(--grn)',title:'Fast break-even',desc:`Recovers cost in ~${breakevenDays} days.`});
+  if (breakevenDays && breakevenDays > 365) sigs.push({icon:'⏳',col:'var(--gold)',title:'Slow break-even',desc:`${breakevenDays} days — price drop risk is significant.`});
+  if (lpPoolSharePct > 0.1) sigs.push({icon:'💧',col:'var(--gold)',title:'Meaningful LP share',desc:`${lpPoolSharePct.toFixed(3)}% pool share generates real daily fees.`});
+  if (mult >= 4) sigs.push({icon:'🔒',col:'var(--gold)',title:'Strong lock multiplier',desc:`${mult}× points on this lock duration.`});
+  if (watts === 0) sigs.push({icon:'⚡',col:'var(--grn)',title:'Zero power cost',desc:'Pure profit regardless of facility level.'});
+  sigs.push({icon:'🏰',col:'var(--pur)',title:'LP earns Moat Points',desc:`LP gives ${mult}× Moat points — miner path earns 0 Moat points unless you also LP.`});
+  sigEl.innerHTML = sigs.map(s => `<div class="sig" style="border-left:2px solid ${s.col};margin-bottom:.45rem"><div class="sig-icon" style="font-size:1rem">${s.icon}</div><div class="sig-body"><div class="sig-title" style="color:${s.col};font-size:var(--fs-sm)">${s.title}</div><div class="sig-desc" style="font-size:var(--fs-xs)">${s.desc}</div></div></div>`).join('');
+
+  // Verdict
+  const verdictEl = $('bd-verdict');
+  const beDays = breakevenDays || 999;
+  verdictEl.innerHTML = netHcashDay <= 0
+    ? `<div style="color:var(--red);font-family:'Share Tech Mono',monospace;font-size:var(--fs-sm);line-height:1.7">⛔ <strong>Do NOT buy at this price.</strong> Electricity exceeds earnings at ${elecRate} hCASH/kWh.<br><br>✅ <strong>LP is the clear choice.</strong> Put ${fmtU(minerUsd)} into AVAX/hCASH LP instead.</div>`
+    : `<div style="font-size:var(--fs-sm);line-height:1.75;color:var(--txt)"><div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:.85rem"><div style="background:rgba(229,62,62,.05);border:1px solid rgba(229,62,62,.15);border-radius:8px;padding:.75rem"><div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--red);margin-bottom:5px;text-transform:uppercase">⛏ Buy the Miner if…</div><div style="font-size:var(--fs-xs);color:var(--dim);line-height:1.65">• You want direct hCASH income<br>• You expect hCASH to rise<br>• ~${beDays}d break-even feels acceptable<br>• You don't need capital liquid</div></div><div style="background:rgba(212,168,67,.05);border:1px solid rgba(212,168,67,.15);border-radius:8px;padding:.75rem"><div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--gold);margin-bottom:5px;text-transform:uppercase">💧 Choose LP if…</div><div style="font-size:var(--fs-xs);color:var(--dim);line-height:1.65">• You want capital flexibility<br>• You want Moat Points + Fort Score<br>• Pool volume is healthy (${vol24h > 5000 ? '✅ yes' : '⚠️ low now'})<br>• You believe in the ecosystem</div></div></div><div style="background:rgba(129,140,248,.06);border:1px solid rgba(129,140,248,.18);border-radius:8px;padding:.75rem;font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--pur);line-height:1.65">💡 <strong>Best of both worlds:</strong> Buy the miner AND use a smaller LP position for Moat Points + swap fees.</div></div>`;
+
+  // Chart
+  bdDrawChart(netUsdDay, myFeeUsdDay, minerUsd, breakevenDays);
+}
+
+function bdDrawChart(netUsdDay, lpFeeUsdDay, cost, breakevenDays) {
+  const ctx = document.getElementById('bd-chart');
+  if (!ctx) return;
+  if (_bdChart) { _bdChart.destroy(); _bdChart = null; }
+  const days = 365; const labels = []; const minerData = []; const lpData = [];
+  for (let d = 0; d <= days; d += 5) {
+    labels.push(d === 0 ? 'Day 0' : d === 365 ? '1yr' : d % 30 === 0 ? `${d/30}mo` : '');
+    minerData.push(parseFloat((netUsdDay * d).toFixed(2)));
+    lpData.push(parseFloat((lpFeeUsdDay * d).toFixed(2)));
+  }
+  const isLight = document.documentElement.classList.contains('light');
+  const gridCol = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.05)';
+  const textCol = isLight ? '#666' : '#5a5b75';
+  _bdChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [
+      { label:'⛏ Miner net USD', data:minerData, borderColor:'#e53e3e', backgroundColor:'rgba(229,62,62,0.06)', borderWidth:2, fill:true, tension:0.35, pointRadius:0 },
+      { label:'💧 LP swap fees USD', data:lpData, borderColor:'#d4a843', backgroundColor:'rgba(212,168,67,0.06)', borderWidth:2, fill:true, tension:0.35, pointRadius:0 },
+    ]},
+    options: { responsive:true, maintainAspectRatio:false, interaction:{intersect:false,mode:'index'}, plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx => `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}` } } }, scales:{ x:{ grid:{color:gridCol}, ticks:{color:textCol,maxTicksLimit:13,font:{size:10}} }, y:{ grid:{color:gridCol}, ticks:{color:textCol,callback:v=>'$'+v.toFixed(0),font:{size:10}} } } }
+  });
+}
+
+// ── Init Build page when tab activated ──
+function bdClearAll() {
+  // Reset all slot state
+  _bdSlots = [];
+  _bdSlotSelectedMiner = null;
+  // Reset slot add inputs
+  const slotSearch = document.getElementById('bd-slotMinerSearch');
+  const slotPrice  = document.getElementById('bd-slotMinerPrice');
+  const slotSource = document.getElementById('bd-slotSource');
+  if (slotSearch) slotSearch.value = '';
+  if (slotPrice)  slotPrice.value  = '';
+  if (slotSource) slotSource.value = 'buy';
+  const slotDd = document.getElementById('bd-slotDropdown');
+  if (slotDd) slotDd.style.display = 'none';
+  // Reset price input
+  const priceEl = document.getElementById('bd-price');
+  if (priceEl) priceEl.value = '';
+  const priceUsd = document.getElementById('bd-priceUsdDisplay');
+  if (priceUsd) priceUsd.textContent = '≈ $— USD';
+  // Reset override hashrate
+  const mhsEl = document.getElementById('bd-customMhs');
+  if (mhsEl) mhsEl.value = '';
+  // Hide results + empty state
+  const results = document.getElementById('bd-resultsSection');
+  const empty   = document.getElementById('bd-emptyState');
+  if (results) results.style.display = 'none';
+  if (empty)   empty.style.display   = '';
+  // Reset LP path B display
+  const lpFields = ['bd-lpTotalUsd','bd-lpAvaxAmt','bd-lpHcashAmt','bd-lpTokens','bd-lpPoolShare',
+    'bd-lpMult','bd-lpPoints','bd-lpFees','bd-priceUsdDisplay'];
+  lpFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '—';
+  });
+  // Re-render empty slot grid
+  bdRenderSlotTable();
+  notif('Facility cleared', 'info', 2000);
+}
+
+function initBuildPage() {
+  bdBuildLockGrid();
+  bdRenderDropdown(); // populate from shared _wiMiners
+  bdRenderSlotTable();
+}
+
+// Close bd dropdowns on outside click
+document.addEventListener('click', function(e) {
+  const dd = document.getElementById('bd-minerDropdown');
+  const search = document.getElementById('bd-minerSearch');
+  if (dd && search && !dd.contains(e.target) && e.target !== search) dd.style.display = 'none';
+  const dd2 = document.getElementById('bd-slotDropdown');
+  const inp2 = document.getElementById('bd-slotMinerSearch');
+  if (dd2 && inp2 && !dd2.contains(e.target) && e.target !== inp2) dd2.style.display = 'none';
+});
+
 </script>
 
 </body>
