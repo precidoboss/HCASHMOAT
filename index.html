@@ -339,13 +339,6 @@ main {
   /* Prevent any child from busting out */
   body > * { max-width: 100vw; overflow-x: hidden; }
   main { overflow-x: hidden; }
-  /* Footer pill — force wrap on small screens */
-  #app-footer-pill, [data-footer-pill] {
-    border-radius: 12px !important;
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    max-width: calc(100vw - 1.7rem) !important;
-  }
 }
 .view.on { display: block; }
 
@@ -2112,19 +2105,6 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
       </div>
       <div class="cbody" style="display:flex;flex-direction:column;gap:.75rem">
 
-        <!-- Price input -->
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">Marketplace Price</div>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-            <input id="bd-price" type="number" class="inp" placeholder="e.g. 2500" style="flex:1;min-width:120px" oninput="bdPriceChanged()" min="1">
-            <select id="bd-priceCurrency" class="inp" style="width:90px;flex-shrink:0" onchange="bdCalc()">
-              <option value="hcash">hCASH</option>
-              <option value="avax">AVAX</option>
-            </select>
-          </div>
-          <div id="bd-priceUsdDisplay" style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-top:4px">≈ $— USD</div>
-        </div>
-
         <!-- Facility level -->
         <div>
           <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">
@@ -2353,17 +2333,17 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
 
 <!-- FOOTER -->
 <div style="position:relative;z-index:1;text-align:center;padding:1rem .85rem 2rem;margin-top:.5rem;border-top:1px solid var(--bor);width:100%;max-width:100%;box-sizing:border-box;overflow:hidden;font-size:clamp(10px,2.5vw,var(--fs-xs))">
-  <div style="display:inline-flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;background:var(--card);border:1px solid var(--bor);border-radius:16px;padding:.55rem 1rem;box-shadow:0 0 24px rgba(229,62,62,.06);max-width:100%;box-sizing:border-box">
-    <img src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/laifumoatsintel.jpg" style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid rgba(229,62,62,.25);flex-shrink:0" onerror="this.style.display='none'">
-    <span class="mono" style="font-size:clamp(.7rem,.85rem,3vw);color:var(--mut)">Built by</span>
-    <a href="https://x.com/precidobos" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:clamp(.75rem,1rem,3.5vw);color:var(--red);text-decoration:none">@precidobos</a>
-    <span style="width:1px;height:14px;background:var(--bor);display:inline-block;flex-shrink:0"></span>
-    <a href="https://x.com/clubhashcash" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:clamp(.75rem,1rem,3.5vw);color:var(--gold);text-decoration:none">@clubhashcash</a>
-    <span style="width:1px;height:14px;background:var(--bor);display:inline-block;flex-shrink:0"></span>
-    <a href="https://moats.app" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:600;font-size:clamp(.7rem,.92rem,3vw);color:var(--gold);text-decoration:none">moats.app</a>
-    <span style="font-size:clamp(.9rem,1.25rem,4vw);flex-shrink:0">🏆</span>
+  <div style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bor);border-radius:99px;padding:.55rem 1.3rem;box-shadow:0 0 24px rgba(229,62,62,.06)">
+    <img src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/laifumoatsintel.jpg" style="width:24px;height:24px;border-radius:50%;object-fit:cover;border:1px solid rgba(229,62,62,.25)" onerror="this.style.display='none'">
+    <span class="mono" style="font-size:.85rem;color:var(--mut)">Built by</span>
+    <a href="https://x.com/precidobos" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:var(--red);text-decoration:none">@precidobos</a>
+    <span style="width:1px;height:14px;background:var(--bor);display:inline-block"></span>
+    <a href="https://x.com/clubhashcash" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:var(--gold);text-decoration:none">@clubhashcash</a>
+    <span style="width:1px;height:14px;background:var(--bor);display:inline-block"></span>
+    <a href="https://moats.app" target="_blank" style="font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.92rem;color:var(--gold);text-decoration:none">moats.app</a>
+    <span style="font-size:1.25rem">🏆</span>
   </div>
-  <div style="margin-top:.55rem;font-family:'Share Tech Mono',monospace;font-size:clamp(.6rem,.76rem,2.8vw);color:var(--mut);padding:0 .5rem;line-height:1.5">
+  <div style="margin-top:.55rem;font-family:'Share Tech Mono',monospace;font-size:.76rem;color:var(--mut)">
     hCASH MOAT INTEL · Not financial advice · Data from moats.app · HashCash API · Pharaoh Exchange
   </div>
 </div>
@@ -8331,9 +8311,8 @@ function bdSelectMinerByIdx(idx) {
   }
   const sForSlot = _bdSelectedMiner.minerStats || {};
   const wattsForSlot = sForSlot.powerWatts || sForSlot.powerRaw || 0;
-  const priceForSlot = parseFloat(document.getElementById('bd-price')?.value) || 0;
   if (!_bdSlots.length || (_bdSlots[0] && _bdSlots[0].source === 'buy')) {
-    _bdSlots[0] = { miner: _bdSelectedMiner, source: 'buy', price: priceForSlot, watts: wattsForSlot };
+    _bdSlots[0] = { miner: _bdSelectedMiner, source: 'buy', price: 0, watts: wattsForSlot };
   }
   bdRenderSlotTable();
   bdCalc();
@@ -8360,15 +8339,6 @@ function bdClearMinerSelection() {
   _bdSearchQuery = '';
   bdRenderDropdown();
   bdRenderSlotTable();
-  bdCalc();
-}
-
-function bdPriceChanged() {
-  const price = parseFloat(document.getElementById('bd-price')?.value) || 0;
-  if (_bdSlots.length > 0 && _bdSlots[0]?.source === 'buy') {
-    _bdSlots[0].price = price;
-    bdRenderSlotTable();
-  }
   bdCalc();
 }
 
@@ -8496,8 +8466,6 @@ function bdRenderSlotTable() {
 
 // ── Main calculation for Build page ──
 function bdCalc() {
-  const priceRaw  = parseFloat(document.getElementById('bd-price')?.value) || 0;
-  const currency  = document.getElementById('bd-priceCurrency')?.value || 'hcash';
   const customMhs = parseFloat(document.getElementById('bd-customMhs')?.value) || 0;
   const hcashUsd  = priceData?.price || 0;
   const avaxUsd   = priceData?.avaxPrice || 0;
@@ -8511,12 +8479,6 @@ function bdCalc() {
       return s + (sl.price || 0) * (hcashUsd || 0);
     }, 0);
   }
-  if (minerUsd === 0 && priceRaw > 0) {
-    minerUsd = currency === 'hcash' ? priceRaw * hcashUsd : priceRaw * avaxUsd;
-  }
-
-  const priceUsdEl = document.getElementById('bd-priceUsdDisplay');
-  if (priceUsdEl) priceUsdEl.textContent = minerUsd > 0 ? `≈ $${minerUsd.toFixed(2)} USD total (${_bdSlots.length} miner${_bdSlots.length!==1?'s':''})` : '≈ $— USD';
 
   const s = _bdSelectedMiner?.minerStats || {};
   const mhs   = customMhs > 0 ? customMhs : (s.hashrateMhps || s.hashrateRaw || 0);
@@ -8527,18 +8489,17 @@ function bdCalc() {
 
   const totalMhs   = slotTotalMhs   > 0 ? slotTotalMhs   : mhs;
   const totalWatts = slotTotalWatts > 0 ? slotTotalWatts : watts;
-  const totalCostHcash = _bdSlots.filter(sl => sl.source === 'buy').reduce((s, sl) => s + (sl.price || 0), 0)
-    || (currency === 'hcash' ? priceRaw : (priceRaw * avaxUsd / Math.max(hcashUsd, 0.000001)));
+  const totalCostHcash = _bdSlots.filter(sl => sl.source === 'buy').reduce((s, sl) => s + (sl.price || 0), 0);
 
   const hasSlotMiners = _bdSlots.length > 0 && _bdSlots.some(sl => (sl.miner?.minerStats?.hashrateMhps || sl.miner?.minerStats?.hashrateRaw || 0) > 0);
-  const hasInputs = (priceRaw > 0 && _bdSelectedMiner && mhs > 0) || hasSlotMiners;
+  const hasInputs = hasSlotMiners || (_bdSelectedMiner && mhs > 0);
   document.getElementById('bd-resultsSection').style.display = hasInputs ? '' : 'none';
   document.getElementById('bd-emptyState').style.display = hasInputs ? 'none' : '';
   if (!hasInputs) {
     // Reset all budget display fields to placeholder
     const dash = '—';
     ['bd-lpTotalUsd','bd-lpAvaxAmt','bd-lpHcashAmt','bd-lpTokens','bd-lpPoolShare',
-     'bd-lpMult','bd-lpPoints','bd-lpFees','bd-lpValue','bd-priceUsdDisplay'].forEach(id => {
+     'bd-lpMult','bd-lpPoints','bd-lpFees','bd-lpValue'].forEach(id => {
       const el = document.getElementById(id); if (el) el.textContent = dash;
     });
     return;
@@ -8719,11 +8680,6 @@ function bdClearAll() {
   if (slotSource) slotSource.value = 'buy';
   const slotDd = document.getElementById('bd-slotDropdown');
   if (slotDd) slotDd.style.display = 'none';
-  // Reset price input
-  const priceEl = document.getElementById('bd-price');
-  if (priceEl) priceEl.value = '';
-  const priceUsd = document.getElementById('bd-priceUsdDisplay');
-  if (priceUsd) priceUsd.textContent = '≈ $— USD';
   // Reset override hashrate
   const mhsEl = document.getElementById('bd-customMhs');
   if (mhsEl) mhsEl.value = '';
@@ -8734,7 +8690,7 @@ function bdClearAll() {
   if (empty)   empty.style.display   = '';
   // Reset LP path B display
   const lpFields = ['bd-lpTotalUsd','bd-lpAvaxAmt','bd-lpHcashAmt','bd-lpTokens','bd-lpPoolShare',
-    'bd-lpMult','bd-lpPoints','bd-lpFees','bd-priceUsdDisplay'];
+    'bd-lpMult','bd-lpPoints','bd-lpFees'];
   lpFields.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = '—';
