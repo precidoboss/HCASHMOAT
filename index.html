@@ -1405,6 +1405,9 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
                 <span class="mono" style="font-size:1.25rem;color:var(--mut)">miner_nft</span>
               </div>
               <div class="cbody">
+                <div id="miner27ImgWrap" style="display:none;margin-bottom:.75rem">
+                  <img id="miner27Img" src="" alt="Miner #27" style="width:100%;max-width:200px;border-radius:10px;border:1px solid rgba(229,62,62,.25);object-fit:cover;display:block">
+                </div>
                 <div class="calc-row"><span class="calc-lbl">Hashrate</span><span class="calc-val cr">100 MH/s</span></div>
                 <div class="calc-row"><span class="calc-lbl">Power</span><span class="calc-val cg">100W</span></div>
                 <div class="calc-row"><span class="calc-lbl">Name</span><span class="calc-val cw">Miner #27</span></div>
@@ -1421,6 +1424,9 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
                 <span class="mono" style="font-size:1.25rem;color:var(--mut)">miner_nft</span>
               </div>
               <div class="cbody">
+                <div id="miner40ImgWrap" style="display:none;margin-bottom:.75rem">
+                  <img id="miner40Img" src="" alt="Miner #40" style="width:100%;max-width:200px;border-radius:10px;border:1px solid rgba(229,62,62,.25);object-fit:cover;display:block">
+                </div>
                 <div class="calc-row"><span class="calc-lbl">Hashrate</span><span class="calc-val cr">150 MH/s</span></div>
                 <div class="calc-row"><span class="calc-lbl">Power</span><span class="calc-val cg">200W</span></div>
                 <div class="calc-row"><span class="calc-lbl">Name</span><span class="calc-val cw">The Grotto Miner</span></div>
@@ -2972,14 +2978,15 @@ async function loadEvents() {
       const meta=txTypeMap[tx.hash];
       let type, wallet;
       if(toLc===MOAT_LC){
-        // LP going INTO moat — stake or lock
+        // LP going INTO moat — stake or lock only
         wallet=fromLc;
-        type=meta?.type==='locked'?'locked':(meta?.type||'staked');
+        type=meta?.type==='locked'?'locked':'staked';
       } else if(fromLc===MOAT_LC){
         // LP going OUT of moat — unstake, exit, eel, or reward claim
         wallet=toLc;
-        // Use the method type from the normal tx; default to 'reward' only if truly no method found
-        type=meta?.type||'reward';
+        // Use method type if known; default to 'unstake' (LP leaving moat = exit action)
+        const outType=meta?.type||'';
+        type=outType==='reward'?'reward':outType==='exit'?'exit':outType==='eel'?'eel':'unstake';
       } else continue;
       const ts=meta?.timestamp||Number(tx.timeStamp||0);
       events.push({eventType:type,wallet,amount:amt,txHash:tx.hash||'',timestamp:ts,blockNumber:tx.blockNumber||meta?.blockNumber,_onchain:true});
@@ -4351,6 +4358,44 @@ async function loadMinerHolders() {
     await Promise.allSettled([
       fetchNFTHolders(m27?.address?ethers.getAddress(m27.address):null,'miner27Holders','miner27Link'),
       fetchNFTHolders(m40?.address?ethers.getAddress(m40.address):null,'miner40Holders','miner40Link'),
+    ]);
+
+    // Fetch NFT images via tokenURI and inject into reward cards
+    async function fetchRewardCardImg(contractAddr, imgId, wrapId) {
+      if (!contractAddr) return;
+      try {
+        const prov = walletProvider || new ethers.JsonRpcProvider(AVAX_RPC);
+        const nft = new ethers.Contract(ethers.getAddress(contractAddr),
+          ['function tokenURI(uint256) view returns (string)'], prov);
+        let uri = '';
+        try { uri = await nft.tokenURI(1); } catch(e) {
+          try { uri = await nft.tokenURI(0); } catch(e2) { return; }
+        }
+        if (!uri) return;
+        let imageUrl = '';
+        if (uri.startsWith('data:application/json;base64,')) {
+          try { const j = JSON.parse(atob(uri.split(',')[1])); imageUrl = j.image || j.image_url || ''; } catch(e) {}
+        } else if (uri.startsWith('data:application/json,')) {
+          try { const j = JSON.parse(decodeURIComponent(uri.split(',')[1])); imageUrl = j.image || j.image_url || ''; } catch(e) {}
+        } else {
+          const fetchUrl = uri.startsWith('ipfs://') ? 'https://ipfs.io/ipfs/' + uri.slice(7) : uri;
+          const meta = await fetch(fetchUrl).then(r => r.json()).catch(() => null);
+          if (meta) imageUrl = meta.image || meta.image_url || meta.imageUrl || '';
+        }
+        if (imageUrl?.startsWith('ipfs://')) imageUrl = 'https://ipfs.io/ipfs/' + imageUrl.slice(7);
+        if (!imageUrl) return;
+        const imgEl = document.getElementById(imgId);
+        const wrapEl = document.getElementById(wrapId);
+        if (imgEl && wrapEl) {
+          imgEl.src = imageUrl;
+          imgEl.onerror = () => { wrapEl.style.display = 'none'; };
+          wrapEl.style.display = '';
+        }
+      } catch(e) { console.warn('fetchRewardCardImg:', e.message); }
+    }
+    await Promise.allSettled([
+      fetchRewardCardImg(m27?.address, 'miner27Img', 'miner27ImgWrap'),
+      fetchRewardCardImg(m40?.address, 'miner40Img', 'miner40ImgWrap'),
     ]);
   }catch(e){
     console.warn('minerHolders:',e.message);
@@ -8479,7 +8524,6 @@ function bdCalc() {
       return s + (sl.price || 0) * (hcashUsd || 0);
     }, 0);
   }
-
   const s = _bdSelectedMiner?.minerStats || {};
   const mhs   = customMhs > 0 ? customMhs : (s.hashrateMhps || s.hashrateRaw || 0);
   const watts = s.powerWatts || s.powerRaw || 0;
@@ -8680,6 +8724,7 @@ function bdClearAll() {
   if (slotSource) slotSource.value = 'buy';
   const slotDd = document.getElementById('bd-slotDropdown');
   if (slotDd) slotDd.style.display = 'none';
+  // Reset price input
   // Reset override hashrate
   const mhsEl = document.getElementById('bd-customMhs');
   if (mhsEl) mhsEl.value = '';
