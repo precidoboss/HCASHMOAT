@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta name="theme-color" content="#0a0a0f">
 <title>hCASH Moat — Liquidity Intelligence</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/precidoboss/HCASHMOAT/main/HCASH%20MOAT%20APP%20LOGO.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/precidoboss/HCASHMOAT/main/HCASH%20MOAT%20APP%20LOGO.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
@@ -1035,9 +1037,9 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
 <header>
   <a class="logo" href="#">
     <img class="logo-img"
-      src="https://raw.githubusercontent.com/precidoboss/my-game-sprites/main/hashcashclub.png"
+      src="https://raw.githubusercontent.com/precidoboss/HCASHMOAT/main/HCASH%20MOAT%20APP%20LOGO.png"
       onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-      alt="hCASH">
+      alt="hCASH Moat">
     <span style="width:38px;height:38px;border-radius:8px;background:var(--red);display:none;align-items:center;justify-content:center;font-size:1.55rem;flex-shrink:0">💧</span>
     <span>
       h<em>CASH</em> MOAT
@@ -1885,11 +1887,11 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
         <div id="wiCartItems" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.6rem"></div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <select id="wi-facilityLevel" class="inp" style="flex:1;min-width:160px;font-size:var(--fs-xs)" onchange="wiOnFacilityChange()">
-            <option value="8.87" data-lv="1">Lv1 (2×2 · 4 slots · 400W) — 8.87 hCASH/kWh</option>
-            <option value="7.09" data-lv="2">Lv2 (2×3 · 6 slots · 1,000W) — 7.09 hCASH/kWh</option>
-            <option value="6.21" data-lv="3" selected>Lv3 (3×3 · 9 slots · 2,000W) — 6.21 hCASH/kWh</option>
-            <option value="7.09" data-lv="4">Lv4 (3×4 · 12 slots · 6,000W) — 7.09 hCASH/kWh</option>
-            <option value="3.55" data-lv="5">Lv5 (4×4 · 16 slots · 15,000W) — 3.55 hCASH/kWh ⚡ best</option>
+            <option value="" data-lv="1">Lv1 — loading...</option>
+            <option value="" data-lv="2">Lv2 — loading...</option>
+            <option value="" data-lv="3" selected>Lv3 — loading...</option>
+            <option value="" data-lv="4">Lv4 — loading...</option>
+            <option value="" data-lv="5">Lv5 — loading...</option>
           </select>
           <button class="btn btn-sm" onclick="wiRunWithCart()">⚡ Run Simulation →</button>
         </div>
@@ -2084,141 +2086,124 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
 
   <!-- Page header -->
   <div class="sh">
-    <div class="sh-t">🔨 Manual Build — Custom Facility Simulator</div>
+    <div class="sh-t">🔨 Build — Facility Simulator</div>
     <span class="live"><span class="ld"></span>Live Prices</span>
   </div>
 
-  <!-- Explainer banner -->
-  <div class="banner" style="margin-bottom:1rem">
-    <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">
-      <div style="font-size:1.8rem;flex-shrink:0">🔨</div>
-      <div style="flex:1;min-width:220px">
-        <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--fs-lg);margin-bottom:4px">Build Your Own Facility — Manual Entry</div>
-        <div style="font-size:var(--fs-sm);color:var(--dim);line-height:1.65">
-          Add any miner by name and price yourself. Build a full facility load-out, set your facility level, and compare your custom build against LP staking.
+  <!-- ── Facility picker popover ── -->
+  <div id="bd-facilityModal" onclick="if(event.target===this)bdCloseFacilityModal()" style="display:none;position:fixed;inset:0;z-index:9000;background:transparent">
+    <div id="bd-facilityPopover" style="position:absolute;z-index:9001;background:var(--card);border:1px solid var(--bor2);border-radius:14px;width:360px;max-width:calc(100vw - 2rem);overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.7)">
+      <div style="padding:.75rem 1rem .6rem;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.95rem;color:var(--txt)">Facility Level</div>
+          <div id="bd-modalRateNote" style="font-family:'Share Tech Mono',monospace;font-size:8.5px;color:var(--mut);margin-top:1px"></div>
         </div>
+        <button onclick="bdCloseFacilityModal()" style="background:rgba(255,255,255,.07);border:1px solid var(--bor);border-radius:6px;color:var(--mut);cursor:pointer;padding:3px 8px;font-size:.85rem;line-height:1.4;flex-shrink:0">✕</button>
+      </div>
+      <div id="bd-facilityCards" style="padding:.5rem;display:flex;flex-direction:column;gap:.35rem;max-height:340px;overflow-y:auto"></div>
+    </div>
+  </div>
+
+  <!-- Hidden select — kept for JS compatibility -->
+  <select id="bd-facilityLevel" style="display:none" onchange="bdOnFacilityChange()">
+    <option value="" data-lv="1">Lv1</option>
+    <option value="" data-lv="2">Lv2</option>
+    <option value="" data-lv="3" selected>Lv3</option>
+    <option value="" data-lv="4">Lv4</option>
+    <option value="" data-lv="5">Lv5</option>
+  </select>
+  <div id="bd-rateNote" style="display:none"></div>
+
+  <!-- ── SLOT BUILDER CARD ── -->
+  <div class="card" style="margin-bottom:1rem">
+    <div class="ch" style="flex-wrap:wrap;gap:8px">
+      <div class="ctitle" style="color:var(--red)">⛏ Slot Builder</div>
+      <!-- Facility pill -->
+      <button id="bd-facilityPill" onclick="bdOpenFacilityModal()" style="display:flex;align-items:center;gap:8px;background:rgba(229,62,62,.08);border:1px solid rgba(229,62,62,.28);border-radius:20px;padding:.28rem .9rem .28rem .6rem;cursor:pointer;transition:all .18s;margin-left:auto" onmouseover="this.style.background='rgba(229,62,62,.16)'" onmouseout="this.style.background='rgba(229,62,62,.08)'">
+        <span id="bd-facilityPillIcon" style="font-size:1rem">🏭</span>
+        <div style="text-align:left">
+          <div id="bd-facilityPillLabel" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.85rem;color:var(--txt);white-space:nowrap">Lv3 — loading…</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:8.5px;color:var(--mut)">tap to change ▾</div>
+        </div>
+      </button>
+      <span id="bd-rateSourceBadge" style="font-size:var(--fs-xs);color:var(--mut);align-self:center"></span>
+    </div>
+    <div class="cbody" style="display:flex;flex-direction:column;gap:.85rem">
+
+      <!-- Add miner search -->
+      <div style="background:rgba(229,62,62,.04);border:1px dashed rgba(229,62,62,.22);border-radius:8px;padding:.75rem">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em">➕ Add Miner to Slot</div>
+        <!-- Search + controls row -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+          <input id="bd-slotMinerSearch" type="text" class="inp" placeholder="🔍 Search miners by name…"
+            oninput="bdSlotFilterMiners(this.value)"
+            autocomplete="off" style="flex:2;min-width:180px;font-size:var(--fs-sm)">
+          <select id="bd-slotSource" class="inp" style="width:100px;font-size:var(--fs-xs);flex-shrink:0">
+            <option value="own">I own it</option>
+            <option value="buy">Will buy</option>
+          </select>
+          <input id="bd-slotMinerPrice" type="number" class="inp" placeholder="Price (hCASH)" style="width:130px;font-size:var(--fs-xs);flex-shrink:0" oninput="bdCalc()">
+          <button class="btn btn-sm" onclick="bdAddSlotMiner()" style="white-space:nowrap;flex-shrink:0;padding:.4rem 1.1rem">+ Add</button>
+        </div>
+        <!-- Inline miner list — always visible, no dropdown -->
+        <div id="bd-slotMinerList" style="border:1px solid var(--bor);border-radius:8px;overflow:hidden;max-height:280px;overflow-y:auto;background:var(--card)">
+          <div id="bd-slotDropdownList"></div>
+        </div>
+      </div>
+
+      <!-- Slot table -->
+      <div id="bd-slotTableWrap" style="display:none">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px">
+          <span>FACILITY SLOTS</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span id="bd-slotSummary" style="color:var(--grn)"></span>
+            <button onclick="bdClearAll()" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:2px 8px;background:rgba(229,62,62,.1);border:1px solid rgba(229,62,62,.3);border-radius:4px;color:var(--red);cursor:pointer;white-space:nowrap">✕ Clear All</button>
+          </div>
+        </div>
+        <div style="background:var(--bor);border-radius:4px;height:5px;overflow:hidden;margin-bottom:8px">
+          <div id="bd-slotPowerBar" style="height:100%;background:linear-gradient(90deg,var(--grn),var(--gold));border-radius:4px;width:0%;transition:width .4s"></div>
+        </div>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+          <div id="bd-slotGrid" style="display:grid;gap:5px"></div>
+        </div>
+      </div>
+
+      <!-- Override MH/s + run -->
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input id="bd-customMhs" type="number" class="inp" placeholder="Override MH/s (optional)" min="0" oninput="bdCalc()" style="flex:1;min-width:160px">
+        <button class="btn" onclick="bdCalc()" style="white-space:nowrap;padding:.45rem 1.2rem;flex-shrink:0">⚡ Run Comparison →</button>
       </div>
     </div>
   </div>
 
-  <!-- ── STEP 1: Manual miner input ── -->
-  <div style="margin-bottom:1rem">
-
-    <!-- Manual Build card — always open on Build page -->
-    <div class="card" style="margin-bottom:.85rem">
-      <div class="ch">
-        <div class="ctitle" style="color:var(--red)">⛏ Manual Build — Custom Miner + Price</div>
-      </div>
-      <div class="cbody" style="display:flex;flex-direction:column;gap:.75rem">
-
-        <!-- Price input -->
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">Marketplace Price</div>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-            <input id="bd-price" type="number" class="inp" placeholder="e.g. 2500" style="flex:1;min-width:120px" oninput="bdPriceChanged()" min="1">
-            <select id="bd-priceCurrency" class="inp" style="width:90px;flex-shrink:0" onchange="bdCalc()">
-              <option value="hcash">hCASH</option>
-              <option value="avax">AVAX</option>
-            </select>
-          </div>
-          <div id="bd-priceUsdDisplay" style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-top:4px">≈ $— USD</div>
-        </div>
-
-        <!-- Facility level -->
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">
-            Facility Level
-            <span id="bd-rateSourceBadge" style="margin-left:6px;font-size:var(--fs-xs);color:var(--mut)"></span>
-          </div>
-          <select id="bd-facilityLevel" class="inp" style="flex:1;min-width:160px;font-size:var(--fs-xs)" onchange="bdOnFacilityChange()">
-            <option value="8.87" data-lv="1">Lv1 (2×2 · 4 slots · 400W) — 8.87 hCASH/kWh</option>
-            <option value="7.09" data-lv="2">Lv2 (2×3 · 6 slots · 1,000W) — 7.09 hCASH/kWh</option>
-            <option value="6.21" data-lv="3" selected>Lv3 (3×3 · 9 slots · 2,000W) — 6.21 hCASH/kWh</option>
-            <option value="7.09" data-lv="4">Lv4 (3×4 · 12 slots · 6,000W) — 7.09 hCASH/kWh</option>
-            <option value="3.55" data-lv="5">Lv5 (4×4 · 16 slots · 15,000W) — 3.55 hCASH/kWh ⚡ best</option>
-          </select>
-          <div id="bd-rateNote" style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-top:4px"></div>
-        </div>
-
-        <!-- Add miner to slot -->
-        <div style="background:rgba(229,62,62,.04);border:1px dashed rgba(229,62,62,.2);border-radius:7px;padding:.6rem">
-          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px">ADD MINER TO SLOT</div>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;width:100%;box-sizing:border-box">
-            <div style="position:relative;flex:1;min-width:120px;max-width:100%">
-              <input id="bd-slotMinerSearch" type="text" class="inp" placeholder="🔍 Search…"
-                oninput="bdSlotFilterMiners(this.value)"
-                onfocus="document.getElementById('bd-slotDropdown').style.display='block'"
-                autocomplete="off" style="width:100%;font-size:var(--fs-xs)">
-              <div id="bd-slotDropdown" style="display:none;position:absolute;z-index:500;left:0;right:0;max-height:180px;overflow-y:auto;background:var(--card);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.5);top:calc(100% + 2px)">
-                <div id="bd-slotDropdownList"></div>
-              </div>
-            </div>
-            <select id="bd-slotSource" class="inp" style="width:90px;font-size:var(--fs-xs)">
-              <option value="own">I own it</option>
-              <option value="buy">Will buy</option>
-            </select>
-            <input id="bd-slotMinerPrice" type="number" class="inp" placeholder="Price (hCASH)" style="width:110px;font-size:var(--fs-xs)" oninput="bdCalc()">
-            <button class="btn btn-sm" onclick="bdAddSlotMiner()" style="white-space:nowrap;flex-shrink:0">+ Add</button>
-          </div>
-        </div>
-
-        <!-- Override hashrate -->
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">Override Hashrate (MH/s) — optional</div>
-          <input id="bd-customMhs" type="number" class="inp" placeholder="Leave blank to use API value" min="0" oninput="bdCalc()">
-        </div>
-
-        <!-- Slot table -->
-        <div id="bd-slotTableWrap" style="margin-top:.65rem;display:none">
-          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px">
-            <span>FACILITY SLOTS</span>
-            <div style="display:flex;align-items:center;gap:6px">
-              <span id="bd-slotSummary" style="color:var(--grn)"></span>
-              <button onclick="bdClearAll()" style="font-family:'Share Tech Mono',monospace;font-size:9px;padding:2px 7px;background:rgba(229,62,62,.1);border:1px solid rgba(229,62,62,.3);border-radius:4px;color:var(--red);cursor:pointer;white-space:nowrap">✕ Clear All</button>
-            </div>
-          </div>
-          <div style="background:var(--bor);border-radius:4px;height:5px;overflow:hidden;margin-bottom:6px">
-            <div id="bd-slotPowerBar" style="height:100%;background:linear-gradient(90deg,var(--grn),var(--gold));border-radius:4px;width:0%;transition:width .4s"></div>
-          </div>
-          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%">
-            <div id="bd-slotGrid" style="display:grid;gap:5px;min-width:0"></div>
-          </div>
-        </div>
-
-        <button class="btn btn-sm" style="align-self:flex-start" onclick="bdCalc()">⚡ Run Comparison →</button>
-
-      </div>
+  <!-- Path B: LP setup -->
+  <div class="card" style="margin-bottom:1rem">
+    <div class="ch">
+      <div class="ctitle" style="color:var(--gold)">💧 Path B — Stake the Same $ into LP</div>
     </div>
-
-    <!-- Path B: LP setup -->
-    <div class="card">
-      <div class="ch">
-        <div class="ctitle" style="color:var(--gold)">💧 Path B — Stake the Same $ into LP</div>
+    <div class="cbody" style="display:flex;flex-direction:column;gap:.75rem">
+      <div style="background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.18);border-radius:8px;padding:.75rem;font-size:var(--fs-sm);color:var(--dim);line-height:1.65">
+        We take the <strong style="color:var(--gold)">same total USD value</strong> you're spending on miners and split it 50% AVAX + 50% hCASH,
+        add it to the Pharaoh LP pool, then stake those LP tokens in the hCASH Moat.
       </div>
-      <div class="cbody" style="display:flex;flex-direction:column;gap:.75rem">
-        <div style="background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.18);border-radius:8px;padding:.75rem;font-size:var(--fs-sm);color:var(--dim);line-height:1.65">
-          We take the <strong style="color:var(--gold)">same total USD value</strong> you're spending on the miner and split it 50% AVAX + 50% hCASH,
-          add it to the Pharaoh LP pool, then stake those LP tokens in the hCASH Moat.
-        </div>
-        <div id="bd-lpCalcBox" style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;padding:.65rem">
-          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Auto-Calculated Split</div>
-          <div class="calc-row"><span class="calc-lbl">Total budget (USD)</span><span class="calc-val cw" id="bd-lpTotalUsd">—</span></div>
-          <div class="calc-row"><span class="calc-lbl">AVAX side (50%)</span><span class="calc-val" id="bd-lpAvaxAmt">—</span></div>
-          <div class="calc-row"><span class="calc-lbl">hCASH side (50%)</span><span class="calc-val cg" id="bd-lpHcashAmt">—</span></div>
-          <div class="calc-row"><span class="calc-lbl">Est. LP tokens</span><span class="calc-val cd" id="bd-lpTokens">—</span></div>
-          <div class="calc-row"><span class="calc-lbl">Pool share</span><span class="calc-val" id="bd-lpPoolShare">—</span></div>
-        </div>
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Lock Duration (Moat multiplier)</div>
-          <div class="dur-grid" id="bd-lockGrid" style="grid-template-columns:repeat(4,1fr)"></div>
-          <input type="hidden" id="bd-lockDays" value="180">
-        </div>
-        <div id="bd-lpStakeBox" style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;padding:.65rem">
-          <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">LP Moat Projections</div>
-          <div class="calc-row"><span class="calc-lbl">Lock multiplier</span><span class="calc-val cg" id="bd-lpMult">—</span></div>
-          <div class="calc-row"><span class="calc-lbl">Moat points (total held)</span><span class="calc-val cr" id="bd-lpPoints">—</span></div>
-          <div class="calc-row"><span class="calc-lbl">Swap fees/day (est.)</span><span class="calc-val cg" id="bd-lpFees">—</span></div>
-        </div>
+      <div id="bd-lpCalcBox" style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;padding:.65rem">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Auto-Calculated Split</div>
+        <div class="calc-row"><span class="calc-lbl">Total budget (USD)</span><span class="calc-val cw" id="bd-lpTotalUsd">—</span></div>
+        <div class="calc-row"><span class="calc-lbl">AVAX side (50%)</span><span class="calc-val" id="bd-lpAvaxAmt">—</span></div>
+        <div class="calc-row"><span class="calc-lbl">hCASH side (50%)</span><span class="calc-val cg" id="bd-lpHcashAmt">—</span></div>
+        <div class="calc-row"><span class="calc-lbl">Est. LP tokens</span><span class="calc-val cd" id="bd-lpTokens">—</span></div>
+        <div class="calc-row"><span class="calc-lbl">Pool share</span><span class="calc-val" id="bd-lpPoolShare">—</span></div>
+      </div>
+      <div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Lock Duration (Moat multiplier)</div>
+        <div class="dur-grid" id="bd-lockGrid" style="grid-template-columns:repeat(4,1fr)"></div>
+        <input type="hidden" id="bd-lockDays" value="180">
+      </div>
+      <div id="bd-lpStakeBox" style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;padding:.65rem">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">LP Moat Projections</div>
+        <div class="calc-row"><span class="calc-lbl">Lock multiplier</span><span class="calc-val cg" id="bd-lpMult">—</span></div>
+        <div class="calc-row"><span class="calc-lbl">Moat points (total held)</span><span class="calc-val cr" id="bd-lpPoints">—</span></div>
+        <div class="calc-row"><span class="calc-lbl">Swap fees/day (est.)</span><span class="calc-val cg" id="bd-lpFees">—</span></div>
       </div>
     </div>
   </div>
@@ -2341,12 +2326,13 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
 
   <!-- Empty state -->
   <div id="bd-emptyState" style="text-align:center;padding:3rem 1rem;color:var(--mut)">
-    <div style="font-size:3rem;margin-bottom:.75rem">🔨</div>
-    <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--fs-lg);margin-bottom:.4rem">Add miners and run comparison</div>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs)">Enter a miner, set a price, and click Run Comparison.</div>
+    <div style="font-size:3rem;margin-bottom:.75rem">⛏</div>
+    <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:var(--fs-lg);margin-bottom:.4rem">Add miners to your facility slots</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs)">Search for a miner above, choose your facility level, then run the comparison.</div>
   </div>
 
 </div><!-- /view-build -->
+
 
 </main>
 
@@ -6691,88 +6677,25 @@ let _wiSelectedMiner = null;
 let _wiLockDaysVal = 180;
 let _wiChart = null;
 
-// ── Facility rates fetched from API (keyed by level 1-5) ──
-// Real facility data from hashcash.club — fetched live, these are fallback defaults
-let _wiFacilityRates = { 1: 8.87, 2: 7.09, 3: 6.21, 4: 7.09, 5: 3.55 };
-// Slots and power cap per facility level (fetched live, fallback below)
-let _wiFacilityData = {
-  1: { slots: 4,  watts: 400,   rate: 8.87, dims: '2×2', upgradeCost: 500,   upgradeTo: 2 },
-  2: { slots: 6,  watts: 1000,  rate: 7.09, dims: '2×3', upgradeCost: 2500,  upgradeTo: 3 },
-  3: { slots: 9,  watts: 2000,  rate: 6.21, dims: '3×3', upgradeCost: 7500,  upgradeTo: 4 },
-  4: { slots: 12, watts: 6000,  rate: 7.09, dims: '3×4', upgradeCost: 15000, upgradeTo: 5 },
-  5: { slots: 16, watts: 15000, rate: 3.55, dims: '4×4', upgradeCost: null,  upgradeTo: null },
-};
+// ── Facility rates keyed by level 1-5 — populated entirely from on-chain ──
+let _wiFacilityRates = {};
+let _wiFacilityData  = { 1:{}, 2:{}, 3:{}, 4:{}, 5:{} };
 let _wiFacilityRatesLoaded = false;
+// Historical min/max per facility level from FacilityElectricityCostChanged events
+// Used to compute trend band: Normal / Medium / High / Surge
+let _wiFacilityRateHistory = {
+  1: { min: null, max: null },
+  2: { min: null, max: null },
+  3: { min: null, max: null },
+  4: { min: null, max: null },
+  5: { min: null, max: null },
+};
 
-// Fetch live facility data (rates, slots, power) from /api/contracts
-// Uses multiple strategies: API contracts endpoint → on-chain read → known defaults
+// Fetch live facility data (rates, slots, power) directly from on-chain.
+// The HashCash public API contracts endpoint does not include electricityCost/facilityLevels data,
+// so the authoritative source is always the Main contract via eth_call.
 async function wiFetchFacilityRates() {
-  try {
-    const r = await fetch(`${HCASH_API}/contracts`, { headers: { 'x-api-key': HCASH_API_KEY } });
-    if (!r.ok) return;
-    const data = await r.json();
-    const contracts = Array.isArray(data) ? data : (data.contracts || []);
-
-    const gameMains = contracts.filter(c =>
-      c.category === 'game_main' || c.category === 'facility' || c.category === 'game_facility'
-    );
-    let found = false;
-
-    for (const g of gameMains) {
-      // Try various shapes the API might return facility data in
-      const levelSources = [
-        g.facilityLevels, g.facilities, g.levels,
-        g.gameData?.facilityLevels, g.metadata?.facilityLevels,
-        g.networkStats?.facilityLevels,
-      ].filter(Boolean);
-
-      for (const src of levelSources) {
-        const arr = Array.isArray(src) ? src : Object.values(src);
-        for (const lv of arr) {
-          const lvNum = parseInt(lv.level || lv.facilityLevel || lv.id || 0);
-          if (lvNum < 1 || lvNum > 5) continue;
-
-          // Rate: try every plausible field name; raw on-chain values may be *100 (e.g. 887 = 8.87)
-          let rate = parseFloat(
-            lv.electricityRate || lv.elecRateHcash || lv.rateHcash ||
-            lv.elecRate || lv.rate || lv.electricity || 0
-          );
-          // If looks like it's stored as integer * 100 (e.g. 887 instead of 8.87)
-          if (rate > 100) rate = rate / 100;
-          if (rate > 0 && rate < 50) {
-            _wiFacilityRates[lvNum] = parseFloat(rate.toFixed(2));
-            found = true;
-          }
-
-          // Slots and power cap
-          const slots = parseInt(lv.slots || lv.maxSlots || lv.slotCount || 0);
-          const watts = parseInt(lv.maxWatts || lv.powerCap || lv.watts || lv.maxPower || 0);
-          const upgCost = parseInt(lv.upgradeCost || lv.upgradePrice || 0);
-          const upgTo   = parseInt(lv.upgradeTo || lv.nextLevel || 0) || null;
-          if (_wiFacilityData[lvNum]) {
-            if (slots > 0) _wiFacilityData[lvNum].slots = slots;
-            if (watts > 0) _wiFacilityData[lvNum].watts = watts;
-            if (rate  > 0) _wiFacilityData[lvNum].rate  = _wiFacilityRates[lvNum];
-            if (upgCost > 0) _wiFacilityData[lvNum].upgradeCost = upgCost;
-            if (upgTo) _wiFacilityData[lvNum].upgradeTo = upgTo;
-          }
-        }
-      }
-    }
-
-    _wiFacilityRatesLoaded = found;
-
-    // Always also fetch from Main contract directly — authoritative source for rates + network stats
-    wiFetchFacilityRatesOnChain();
-
-    if (found) {
-      wiFacilityRatesUpdateUI();
-      wiRenderSlotTable();
-    }
-  } catch(e) {
-    console.warn('wiFetchFacilityRates API failed, trying on-chain:', e.message);
-    await wiFetchFacilityRatesOnChain();
-  }
+  await wiFetchFacilityRatesOnChain();
 }
 
 // ── Read ALL live data directly from the verified Main contract ──
@@ -6783,8 +6706,8 @@ async function wiFetchFacilityRates() {
 //   facilities(3) = Lv3 (3×3, 9 slots, 2000W,  6.21 hCASH/kWh)
 //   facilities(4) = Lv4 (3×4, 12 slots, 6000W, 7.09 hCASH/kWh)
 //   facilities(5) = Lv5 (4×4, 16 slots, 15000W,3.55 hCASH/kWh)
-// electricityCost scale: raw / 28184891770012.4 = hCASH/kWh
-//   (verified: 250000000000000 / 28184891770012.4 = 8.87 ✓)
+// electricityCost decoded with ethers.formatEther (1e18 fixed-point, same as ERC-20 amounts)
+//   e.g. 0.0001e18 = 100000000000000 raw → formatEther → 0.0001 hCASH/kWh
 // totalPowerOutput scale: stored as watts/100
 //   (verified: 4*100=400W, 10*100=1000W, 20*100=2000W ✓)
 async function wiFetchFacilityRatesOnChain() {
@@ -6799,8 +6722,9 @@ async function wiFetchFacilityRatesOnChain() {
   ];
 
   const DIMS = { 1:'2×2', 2:'2×3', 3:'3×3', 4:'3×4', 5:'4×4' };
-  // Verified scale factor from live data: elecRaw 250000000000000 = 8.87 hCASH/kWh
-  const ELEC_SCALE = 28184891770012.4;
+  // electricityCost is stored as standard 18-decimal fixed-point (1e18 = 1 hCASH/kWh)
+  // e.g. 0.0001e18 = 100000000000000 raw = 0.0001 hCASH/kWh
+  // Decode with ethers.formatEther — no custom scale factor needed.
 
   try {
     const prov = new ethers.JsonRpcProvider(AVAX_RPC);
@@ -6841,7 +6765,7 @@ async function wiFetchFacilityRatesOnChain() {
     // ── 2. Facility slots: index 0 = starter (skip), index 1-N = Lv1-LvN ──
     const facCount = Number(facilityCountRaw) || 6;
     const facCalls = [];
-    for (let i = 0; i < facCount; i++) facCalls.push(game.facilities(i).catch(() => null));
+    for (let i = 0; i <= facCount; i++) facCalls.push(game.facilities(i).catch(() => null));
     const facResults = await Promise.all(facCalls);
 
     let found = false;
@@ -6863,21 +6787,26 @@ async function wiFetchFacilityRatesOnChain() {
 
       // powerOutput stored as watts/100 (verified: 4→400W, 10→1000W, 20→2000W, 60→6000W)
       const watts   = Number(fac[1]) * 100;
-      // electricityCost stored with custom scale (verified against known values)
-      const elecRaw = Number(fac[6]);
-      const rate    = elecRaw > 0 ? elecRaw / ELEC_SCALE : 0;
+      // electricityCost stored as hCASH per power-unit (100W) per block, scaled by 1e18.
+      // Display conversion to hCASH/kWh:
+      //   = formatEther(raw) × (1000W/kW ÷ 100W/unit) × blocks_per_hour
+      //   = formatEther(raw) × 10 × 3336
+      // Verified against live display: Lv1 0.00025→8.34, Lv5 0.0001→3.34 ✓
+      const BLOCKS_PER_HOUR = 3336; // Grotto L1: ~80,064 blocks/day ÷ 24
+      const elecRaw = fac[6];  // BigInt
+      const rate    = elecRaw > 0n ? parseFloat(ethers.formatEther(elecRaw)) * 10 * BLOCKS_PER_HOUR : 0;
 
-      console.log(`[Chain] facilities(${i}) → Lv${lv}: ${maxMiners} slots, ${watts}W, ${rate.toFixed(2)} hCASH/kWh ✓`);
+      console.log(`[Chain] facilities(${i}) → Lv${lv}: ${maxMiners} slots, ${watts}W, ${rate.toFixed(4)} hCASH/kWh ✓`);
 
-      if (rate > 0 && rate < 100) {
-        _wiFacilityRates[lv] = parseFloat(rate.toFixed(2));
+      if (rate > 0 && rate < 1000) {
+        _wiFacilityRates[lv] = parseFloat(rate.toFixed(4));
         _wiFacilityRatesLoaded = true;
         found = true;
       }
       if (_wiFacilityData[lv]) {
         if (maxMiners > 0) _wiFacilityData[lv].slots = maxMiners;
         if (watts > 0)     _wiFacilityData[lv].watts = watts;
-        if (rate > 0 && rate < 100) _wiFacilityData[lv].rate = _wiFacilityRates[lv];
+        if (rate > 0 && rate < 1000) _wiFacilityData[lv].rate = _wiFacilityRates[lv];
         if (DIMS[lv])      _wiFacilityData[lv].dims  = DIMS[lv];
       }
     }
@@ -6898,6 +6827,86 @@ async function wiFetchFacilityRatesOnChain() {
   wiFacilityRatesUpdateUI();
   wiRenderSlotTable();
   wiCalc();
+  // Fetch historical rate trend after live rates are loaded
+  wiFetchFacilityRateTrend().catch(e => console.warn('[Chain] trend fetch failed:', e.message));
+}
+
+// ── Fetch historical electricity rate min/max from FacilityElectricityCostChanged events ──
+// Uses these to compute trend band: Normal / Medium / High / Surge
+async function wiFetchFacilityRateTrend() {
+  const MAIN_CONTRACT = '0x105fecae0c48d683dA63620De1f2d1582De9e98a';
+  // FacilityElectricityCostChanged(uint256 indexed facilityIndex, uint256 newCost)
+  const EVENT_SIG = ethers.id('FacilityElectricityCostChanged(uint256,uint256)');
+  const prov = new ethers.JsonRpcProvider(AVAX_RPC);
+  const MAX_CHUNK = 2048;
+  // ~85,000 blocks/day on Grotto L1 → 30 days ≈ 2,550,000 blocks; cap at feasible depth
+  const HISTORY_BLOCKS = 200000; // ~2.3 days — enough for trend without hundreds of calls
+  // For deeper history use up to 100 chunks (~200k blocks)
+  const MAX_CHUNKS = 100;
+
+  try {
+    const latest = await prov.getBlockNumber();
+    const oldest = Math.max(0, latest - HISTORY_BLOCKS);
+
+    // Seed current live rates as baseline min/max
+    for (let lv = 1; lv <= 5; lv++) {
+      const cur = _wiFacilityRates[lv];
+      if (cur > 0) {
+        _wiFacilityRateHistory[lv].min = cur;
+        _wiFacilityRateHistory[lv].max = cur;
+      }
+    }
+
+    let found = false;
+    let chunksDone = 0;
+    // Walk backwards from latest in 2048-block chunks
+    for (let toBlock = latest; toBlock > oldest && chunksDone < MAX_CHUNKS; toBlock -= MAX_CHUNK) {
+      const fromBlock = Math.max(oldest, toBlock - MAX_CHUNK + 1);
+      try {
+        const logs = await prov.getLogs({
+          address: MAIN_CONTRACT,
+          topics: [EVENT_SIG],
+          fromBlock,
+          toBlock,
+        });
+        for (const log of logs) {
+          const facIdx = Number(BigInt(log.topics[1]));
+          if (facIdx < 1 || facIdx > 5) continue;
+          const newCostRaw = BigInt(log.data);
+          const rate = parseFloat(ethers.formatEther(newCostRaw)) * 10 * 3336;
+          if (rate <= 0 || rate >= 1000) continue;
+          const h = _wiFacilityRateHistory[facIdx];
+          if (h.min === null || rate < h.min) h.min = rate;
+          if (h.max === null || rate > h.max) h.max = rate;
+          found = true;
+        }
+      } catch(chunkErr) {
+        console.warn(`[Trend] chunk ${fromBlock}-${toBlock} failed:`, chunkErr.message);
+      }
+      chunksDone++;
+    }
+
+    if (found) {
+      console.log('[Trend] ✅ Rate history:', JSON.stringify(_wiFacilityRateHistory));
+    } else {
+      console.log('[Trend] No FacilityElectricityCostChanged events found — trend unavailable');
+    }
+    wiFacilityRatesUpdateUI();
+  } catch(e) {
+    console.warn('[Trend] trend fetch failed:', e.message);
+  }
+}
+
+// ── Compute trend band label + color for a facility level ──
+function wiGetElecTrend(lv) {
+  const cur = _wiFacilityRates[lv];
+  const h = _wiFacilityRateHistory[lv];
+  if (!h || h.min === null || h.max === null || h.min === h.max) return null;
+  const norm = (cur - h.min) / (h.max - h.min);
+  if (norm <= 0.25) return { label: '🟢 Normal',    color: 'var(--grn)' };
+  if (norm <= 0.60) return { label: '🟡 Medium',    color: 'var(--gold)' };
+  if (norm <= 0.85) return { label: '🟠 High',      color: 'orange' };
+  return               { label: '🔴 Surge Rate', color: 'var(--red)' };
 }
 
 // ── Slot table state ──
@@ -6905,34 +6914,65 @@ let _wiSlots = [];           // array of slot objects: { miner, source, price }
 let _wiSlotSelectedMiner = null;
 
 function wiFacilityRatesUpdateUI() {
+  // Update both the WhatIf and Build page facility selects
+  ['wi-facilityLevel', 'bd-facilityLevel'].forEach(selId => {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
+    const prevIdx = sel.selectedIndex >= 0 ? sel.selectedIndex : 2;
+    for (const opt of sel.options) {
+      const lv = parseInt(opt.dataset.lv);
+      if (!lv) continue;
+      const d = _wiFacilityData[lv];
+      const rate = d?.rate || _wiFacilityRates[lv];
+      if (rate) {
+        const trend = wiGetElecTrend(lv);
+        const trendTag = trend ? ` · ${trend.label}` : (lv === 5 ? ' ⚡ best' : '');
+        opt.value = String(rate);
+        opt.textContent = `Lv${lv} (${d?.dims||''} · ${d?.slots||'?'} slots · ${d?.watts ? (d.watts >= 1000 ? (d.watts/1000)+'kW' : d.watts+'W') : '?'}) — ${rate} hCASH/kWh${trendTag}`;
+      }
+    }
+    sel.selectedIndex = prevIdx;
+  });
+
+  // Update WI-specific badge/note
   const sel = document.getElementById('wi-facilityLevel');
-  if (!sel) return;
   const badge = document.getElementById('wi-rateSourceBadge');
   const note  = document.getElementById('wi-rateNote');
-
-  const prevIdx = sel.selectedIndex >= 0 ? sel.selectedIndex : 2;
-
-  for (const opt of sel.options) {
-    const lv = parseInt(opt.dataset.lv);
-    if (!lv) continue;
-    const d = _wiFacilityData[lv];
-    const rate = d?.rate || _wiFacilityRates[lv];
-    if (rate) {
-      const tag = lv === 5 ? ' ⚡ best' : '';
-      opt.value = String(rate);
-      opt.textContent = `Lv${lv} (${d?.dims||''} · ${d?.slots||'?'} slots · ${d?.watts ? (d.watts >= 1000 ? (d.watts/1000)+'kW' : d.watts+'W') : '?'}) — ${rate} hCASH/kWh${tag}`;
-    }
-  }
-
-  sel.selectedIndex = prevIdx;
 
   if (badge) {
     badge.textContent = _wiFacilityRatesLoaded ? '● live' : '● defaults';
     badge.style.color  = _wiFacilityRatesLoaded ? 'var(--grn)' : 'var(--mut)';
   }
-  if (note) note.textContent = _wiFacilityRatesLoaded
-    ? 'Rates & capacities fetched live from HashCash API'
-    : 'Using known defaults from hashcash.club (API did not return facility data)';
+  if (note && sel) {
+    const selLv = parseInt(sel.options[sel.selectedIndex]?.dataset?.lv);
+    const trend = selLv ? wiGetElecTrend(selLv) : null;
+    const src = _wiFacilityRatesLoaded
+      ? 'Rates fetched live from on-chain contract'
+      : 'Using known defaults (on-chain fetch pending)';
+    const trendStr = trend
+      ? ` · Electricity trend: <span style="color:${trend.color};font-weight:700">${trend.label}</span>`
+      : '';
+    note.innerHTML = src + trendStr;
+  }
+
+  // Update BD-specific badge/note
+  const bdSel   = document.getElementById('bd-facilityLevel');
+  const bdBadge = document.getElementById('bd-rateSourceBadge');
+  const bdNote  = document.getElementById('bd-rateNote');
+  if (bdBadge) {
+    bdBadge.textContent = _wiFacilityRatesLoaded ? '● live' : '● loading...';
+    bdBadge.style.color  = _wiFacilityRatesLoaded ? 'var(--grn)' : 'var(--mut)';
+  }
+  if (bdNote && bdSel) {
+    const bdLv = parseInt(bdSel.options[bdSel.selectedIndex]?.dataset?.lv);
+    const bdTrend = bdLv ? wiGetElecTrend(bdLv) : null;
+    const bdSrc = _wiFacilityRatesLoaded ? 'Rates fetched live from on-chain contract' : 'Fetching from chain…';
+    const bdTrendStr = bdTrend
+      ? ` · Electricity trend: <span style="color:${bdTrend.color};font-weight:700">${bdTrend.label}</span>`
+      : '';
+    bdNote.innerHTML = bdSrc + bdTrendStr;
+  }
+
   wiRenderSlotTable();
   wiCalc();
 }
@@ -6955,6 +6995,7 @@ function wiOnFacilityChange() {
   renderWiCart();
   wiRenderSlotTable();
   wiCalc();
+  if (typeof bdUpdateFacilityPill === 'function') bdUpdateFacilityPill();
 }
 
 // Get current facility data (live or defaults)
@@ -7627,7 +7668,7 @@ function wiCalc() {
 
   // Facility electricity rate — read from select, which is kept in sync by wiFacilityRatesUpdateUI
   const selEl   = document.getElementById('wi-facilityLevel');
-  const elecRate = selEl ? parseFloat(selEl.options[selEl.selectedIndex]?.value) || 5.77 : 5.77;
+  const elecRate = selEl ? parseFloat(selEl.options[selEl.selectedIndex]?.value) || 0 : 0;
 
   // Convert miner price to USD
   // When miners come from the cart (_wiCart), ALL prices are already in _wiSlots — use those directly.
@@ -7843,7 +7884,10 @@ function wiCalc() {
   document.getElementById('wi-assumNetHash').textContent  = (liveNetHash / 1000).toFixed(2) + ' GH/s' + (_wiNetHashMhs ? ' ✓ live' : '');
   document.getElementById('wi-assumLiq').textContent      = poolTvlUsd > 0 ? '$' + (poolTvlUsd/1000).toFixed(1) + 'K' + (poolData?.avaxReserve ? ' (on-chain)' : ' (dex)') : '—';
   document.getElementById('wi-assumVol').textContent      = vol24h > 0 ? '$' + (vol24h/1000).toFixed(1) + 'K' : '—';
-  document.getElementById('wi-assumElec').textContent     = elecRate + ' hCASH/kWh' + (_wiFacilityRatesLoaded ? ' ✓ live' : ' (default)');
+  const selLvWi = parseInt(selEl?.options[selEl.selectedIndex]?.dataset?.lv);
+  const wiTrend = selLvWi ? wiGetElecTrend(selLvWi) : null;
+  const wiTrendStr = wiTrend ? ` · <span style="color:${wiTrend.color}">${wiTrend.label}</span>` : '';
+  document.getElementById('wi-assumElec').innerHTML = elecRate + ' hCASH/kWh' + (_wiFacilityRatesLoaded ? ' ✓ live' : ' (default)') + wiTrendStr;
   document.getElementById('wi-assumEmission').textContent = fmtP(dailyEmission) + ' hCASH' + (_wiDailyEmission ? ' ✓ live' : '');
   const halvEl = document.getElementById('wi-assumHalving');
   if (halvEl) {
@@ -8125,22 +8169,6 @@ async function wiSyncLiveData() {
     if (game?.networkStats) {
       _wiNetHashMhs    = game.networkStats.totalHashMhs    || _wiNetHashMhs;
       _wiDailyEmission = game.networkStats.dailyEmission   || _wiDailyEmission;
-    }
-    if (!_wiFacilityRatesLoaded) {
-      const gameMains = contracts.filter(c => c.category === 'game_main' || c.category === 'facility');
-      for (const g of gameMains) {
-        const levels = g.facilityLevels || g.facilities || g.levels || [];
-        const arr = Array.isArray(levels) ? levels : Object.values(levels);
-        for (const lv of arr) {
-          const lvNum = parseInt(lv.level || lv.facilityLevel || 0);
-          const rate   = parseFloat(lv.electricityRate || lv.elecRateHcash || lv.rateHcash || 0);
-          if (lvNum >= 1 && lvNum <= 5 && rate > 0) {
-            _wiFacilityRates[lvNum] = rate;
-            _wiFacilityRatesLoaded = true;
-          }
-        }
-      }
-      if (_wiFacilityRatesLoaded) wiFacilityRatesUpdateUI();
     }
   } catch(e) { /* silent */ }
   // Always fetch direct from Main contract — this is the authoritative source
@@ -8433,7 +8461,7 @@ function bdAddSlotMiner() {
   _bdSlots.push({ miner: _bdSlotSelectedMiner, source, price, watts });
   const inp = document.getElementById('bd-slotMinerSearch');
   if (inp) inp.value = '';
-  document.getElementById('bd-slotDropdown').style.display = 'none';
+  bdSlotFilterMiners(''); // repopulate inline list after add
   _bdSlotSelectedMiner = null;
   document.getElementById('bd-slotMinerPrice').value = '';
   bdRenderSlotTable();
@@ -8443,30 +8471,48 @@ function bdAddSlotMiner() {
 function bdSlotFilterMiners(q) {
   const list = document.getElementById('bd-slotDropdownList');
   if (!list) return;
-  const filtered = q ? _wiMiners.filter(m => m.name?.toLowerCase().includes(q.toLowerCase())) : _wiMiners.slice(0, 20);
+
+  const filtered = q
+    ? _wiMiners.filter(m => m.name?.toLowerCase().includes(q.toLowerCase()))
+    : _wiMiners.slice(0, 30);
+
+  if (!filtered.length) {
+    list.innerHTML = `<div style="padding:14px 16px;font-family:'Share Tech Mono',monospace;font-size:var(--fs-xs);color:var(--mut);text-align:center">No miners found</div>`;
+    return;
+  }
+
   list.innerHTML = filtered.map(m => {
-    const s = m.minerStats || {};
-    const mhs = s.hashrateMhps || s.hashrateRaw || 0;
-    const watts = s.powerWatts || s.powerRaw || 0;
-    const imgTag = m.imageUrl ? `<img src="${m.imageUrl}" style="width:22px;height:22px;object-fit:cover;border-radius:3px" onerror="this.style.display='none'" alt="">` : '<span>⛏</span>';
-    return `<div onclick="bdSlotSelectMiner(${_wiMiners.indexOf(m)})"
-      style="display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;border-bottom:1px solid var(--bor);font-size:var(--fs-xs)"
-      onmouseover="this.style.background='rgba(229,62,62,.08)'" onmouseout="this.style.background=''">
-      ${imgTag}
-      <div>
-        <div style="font-weight:600;color:var(--txt)">${m.name}</div>
-        <div style="font-family:'Share Tech Mono',monospace;color:var(--mut);font-size:9px">${mhs}MH/s · ${watts||0}W</div>
-      </div>
-    </div>`;
+    const idx   = _wiMiners.indexOf(m);
+    const s     = m.minerStats || {};
+    const mhs   = s.hashrateMhps ?? s.hashrateRaw ?? 0;
+    const watts = s.powerWatts ?? s.powerUnits ?? 0;
+    const eff   = (mhs && watts) ? (mhs / watts * 1000).toFixed(2) : null;
+    const img   = m.imageUrl
+      ? `<img src="${m.imageUrl}" style="width:44px;height:44px;object-fit:cover;border-radius:7px;flex-shrink:0;border:1px solid var(--bor)" onerror="this.outerHTML='<div style=\\'width:44px;height:44px;border-radius:7px;background:rgba(229,62,62,.1);border:1px solid var(--bor);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0\\'>⛏</div>'" alt="">`
+      : `<div style="width:44px;height:44px;border-radius:7px;background:rgba(229,62,62,.1);border:1px solid var(--bor);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">⛏</div>`;
+    return `
+      <div onclick="bdSlotSelectMiner(${idx})"
+        style="display:flex;align-items:center;gap:10px;padding:8px 10px;cursor:pointer;border-bottom:1px solid var(--bor);transition:background .12s"
+        onmouseover="this.style.background='rgba(229,62,62,.07)'" onmouseout="this.style.background=''">
+        ${img}
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.name}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;align-items:center">
+            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--red)">${mhs} MH/s</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--mut)">·</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--mut)">${watts}W</span>
+            ${eff ? `<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--grn)">${eff} MH/W</span>` : ''}
+            ${m.category === 'miner_nft' ? '<span style="font-family:\'Share Tech Mono\',monospace;font-size:8px;color:var(--gold);border:1px solid rgba(212,168,67,.3);border-radius:4px;padding:0 4px">NFT</span>' : ''}
+          </div>
+        </div>
+      </div>`;
   }).join('');
-  document.getElementById('bd-slotDropdown').style.display = 'block';
 }
 
 function bdSlotSelectMiner(idx) {
   _bdSlotSelectedMiner = _wiMiners[idx];
   const inp = document.getElementById('bd-slotMinerSearch');
   if (inp) inp.value = _bdSlotSelectedMiner.name;
-  document.getElementById('bd-slotDropdown').style.display = 'none';
   const s = _bdSlotSelectedMiner.minerStats || {};
   const price = s.priceHcash || s.price || '';
   const priceEl = document.getElementById('bd-slotMinerPrice');
@@ -8541,7 +8587,7 @@ function bdCalc() {
   const avaxUsd   = priceData?.avaxPrice || 0;
 
   const selEl    = document.getElementById('bd-facilityLevel');
-  const elecRate = selEl ? parseFloat(selEl.options[selEl.selectedIndex]?.value) || 5.77 : 5.77;
+  const elecRate = selEl ? parseFloat(selEl.options[selEl.selectedIndex]?.value) || 0 : 0;
 
   let minerUsd = 0;
   if (_bdSlots.length > 0) {
@@ -8654,7 +8700,10 @@ function bdCalc() {
   $('bd-assumNetHash').textContent  = (liveNetHash/1000).toFixed(2)+' GH/s';
   $('bd-assumLiq').textContent      = poolTvlUsd > 0 ? '$'+(poolTvlUsd/1000).toFixed(1)+'K' : '—';
   $('bd-assumVol').textContent      = vol24h > 0 ? '$'+(vol24h/1000).toFixed(1)+'K' : '—';
-  $('bd-assumElec').textContent     = elecRate+' hCASH/kWh';
+  const selLvBd = parseInt(selEl?.options[selEl.selectedIndex]?.dataset?.lv);
+  const bdTrend = selLvBd ? wiGetElecTrend(selLvBd) : null;
+  const bdTrendStr = bdTrend ? ` · <span style="color:${bdTrend.color}">${bdTrend.label}</span>` : '';
+  $('bd-assumElec').innerHTML = elecRate+' hCASH/kWh' + (_wiFacilityRatesLoaded ? ' ✓ live' : ' (default)') + bdTrendStr;
   $('bd-assumEmission').textContent = fmtPbd(dailyEmission)+' hCASH';
   const halvEl = $('bd-assumHalving');
   if (halvEl) { const blk = window._wiBlocksToHalving; halvEl.textContent = blk > 0 ? blk.toLocaleString()+' blocks (~'+(blk/85460).toFixed(1)+'d)' : '—'; }
@@ -8755,8 +8804,7 @@ function bdClearAll() {
   if (slotSearch) slotSearch.value = '';
   if (slotPrice)  slotPrice.value  = '';
   if (slotSource) slotSource.value = 'buy';
-  const slotDd = document.getElementById('bd-slotDropdown');
-  if (slotDd) slotDd.style.display = 'none';
+  bdSlotFilterMiners(''); // repopulate after clear
   // Reset price input
   const priceEl = document.getElementById('bd-price');
   if (priceEl) priceEl.value = '';
@@ -8782,10 +8830,118 @@ function bdClearAll() {
   notif('Facility cleared', 'info', 2000);
 }
 
-function initBuildPage() {
+async function initBuildPage() {
+  wiFacilityRatesUpdateUI();
+  if (!_wiMiners.length) {
+    await wiLoadMiners().catch(e => console.warn('[Build] miner load failed:', e.message));
+  }
+  // Load facility rates if not already fetched (WhatIf page may not have been visited)
+  if (!_wiFacilityRatesLoaded) {
+    wiFetchFacilityRates();
+  }
   bdBuildLockGrid();
-  bdRenderDropdown(); // populate from shared _wiMiners
+  bdRenderDropdown();
+  bdSlotFilterMiners('');
+  bdUpdateFacilityPill();
   bdRenderSlotTable();
+}
+
+function bdOpenFacilityModal() {
+  const modal    = document.getElementById('bd-facilityModal');
+  const popover  = document.getElementById('bd-facilityPopover');
+  const cards    = document.getElementById('bd-facilityCards');
+  const note     = document.getElementById('bd-modalRateNote');
+  const pill     = document.getElementById('bd-facilityPill');
+  if (!modal || !cards || !pill) return;
+
+  // Position popover anchored below the pill
+  const rect = pill.getBoundingClientRect();
+  const popW = Math.min(360, window.innerWidth - 32);
+  let left = rect.left;
+  // Clamp so it doesn't overflow right edge
+  if (left + popW > window.innerWidth - 16) left = window.innerWidth - popW - 16;
+  if (left < 16) left = 16;
+  const top = rect.bottom + 8 + window.scrollY;
+
+  popover.style.top  = top + 'px';
+  popover.style.left = left + 'px';
+  popover.style.width = popW + 'px';
+
+  if (note) note.textContent = _wiFacilityRatesLoaded ? '✓ live from on-chain' : 'fetching live rates…';
+
+  const sel = document.getElementById('bd-facilityLevel');
+  const currentLv = parseInt(sel?.options[sel.selectedIndex]?.dataset?.lv) || 3;
+  const lvIcons  = { 1:'🏠', 2:'🏭', 3:'🏗️', 4:'🏢', 5:'⚡' };
+  const lvColors = { 1:'var(--mut)', 2:'var(--dim)', 3:'var(--red)', 4:'var(--gold)', 5:'var(--grn)' };
+
+  cards.innerHTML = '';
+  for (let lv = 1; lv <= 5; lv++) {
+    const d    = _wiFacilityData[lv] || {};
+    const rate = _wiFacilityRates[lv] || 0;
+    const trend = wiGetElecTrend(lv);
+    const isSel = lv === currentLv;
+    const color = lvColors[lv];
+    const watts = d.watts || 0;
+    const wattsStr = watts >= 1000 ? (watts/1000).toFixed(1)+'kW' : watts ? watts+'W' : '—';
+    const trendHtml = trend ? `<span style="color:${trend.color};font-size:9px;margin-left:4px">${trend.label}</span>` : '';
+
+    const card = document.createElement('div');
+    card.onclick = () => bdSelectFacility(lv);
+    card.style.cssText = `background:${isSel?'rgba(229,62,62,.1)':'var(--sur)'};border:1.5px solid ${isSel?'rgba(229,62,62,.45)':'var(--bor)'};border-radius:9px;padding:.5rem .75rem;cursor:pointer;transition:all .14s;display:flex;align-items:center;gap:10px;`;
+    card.onmouseover = () => { if (!isSel) card.style.background='rgba(255,255,255,.04)'; };
+    card.onmouseout  = () => { if (!isSel) card.style.background='var(--sur)'; };
+    card.innerHTML = `
+      <div style="font-size:1.3rem;flex-shrink:0">${lvIcons[lv]}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;color:${color};display:flex;align-items:center;gap:6px">
+          Level ${lv} — ${d.dims||'—'}
+          ${isSel?'<span style="font-size:8px;background:rgba(229,62,62,.2);color:var(--red);padding:1px 5px;border-radius:6px">✓ selected</span>':''}
+        </div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--mut);margin-top:1px;display:flex;gap:8px;flex-wrap:wrap">
+          <span>${d.slots||'?'} slots</span><span>·</span><span>${wattsStr}</span>
+          <span style="color:var(--txt)">${rate ? rate+' hCASH/kWh' : '…'}</span>${trendHtml}
+        </div>
+      </div>
+    `;
+    cards.appendChild(card);
+  }
+
+  modal.style.display = 'block';
+}
+
+function bdCloseFacilityModal() {
+  const modal = document.getElementById('bd-facilityModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function bdSelectFacility(lv) {
+  const sel = document.getElementById('bd-facilityLevel');
+  if (sel) {
+    for (let i = 0; i < sel.options.length; i++) {
+      if (parseInt(sel.options[i].dataset.lv) === lv) {
+        sel.selectedIndex = i;
+        break;
+      }
+    }
+    bdOnFacilityChange();
+  }
+  bdCloseFacilityModal();
+  bdUpdateFacilityPill();
+}
+
+function bdUpdateFacilityPill() {
+  const sel   = document.getElementById('bd-facilityLevel');
+  const pill  = document.getElementById('bd-facilityPill');
+  const label = document.getElementById('bd-facilityPillLabel');
+  if (!sel || !pill || !label) return;
+  const lv = parseInt(sel.options[sel.selectedIndex]?.dataset?.lv) || 3;
+  const d  = _wiFacilityData[lv] || {};
+  const rate = _wiFacilityRates[lv];
+  const watts = d.watts || 0;
+  const wattsStr = watts >= 1000 ? (watts/1000).toFixed(1)+'kW' : (watts ? watts+'W' : '');
+  const rateStr = rate ? ` · ${rate} hCASH/kWh` : '';
+  label.textContent = `Lv${lv}${d.dims ? ' · '+d.dims : ''}${d.slots ? ' · '+d.slots+' slots' : ''}${wattsStr ? ' · '+wattsStr : ''}${rateStr}`;
+  document.getElementById('bd-facilityPillIcon').textContent = ['','🏠','🏭','🏗️','🏢','⚡'][lv] || '🏭';
 }
 
 // Close bd dropdowns on outside click
@@ -8793,9 +8949,7 @@ document.addEventListener('click', function(e) {
   const dd = document.getElementById('bd-minerDropdown');
   const search = document.getElementById('bd-minerSearch');
   if (dd && search && !dd.contains(e.target) && e.target !== search) dd.style.display = 'none';
-  const dd2 = document.getElementById('bd-slotDropdown');
-  const inp2 = document.getElementById('bd-slotMinerSearch');
-  if (dd2 && inp2 && !dd2.contains(e.target) && e.target !== inp2) dd2.style.display = 'none';
+
 });
 
 </script>
