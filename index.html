@@ -1893,6 +1893,7 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
             <option value="" data-lv="4">Lv4 — loading...</option>
             <option value="" data-lv="5">Lv5 — loading...</option>
           </select>
+          <button id="wi-elecRefreshBtn" onclick="wiRefreshElecRate()" title="Refresh electricity rates" style="flex-shrink:0;background:rgba(229,62,62,.08);border:1px solid rgba(229,62,62,.25);border-radius:8px;color:var(--red);cursor:pointer;padding:.3rem .65rem;font-size:.85rem;transition:all .2s" onmouseover="this.style.background='rgba(229,62,62,.18)'" onmouseout="this.style.background='rgba(229,62,62,.08)'">⟳</button>
           <button class="btn btn-sm" onclick="wiRunWithCart()">⚡ Run Simulation →</button>
         </div>
         <!-- Slot grid preview -->
@@ -2127,6 +2128,7 @@ html.light .tab.on  { color: var(--acc); background: rgba(232,53,53,.08); }
         </div>
       </button>
       <span id="bd-rateSourceBadge" style="font-size:var(--fs-xs);color:var(--mut);align-self:center"></span>
+      <button id="bd-elecRefreshBtn" onclick="wiRefreshElecRate()" title="Refresh electricity rates" style="flex-shrink:0;background:rgba(229,62,62,.08);border:1px solid rgba(229,62,62,.25);border-radius:8px;color:var(--red);cursor:pointer;padding:.3rem .65rem;font-size:.85rem;transition:all .2s;margin-left:auto" onmouseover="this.style.background='rgba(229,62,62,.18)'" onmouseout="this.style.background='rgba(229,62,62,.08)'">⟳</button>
     </div>
     <div class="cbody" style="display:flex;flex-direction:column;gap:.85rem">
 
@@ -5121,7 +5123,7 @@ async function loadChainStats() {
     // Emission per block + per day
     const bpb = parseFloat(ethers.formatEther(bpbRaw || 0n));
     if (bpb > 0) {
-      const blocksPerDay = 83802; // live average from chain data
+      const blocksPerDay = _wiBlocksPerHour > 0 ? Math.round(_wiBlocksPerHour * 24) : 77005;
       const emitDay = bpb * blocksPerDay;
       setTxt('d_emitBlock', bpb.toFixed(4) + ' hCASH');
       setTxt('d_emitDay', fmtP(emitDay) + ' hCASH/day');
@@ -6680,6 +6682,9 @@ let _wiChart = null;
 // ── Facility rates keyed by level 1-5 — populated entirely from on-chain ──
 let _wiFacilityRates = {};
 let _wiFacilityData  = { 1:{}, 2:{}, 3:{}, 4:{}, 5:{} };
+// Live blocks per hour — derived from actual block timestamps, used to decode electricityCost
+// Default 3208 = 77,005 blocks/day ÷ 24 (current observed Grotto L1 rate)
+let _wiBlocksPerHour = 3208;
 let _wiFacilityRatesLoaded = false;
 // Historical min/max per facility level from FacilityElectricityCostChanged events
 // Used to compute trend band: Normal / Medium / High / Surge
@@ -6690,6 +6695,23 @@ let _wiFacilityRateHistory = {
   4: { min: null, max: null },
   5: { min: null, max: null },
 };
+
+// Manual refresh of electricity rates — called from ⟳ button on WI and Build pages
+async function wiRefreshElecRate() {
+  // Spin both buttons
+  ['wi-elecRefreshBtn','bd-elecRefreshBtn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) { btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; btn.textContent = '…'; }
+  });
+  _wiFacilityRatesLoaded = false;
+  await wiFetchFacilityRates();
+  wiFetchFacilityRateTrend().catch(() => {});
+  // Restore buttons
+  ['wi-elecRefreshBtn','bd-elecRefreshBtn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; btn.textContent = '⟳'; }
+  });
+}
 
 // Fetch live facility data (rates, slots, power) directly from on-chain.
 // The HashCash public API contracts endpoint does not include electricityCost/facilityLevels data,
@@ -6710,6 +6732,29 @@ async function wiFetchFacilityRates() {
 //   e.g. 0.0001e18 = 100000000000000 raw → formatEther → 0.0001 hCASH/kWh
 // totalPowerOutput scale: stored as watts/100
 //   (verified: 4*100=400W, 10*100=1000W, 20*100=2000W ✓)
+// Fetch live blocks-per-hour by sampling two recent blocks.
+// electricityCost display = formatEther(raw) × 10 × BPH, so accuracy depends on live BPH.
+async function wiFetchLiveBlocksPerHour() {
+  try {
+    const prov = new ethers.JsonRpcProvider(AVAX_RPC);
+    const latest = await prov.getBlockNumber();
+    // Sample 100 blocks apart for a stable average
+    const [b1, b2] = await Promise.all([
+      prov.getBlock(latest),
+      prov.getBlock(latest - 100),
+    ]);
+    if (b1 && b2 && b1.timestamp > b2.timestamp) {
+      const secondsPer100 = b1.timestamp - b2.timestamp;
+      const secPerBlock = secondsPer100 / 100;
+      const bph = 3600 / secPerBlock;
+      _wiBlocksPerHour = bph;
+      console.log(`[Chain] Live block time: ${secPerBlock.toFixed(2)}s → ${bph.toFixed(0)} blocks/hour (${(bph*24).toFixed(0)}/day)`);
+    }
+  } catch(e) {
+    console.warn('[Chain] wiFetchLiveBlocksPerHour failed, using default:', e.message);
+  }
+}
+
 async function wiFetchFacilityRatesOnChain() {
   const MAIN_CONTRACT = '0x105fecae0c48d683dA63620De1f2d1582De9e98a';
   const MAIN_ABI = [
@@ -6722,14 +6767,14 @@ async function wiFetchFacilityRatesOnChain() {
   ];
 
   const DIMS = { 1:'2×2', 2:'2×3', 3:'3×3', 4:'3×4', 5:'4×4' };
-  // electricityCost is stored as standard 18-decimal fixed-point (1e18 = 1 hCASH/kWh)
-  // e.g. 0.0001e18 = 100000000000000 raw = 0.0001 hCASH/kWh
-  // Decode with ethers.formatEther — no custom scale factor needed.
+  // electricityCost decode: formatEther(raw) × 10 × blocks_per_hour (LIVE)
+  // BPH is fetched fresh each time since block times fluctuate → rates fluctuate
 
   try {
+    // Fetch live block rate first so electricity decode is accurate
+    await wiFetchLiveBlocksPerHour();
     const prov = new ethers.JsonRpcProvider(AVAX_RPC);
     const game = new ethers.Contract(MAIN_CONTRACT, MAIN_ABI, prov);
-
     // ── 1. Network stats (all in parallel) ──
     const [totalHashRaw, bigcoinPerBlockRaw, blocksToHalvingRaw, halvingIntervalRaw, facilityCountRaw] =
       await Promise.all([
@@ -6750,7 +6795,7 @@ async function wiFetchFacilityRatesOnChain() {
     // getBigcoinPerBlock: 18-decimal token amount — use ethers.formatEther for precision
     const bpb = parseFloat(ethers.formatEther(bigcoinPerBlockRaw || 0n));
     if (bpb > 0) {
-      _wiDailyEmission = bpb * 87500; // 87,500 blocks/day — from docs: 4,200,000 halving interval / 48 days
+      _wiDailyEmission = bpb * (_wiBlocksPerHour * 24); // live blocks/day
       console.log('[Chain] getBigcoinPerBlock:', bpb.toFixed(4), 'hCASH/block → daily:', _wiDailyEmission.toFixed(0), '✓');
     }
 
@@ -6788,13 +6833,9 @@ async function wiFetchFacilityRatesOnChain() {
       // powerOutput stored as watts/100 (verified: 4→400W, 10→1000W, 20→2000W, 60→6000W)
       const watts   = Number(fac[1]) * 100;
       // electricityCost stored as hCASH per power-unit (100W) per block, scaled by 1e18.
-      // Display conversion to hCASH/kWh:
-      //   = formatEther(raw) × (1000W/kW ÷ 100W/unit) × blocks_per_hour
-      //   = formatEther(raw) × 10 × 3336
-      // Verified against live display: Lv1 0.00025→8.34, Lv5 0.0001→3.34 ✓
-      const BLOCKS_PER_HOUR = 3336; // Grotto L1: ~80,064 blocks/day ÷ 24
+      // Display: hCASH/kWh = formatEther(raw) × (1000W/kW ÷ 100W/unit) × live_blocks_per_hour
       const elecRaw = fac[6];  // BigInt
-      const rate    = elecRaw > 0n ? parseFloat(ethers.formatEther(elecRaw)) * 10 * BLOCKS_PER_HOUR : 0;
+      const rate    = elecRaw > 0n ? parseFloat(ethers.formatEther(elecRaw)) * 10 * _wiBlocksPerHour : 0;
 
       console.log(`[Chain] facilities(${i}) → Lv${lv}: ${maxMiners} slots, ${watts}W, ${rate.toFixed(4)} hCASH/kWh ✓`);
 
@@ -6873,7 +6914,7 @@ async function wiFetchFacilityRateTrend() {
           const facIdx = Number(BigInt(log.topics[1]));
           if (facIdx < 1 || facIdx > 5) continue;
           const newCostRaw = BigInt(log.data);
-          const rate = parseFloat(ethers.formatEther(newCostRaw)) * 10 * 3336;
+          const rate = parseFloat(ethers.formatEther(newCostRaw)) * 10 * _wiBlocksPerHour;
           if (rate <= 0 || rate >= 1000) continue;
           const h = _wiFacilityRateHistory[facIdx];
           if (h.min === null || rate < h.min) h.min = rate;
